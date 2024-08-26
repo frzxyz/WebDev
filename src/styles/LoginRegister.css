@@ -1,0 +1,245 @@
+
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+    
+}
+
+body{
+    background-color: #000 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 100vh !important;
+}
+
+h1{
+    color: #faebd7 !important;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700 !important;
+    font-size: 32px;
+}
+
+.container{
+    background-color:#051941;
+    border-radius: 30px;
+    box-shadow: 5px 5px 10px #0D6EFD ;
+    position: relative;
+    overflow: hidden;
+    width: 900px !important;
+    max-width: 100% !important;
+    min-height: 480px !important;
+    height: 90vh;
+}
+
+.container p{
+    color: antiquewhite;
+    font-size: 18px;
+    line-height: 20px;
+    letter-spacing: 0.3px;
+    margin: 20px 0;
+}
+
+.container span{
+    color: antiquewhite;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.container a{
+    color: antiquewhite;
+    font-size: 16px;
+    text-decoration: none;
+    margin: 15px 0 10px;
+}
+
+.container button{
+    font-size: 14px;
+    padding: 10px 45px;
+    border: 1px solid transparent;
+    border-radius: 20px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-top: 10px;
+    cursor: pointer;
+    background-color: antiquewhite !important;
+}
+
+.container button.hidden{
+    background-color: transparent !important;
+    color:antiquewhite !important;
+    border-color: antiquewhite !important;
+}
+
+.container form{
+    background-color: #051941;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 40px;
+    height: 100% !important;
+}
+
+.container input{
+    background-color: #242f44;
+    color: antiquewhite;
+    border: none;
+    border-radius: 8px;
+    margin: 8px 0;
+    padding: 10px 15px;
+    width: 100%;
+    outline-width: 2px;
+    font-size: 13px;
+}
+
+.form-container{
+    position: absolute;
+    top: 0;
+    height: 100% !important;
+    transition: all 0.6s ease-in-out;
+}
+
+.sign-in{
+    left: 0;
+    width: 50%;
+    z-index: 2;
+}
+
+.container.active .sign-in{
+    transform: translateX(100%); 
+}
+
+.sign-up{
+    left: 0;
+    width: 50%;
+    z-index: 1;
+    opacity: 0;
+}
+
+.container.active .sign-up{
+    transform: translateX(100%) !important;
+    opacity: 1 !important;
+    z-index: 5 !important;
+    animation: move 0.6s !important;
+}
+
+@keyframes move{
+    0%, 49.99%{
+        opacity: 0;
+        z-index: 1;
+    }
+    50%, 100%{
+        opacity: 1;
+        z-index: 5;
+    }
+}
+
+.social-icons{
+    margin: 20px 0;
+}
+
+.social-icons a{
+    border: 1px solid #ccc;
+    border-radius: 20%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 3px;
+    width: 40px;
+    height: 40px;
+}
+
+.toggle-container{
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 50% !important;
+    height: 100% !important;
+    overflow: hidden;
+    transition: all 0.6s ease-in-out;
+    z-index: 1000 ;
+    border-radius: 150px 0 0 100px ;
+}
+
+.container.active .toggle-container{
+    transform: translateX(-100%) ;
+    border-radius: 0 150px 100px 0;
+}
+
+.toggle{
+    background-color:#000;
+    background: linear-gradient(to right, #051941, #000);
+    position: relative;
+    left: -100%;
+    height: 100% !important;
+    width: 200% !important;
+    transform: translateX(0);
+    transition: all 0.6s ease-in-out;
+}
+
+.container.active .toggle{
+    transform: translateX(50%);
+}
+
+.toggle-panel{
+    position: absolute;
+    width: 50% !important;
+    height: 100% !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 30px ;
+    text-align: center;
+    top: 0;
+    transform: translateX(0);
+    transition: all 0.6s ease-in-out;
+}
+
+.toggle-left{
+    transform: translateX(-200%);
+}
+
+.container.active .toggle-left{
+    transform: translateX(0);
+}
+
+.toggle-right{
+    right: 0;
+    transform: translateX(0);
+}
+
+.container.active .toggle-right{
+    transform: translateX(200%);
+}
+
+#register {
+    display: inline-block !important;
+    background-color: transparent !important;
+    color:antiquewhite !important;
+    border-color: antiquewhite !important;
+    border: 2px solid #faebd7 !important;
+    border-radius: 20px !important;
+    cursor: pointer !important;
+}
+
+
+#login {
+    display: inline-block !important;
+    background-color: transparent !important;
+    color:antiquewhite !important;
+    border-color: antiquewhite !important;
+    border: 2px solid #faebd7 !important;
+    border-radius: 20px !important;
+    cursor: pointer !important;
+}
