@@ -1,0 +1,21 @@
+.custom-search-bar {
+  border-radius: 25px; /* Rounded corners for the entire input group */
+  overflow: hidden; /* Ensure the rounded corners work correctly */
+  background-color: #001744; /* Background color for the search bar */
+}
+
+.custom-input {
+  border: none; /* Remove default border */
+  background-color: white; /* Dark background color for the input field */
+  color: #ecf0f1; /* Light text color */
+  padding-left: 20px; /* Add padding inside the input */
+}
+
+.custom-input::placeholder {
+  color: #b0c4de; /* Placeholder text color */
+}
+
+.custom-input:focus {
+  outline: none; /* Remove focus outline */
+  box-shadow: none; /* Remove box shadow on focus */
+}
