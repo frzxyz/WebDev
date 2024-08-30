@@ -1,13 +1,31 @@
-// src/components/SearchBar.js
+import { useState } from 'react';
+import { useRouter } from 'next/router';
+import '../styles/custom.css'; // Make sure this path is correct
 
 export default function SearchBar() {
-    return (
-      <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 className="h2">Search Drama</h1>
-        <div className="btn-toolbar mb-2 mb-md-0">
-          <input type="text" className="form-control" placeholder="Search Drama" aria-label="Search" />
-        </div>
+  const [query, setQuery] = useState('');
+  const router = useRouter();
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (query.trim()) {
+      router.push(`/search?query=${encodeURIComponent(query)}`);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSearch} className="d-flex justify-content-end align-items-center pt-3 pb-2 mb-3">
+      <div className="input-group custom-search-bar">
+        <input 
+          type="search" 
+          className="form-control custom-input" 
+          placeholder="Search Movie" 
+          aria-label="Search" 
+          aria-describedby="search-addon" 
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
       </div>
-    );
-  }
-  
+    </form>
+  );
+}
