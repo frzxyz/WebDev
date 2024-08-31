@@ -19,3 +19,53 @@
   outline: none; /* Remove focus outline */
   box-shadow: none; /* Remove box shadow on focus */
 }
+
+/* global.css or your main CSS file */
+body {
+  background-color: white;
+  color: black;
+}
+
+body.dark {
+  background-color: #121212;
+  color: white;
+}
+
+/* Add additional styles for your components */
+.sidebar {
+  background-color: white;
+}
+
+body.dark .sidebar {
+  background-color: #2c2c2c;
+}
+
+.card {
+  background-color: white;
+  color: black;
+}
+
+body.dark .card {
+  background-color: #1e1e1e;
+  color: white;
+}
+
+/* Add styles for other components as needed */
+.cast-slider {
+  white-space: nowrap;
+  overflow-x: auto;
+  padding: 10px 0;
+}
+
+.cast-slider::-webkit-scrollbar {
+  height: 8px;
+}
+
+.cast-slider::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 10px;
+}
+
+.cast-slider::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
