@@ -5,7 +5,6 @@ import SearchBar from '../components/SearchBar';
 import Filters from '../components/Filters';
 import DramaCard from '../components/DramaCard';
 import { dramas } from '../data/dramas';
-
 export default function HomePage() {
   const [filteredDramas, setFilteredDramas] = useState(dramas);
 

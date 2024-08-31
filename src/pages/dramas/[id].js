@@ -1,5 +1,4 @@
 import { useRouter } from 'next/router';
-import { useState } from 'react';
 import { dramas } from '../../data/dramas'; // Adjust the path as necessary
 import Sidebar from '../../components/Sidebar';
 import SearchBar from '../../components/SearchBar';
@@ -8,31 +7,52 @@ import ReviewList from '../../components/ReviewList';
 import AddReviewForm from '../../components/AddReviewForm';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../styles/custom.css';
+import { reviews as initialReviewsData } from '../../data/reviews';
+import { useState, useEffect } from 'react';
 
 export default function DramaDetails() {
   const router = useRouter();
   const { id } = router.query;
   const [minRating, setMinRating] = useState(0);
+  const [dramaId, setDramaId] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [filteredReviews, setFilteredReviews] = useState([]); // Initialize filteredReviews here
 
-  const drama = dramas.find(drama => drama.id === parseInt(id)); // Find the drama by ID
+  // useEffect to handle the dramaId after the router query is available
+  useEffect(() => {
+    if (id) {
+      const dramaIdParsed = parseInt(id);
+      setDramaId(dramaIdParsed);
+
+      const dramaReviews = initialReviewsData.filter(review => review.dramaId === dramaIdParsed);
+      setReviews(dramaReviews);
+      setFilteredReviews(dramaReviews.filter(review => review.rating >= minRating));
+    }
+  }, [id]);
+
+  useEffect(() => {
+    setFilteredReviews(reviews.filter(review => review.rating >= minRating));
+  }, [minRating, reviews]);
+
+  const drama = dramas.find(drama => drama.id === dramaId);
+
   if (!drama) {
     return <div>Drama not found</div>;
   }
 
+  const handleAddReview = (newReview) => {
+    const updatedReviews = [...reviews, newReview];
+    setReviews(updatedReviews);
+  };
+
   const handleFilterChange = (rating) => {
     setMinRating(rating);
   };
-  const reviews = [
-    { userName: "John Doe", date: "2024-01-01", comment: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", rating: 4 },
-    { userName: "Jane Smith", date: "2024-01-02", comment: "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.", rating: 5 },
-    { userName: "Alice Johnson", date: "2024-01-03", comment: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.", rating: 3 },
-    { userName: "Bob Brown", date: "2024-01-04", comment: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.", rating: 4 },
-  ];
+
   const cast = drama.cast;
-  // Group cast members into chunks of 5
 
   return (
-    <div className="container-fluid">
+    <div className="container-fluid bg-white">
       <div className="row">
         <Sidebar />
         <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
@@ -48,7 +68,7 @@ export default function DramaDetails() {
               <p><strong>Genre:</strong> {drama.genre}</p>
               <p><strong>Rating:</strong> {drama.rating}</p>
               <p><strong>Availability:</strong> {drama.availability}</p>
-              <p>{drama.description}</p>
+              <p style={{ textAlign: 'justify' }}><strong>Description:</strong> {drama.description}</p>
             </div>
           </div>
 
@@ -57,7 +77,7 @@ export default function DramaDetails() {
             <div className="cast-slider">
               <div className="d-flex align-items-center overflow-auto">
                 {cast.map((actor, index) => (
-                  <div key={index} className="text-center mx-3">
+                  <div key={index} className="d-flex flex-column align-items-center text-center mx-3">
                     <img 
                       src={actor.photo} 
                       alt={actor.name} 
@@ -71,7 +91,6 @@ export default function DramaDetails() {
               </div>
             </div>
           </div>
-
 
           <div className="row mt-4">
             <h4>Trailer</h4>
@@ -91,12 +110,12 @@ export default function DramaDetails() {
           <div className="row mt-4">
             <h4>People think about this drama</h4>
             <Filters onFilterChange={handleFilterChange} />
-            <ReviewList reviews={reviews} minRating={minRating} />
+            <ReviewList reviews={filteredReviews} />
           </div>
 
           <div className="row mt-4">
             <h4>Add yours!</h4>
-            <AddReviewForm />
+            <AddReviewForm onAddReview={handleAddReview} />
           </div>
         </main>
       </div>

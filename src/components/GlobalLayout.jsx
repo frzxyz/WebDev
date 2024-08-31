@@ -2,10 +2,9 @@
 
 import React from 'react';
 import Head from 'next/head';
-
 export default function GlobalLayout({ children }) {
   return (
-    <div className="bg-light">
+    <div className="bg-white">
       <Head>
         <title>MovNow</title>
         <link
