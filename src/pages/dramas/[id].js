@@ -48,6 +48,7 @@ export default function DramaDetails({ drama, initialReviews }) {
 
   const handleAddReview = (newReview) => {
     setReviews((prevReviews) => [...prevReviews, newReview]);
+    setFilteredReviews((prevFiltered) => [...prevFiltered, newReview]);
   };
 
   if (!drama) {
@@ -114,15 +115,15 @@ export default function DramaDetails({ drama, initialReviews }) {
 
           {/* Review dan Tambah Review Form */}
           <div className="row mt-4">
-            <h4>People think about this drama</h4>
-            <Filters onFilterChange={(rating) => setMinRating(rating)} />
-            <ReviewList reviews={filteredReviews} />
-          </div>
+          <h4>People think about this drama</h4>
+          <Filters onFilterChange={(rating) => setFilteredReviews(reviews.filter(r => r.rating >= rating))} />
+          <ReviewList reviews={filteredReviews} />
+        </div>
 
-          <div className="row mt-4">
-            <h4>Add yours!</h4>
-            <AddReviewForm onAddReview={handleAddReview} />
-          </div>
+        <div className="row mt-4">
+          <h4>Add yours!</h4>
+          <AddReviewForm dramaId={drama.id} onAddReview={handleAddReview} />
+        </div>
         </main>
       </div>
     </div>

@@ -39,11 +39,12 @@ model Actor {
 }
 
 model Review {
-  id        Int      @id @default(autoincrement())
-  dramaId   Int
-  drama     Drama    @relation(fields: [dramaId], references: [id])
-  userName  String
-  date      DateTime @default(now())
-  comment   String
-  rating    Int
+  id       Int    @id @default(autoincrement())
+  userName String
+  rating   Int
+  comment  String
+  date     DateTime @default(now())
+  drama    Drama    @relation(fields: [dramaId], references: [id])
+  dramaId  Int
 }
+
