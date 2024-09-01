@@ -1,0 +1,49 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Drama {
+  id           Int      @id @default(autoincrement())
+  title        String
+  alternativeTitle String?
+  urlPhoto     String?
+  year         Int
+  country      String
+  synopsis     String?
+  availability String
+  genres       Genre[]
+  actors       Actor[]
+  trailerLink  String?
+  award        String?
+  rating       Float?
+  reviews      Review[]
+}
+
+model Genre {
+  id     Int    @id @default(autoincrement())
+  name   String
+  dramas Drama[]
+}
+
+model Actor {
+  id     Int    @id @default(autoincrement())
+  name   String
+  role   String
+  photo  String?
+  dramas Drama[]
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  dramaId   Int
+  drama     Drama    @relation(fields: [dramaId], references: [id])
+  userName  String
+  date      DateTime @default(now())
+  comment   String
+  rating    Int
+}
