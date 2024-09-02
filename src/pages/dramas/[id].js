@@ -52,14 +52,20 @@ export default function DramaDetails() {
   const cast = drama.cast;
 
   return (
-    <div className="container-fluid bg-white">
+    <div className="container-fluid bg-dark text-white">
       <div className="row">
         <Sidebar />
         <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
           <SearchBar />
           <div className="row mt-4">
             <div className="col-md-4">
-              <img src={drama.poster} alt={drama.title} className="img-fluid mb-4" />
+              <div className="image-container">
+                <img 
+                  src={drama.poster} 
+                  alt={drama.title} 
+                  className="img-fluid mb-4"
+                />
+              </div>
             </div>
             <div className="col-md-8">
               <h1 className="display-4">{drama.title}</h1>
@@ -82,7 +88,7 @@ export default function DramaDetails() {
                       src={actor.photo} 
                       alt={actor.name} 
                       className="img-fluid rounded-circle mb-2" 
-                      style={{ objectFit: 'cover', width: '50px', height: '50px' }} 
+                      style={{ width: '50px', height: '50px', objectFit: 'cover' }} 
                     />
                     <p className="mb-0 text-truncate">{actor.name}</p>
                     <small className="text-muted">{actor.role}</small>
@@ -101,7 +107,7 @@ export default function DramaDetails() {
                   src={`https://www.youtube.com/embed/dQw4w9WgXcQ`} // Replace with your video ID
                   allowFullScreen
                   title="Drama Trailer"
-                  style={{ width: '40%', height: '20vw', border: 'none' }}
+                  style={{ width: '100%', height: '40vw', border: 'none' }}
                 ></iframe>
               </div>
             </div>

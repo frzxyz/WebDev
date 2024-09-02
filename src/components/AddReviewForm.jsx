@@ -59,7 +59,7 @@ export default function AddReviewForm({ dramaId, onAddReview }) {
           required
         ></textarea>
       </div>
-      <button type="submit" className="btn btn-primary">Submit</button>
+      <button type="submit" className="btn btn-secondary">Submit</button>
     </form>
   );
 }

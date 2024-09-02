@@ -6,7 +6,7 @@
 
 .custom-input {
   border: none; /* Remove default border */
-  background-color: white; /* Dark background color for the input field */
+  background-color: white; /* Background color for the input field */
   color: #ecf0f1; /* Light text color */
   padding-left: 20px; /* Add padding inside the input */
 }
@@ -20,10 +20,11 @@
   box-shadow: none; /* Remove box shadow on focus */
 }
 
-/* global.css or your main CSS file */
-body {
-  background-color: white;
-  color: black;
+/* Ensure the body takes the full height of the viewport and applies a consistent background color */
+body, html {
+  height: 100%;
+  margin: 0;
+  background-color: black;
 }
 
 body.dark {
@@ -50,6 +51,21 @@ body.dark .card {
   color: white;
 }
 
+/* Ensure the main container takes the full height of the viewport */
+.container-fluid {
+  min-height: 100vh;
+  background-color: #212529; /* Ensure the background color is applied */
+  padding-bottom: 20px; /* Optional: Add some space at the bottom */
+}
+
+body.dark .container-fluid {
+  background-color: #121212;
+}
+
+.row {
+  margin-bottom: 0;
+}
+
 /* Add styles for other components as needed */
 .cast-slider {
   white-space: nowrap;
@@ -68,4 +84,45 @@ body.dark .card {
 
 .cast-slider::-webkit-scrollbar-thumb:hover {
   background-color: #555;
+}
+
+
+.card {
+  height: 100%; /* Ensure each card takes the full height of its column */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Ensure content stays well-positioned */
+}
+
+.card-img-top {
+  max-height: 200px; /* Adjust max height if necessary */
+  object-fit: contain;
+}
+
+.card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.col-md-3 {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+
+.image-container {
+  width: 100%;
+  height: 400px; /* Set a fixed height for all images */
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  overflow: hidden;
+}
+
+.image-container img {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain; /* Ensure the image fits within the container without being cropped */
 }

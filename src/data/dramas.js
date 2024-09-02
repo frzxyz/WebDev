@@ -55,7 +55,7 @@ export const dramas = [
     rating: 4.6,
     views: 50,
     synopsis: "At the age of eight, Park Joo-hyung went to Italy after being adopted. Now an adult, he is known as Vincenzo Cassano, a Mafia lawyer. He is back in Korea to recover his hidden treasure, but ends up fighting evil corporations with a quirky lawyer.",
-    poster: "https://via.placeholder.com/150",
+    poster: "https://upload.wikimedia.org/wikipedia/id/c/c6/Vincenzo_poster.jpg",
     cast: [
       { name: "Song Joong-ki", role: "Vincenzo Cassano", photo: "https://via.placeholder.com/100" },
       { name: "Jeon Yeo-been", role: "Hong Cha-young", photo: "https://via.placeholder.com/100" },
@@ -70,7 +70,7 @@ export const dramas = [
     rating: 4.8,
     views: 55,
     synopsis: "Five doctors, who have been friends since medical school, share stories of their patients and struggle to balance life and work at a busy hospital.",
-    poster: "https://via.placeholder.com/150",
+    poster: "https://asianwiki.com/images/c/ca/Hospital_Playlist-P1.jpg",
     cast: [
       { name: "Jo Jung-suk", role: "Lee Ik-jun", photo: "https://via.placeholder.com/100" },
       { name: "Yoo Yeon-seok", role: "Ahn Jeong-won", photo: "https://via.placeholder.com/100" },
@@ -84,7 +84,7 @@ export const dramas = [
     genre: "Drama, Slice of Life",
     rating: 4.9,
     views: 40,
-    poster: "https://via.placeholder.com/150",
+    poster: "https://asianwiki.com/images/2/2d/My_Mister-CP111.jpg",
     cast: [
       { name: "Lee Sun-kyun", role: "Park Dong-hoon", photo: "https://via.placeholder.com/100" },
       { name: "IU", role: "Lee Ji-an", photo: "https://via.placeholder.com/100" },
@@ -98,7 +98,7 @@ export const dramas = [
     genre: "Fantasy, Romance, Drama",
     rating: 4.7,
     views: 70,
-    poster: "https://via.placeholder.com/150",
+    poster: "https://asianwiki.com/images/b/b2/Goblin-p04.jpg",
     cast: [
       { name: "Gong Yoo", role: "Kim Shin", photo: "https://via.placeholder.com/100" },
       { name: "Kim Go-eun", role: "Ji Eun-tak", photo: "https://via.placeholder.com/100" },
@@ -112,7 +112,7 @@ export const dramas = [
     genre: "Historical, Horror, Thriller",
     rating: 4.6,
     views: 48,
-    poster: "https://via.placeholder.com/150",
+    poster: "https://m.media-amazon.com/images/M/MV5BNTBlZmE4YzItNTY5Mi00NmIxLTlhZTAtOWIxNjFlNTMzNmI1XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg",
     cast: [
       { name: "Ju Ji-hoon", role: "Crown Prince Lee Chang", photo: "https://via.placeholder.com/100" },
       { name: "Bae Doona", role: "Seo-bi", photo: "https://via.placeholder.com/100" },
