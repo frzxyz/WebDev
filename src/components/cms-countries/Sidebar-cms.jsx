@@ -1,6 +1,6 @@
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
-import Logo from "../../assets/movnow.png";
+import Logo from "../../assets/logo-movienow.png";
 import { BiSolidCameraMovie, BiSolidTrophy } from "react-icons/bi";
 import { MdTheaterComedy } from "react-icons/md";
 import {
@@ -10,24 +10,25 @@ import {
   IoPeople,
   IoLogOut,
 } from "react-icons/io5";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function Sidebar() {
   return (
-    <div className="container-fluid">
+    <div>
       <nav className="col-auto col-md-2 d-flex justify-content-between flex-column sidebar">
         <div className="position-sticky">
-          <div className="col-auto text-decoration-none d-flex text-white align-item-center">
-
-          <Navbar.Brand href="#home">
-            <img
-              alt=""
-              src={Logo}
-              width="50"
-              height="50"
-            />
-            <h1 className="d-inline-block align-top text-white">MovNow</h1>
-          </Navbar.Brand>
-          </div>
+        <Nav.Item className="text-center my-3">
+              <Nav.Link href="#" className="d-flex align-items-center justify-content-center text-white">
+                <img
+                  alt=""
+                  src={Logo}
+                  width="50"
+                  height="50"
+                  className="me-2"
+                />
+                <h1 className="d-inline-block align-top m-0 text-white">MovieNow</h1>
+              </Nav.Link>
+            </Nav.Item>
           <hr />
           <Nav className="nav nav-pills flex-column">
             <Nav.Item>

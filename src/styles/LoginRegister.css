@@ -11,7 +11,7 @@
 }
 
 body{
-    background-color: #000 !important;
+    background-color: #D3D7FA ;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -31,7 +31,7 @@ h1{
 .container{
     background-color:#051941;
     border-radius: 30px;
-    box-shadow: 5px 5px 10px #0D6EFD ;
+    box-shadow: 5px 5px 10px #000 ;
     position: relative;
     overflow: hidden;
     width: 900px !important;
@@ -242,4 +242,18 @@ h1{
     border: 2px solid #faebd7 !important;
     border-radius: 20px !important;
     cursor: pointer !important;
+}
+
+.page-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Mengatur konten dalam container ke sebelah kiri */
+    padding: 20px; /* Opsional: untuk memberikan padding di sekitar konten */
+}
+
+.back-button {
+    align-self: flex-start; /* Membuat tombol back ada di kiri */
+    cursor: pointer; /* Memberikan gaya kursor untuk menandakan itu bisa diklik */
+    margin-bottom: 20px; /* Memberikan jarak antara tulisan 'Back' dan komponen berikutnya */
+    color: #051941; /* Warna teks, sesuaikan dengan desain Anda */
 }

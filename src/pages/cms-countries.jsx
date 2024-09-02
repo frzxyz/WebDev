@@ -6,9 +6,9 @@ import TableCountry from '../components/cms-countries/TableCountry';
 
 export default function Countries() {
   return (
-    <div>
+    <div className="cms-countries">
       <Sidebar/>
-      <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <main className="col-2 col-10 px-md-4 main-content">
         <AddCountry />
         <TableCountry />
       </main>
