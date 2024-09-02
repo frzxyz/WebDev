@@ -1,14 +1,24 @@
 import { useState } from 'react';
 
-export default function AddReviewForm() {
+export default function AddReviewForm({ dramaId, onAddReview }) {
   const [name, setName] = useState('');
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission (e.g., send to API)
-    console.log({ name, rating, comment });
+    const newReview = {
+      dramaId, // Link the review to the specific drama
+      userName: name,
+      date: new Date().toISOString().split('T')[0], // Format the date as YYYY-MM-DD
+      comment,
+      rating,
+    };
+    onAddReview(newReview); // Pass the new review to the parent component
+    // Clear form fields after submission
+    setName('');
+    setRating(0);
+    setComment('');
   };
 
   return (
@@ -49,7 +59,7 @@ export default function AddReviewForm() {
           required
         ></textarea>
       </div>
-      <button type="submit" className="btn btn-primary">Submit</button>
+      <button type="submit" className="btn btn-secondary">Submit</button>
     </form>
   );
 }
