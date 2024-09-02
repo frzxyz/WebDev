@@ -1,19 +1,22 @@
 import Table from "react-bootstrap/Table";
 import Container from "react-bootstrap/Container";
 import { TiEdit, TiTrash } from "react-icons/ti";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 
 import "../../styles/Countries.css";
+import "../../styles/Awards.css";
 
-function TableCountries() {
+function TableAwards() {
   return (
     <div className="table-countries">
-      <h4 >List Countries</h4>
-        <Table responsive striped>
+      <h4 >List Awards</h4>
+    <Table responsive striped>
           <thead>
             <tr>
               <th>Id</th>
               <th>Countries</th>
+              <th>Years</th>
+              <th>Awards</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -21,6 +24,8 @@ function TableCountries() {
             <tr>
               <td>1</td>
               <td>Japan</td>
+              <td>2024</td>
+              <td>Japanese Drama Awards Spring 2024</td>
               <td>
                 <button className="btn btn-success mx-2">
                   <span className="d-flex align-items-center">
@@ -39,6 +44,8 @@ function TableCountries() {
             <tr>
               <td>2</td>
               <td>Korea</td>
+              <td>2024</td>
+              <td>Korean Drama Awards Spring 2024</td>
               <td>
                 <button className="btn btn-success mx-2">
                   <span className="d-flex align-items-center">
@@ -57,6 +64,8 @@ function TableCountries() {
             <tr>
               <td>3</td>
               <td>China</td>
+              <td>2024</td>
+              <td>Chinese Drama Awards Spring 2024</td>
               <td>
                 <button className="btn btn-success mx-2">
                   <span className="d-flex align-items-center">
@@ -74,8 +83,9 @@ function TableCountries() {
             </tr>
           </tbody>
         </Table>
-    </div>
+        </div>
   );
 }
 
-export default TableCountries;
+
+export default TableAwards;
