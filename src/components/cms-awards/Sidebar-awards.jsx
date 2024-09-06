@@ -15,7 +15,7 @@ import {
 } from "react-icons/io5";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-function Sidebar() {
+function SidebarAwards() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleLogoutClick = () => {
@@ -57,13 +57,13 @@ function Sidebar() {
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link className="text-white active" href="#">
+              <Nav.Link className="text-white" href="/cms-countries">
                 <IoEarth />
                 <span className="ms-2">Countries</span>
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link className="text-white" href="/cms-awards">
+              <Nav.Link className="text-white active" href="/cms-awards">
                 <BiSolidTrophy />
                 <span className="ms-2">Awards</span>
               </Nav.Link>
@@ -123,4 +123,4 @@ function Sidebar() {
   );
 }
 
-export default Sidebar;
+export default SidebarAwards;

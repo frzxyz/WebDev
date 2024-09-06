@@ -1,20 +1,20 @@
 import React, { useState } from "react";
 import Table from "react-bootstrap/Table";
-import { TiEdit, TiTrash } from "react-icons/ti";
+import { TiEdit, TiTrash, TiMail } from "react-icons/ti";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import "../../styles/Countries.css";
 import "../../styles/Awards.css";
 import { useEdit } from "../cms-global/cms-edit";
 
-function TableAwards() {
-  const { cancelEdit, edit, saveEdit } = useEdit();
+function TableUsers() {
+  const { cancelEdit, edit, saveEdit } = useEdit(); // Destructure dari objek
 
   const [users, setUsers] = useState([
-    { id: 1, countries: "Japan", years: "2024", awards: "Japanese Drama Awards Spring 2024" },
-    { id: 2, countries: "Korea", years: "2020", awards: "Korean Drama Awards Baeksang 2020" },
-    { id: 3, countries: "China", years: "2022", awards: "Chinese Drama Awards Summer 2022" },
-  ]); 
+    { id: 1, username: "welsyaalmaira13", email: "welsyaalmaira@gmail.com" },
+    { id: 2, username: "rendi123", email: "rendi@polban.ac.id" },
+    { id: 3, username: "farrelrahandika", email: "farrel456@gmail.com" },
+  ]);
 
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
@@ -38,42 +38,46 @@ function TableAwards() {
     setSortConfig({ key, direction });
     setUsers(sortedUsers);
   };
-  
+
   return (
     <div className="table-countries">
-      <h4 >List Awards</h4>
-
+      <h4>List Users</h4>
+      
       <div className="sort-buttons">
-        <button className="sort-button" onClick={() => sortBy("countries")}>
-          Sort By Countries {sortConfig.key === "countries" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+        <button className="sort-button" onClick={() => sortBy("username")}>
+          Sort By Username {sortConfig.key === "username" && (sortConfig.direction === "asc" ? "↑" : "↓")}
         </button>
-        <button className="sort-button" onClick={() => sortBy("years")}>
-          Sort By Years {sortConfig.key === "years" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+        <button className="sort-button" onClick={() => sortBy("email")}>
+          Sort By Email {sortConfig.key === "email" && (sortConfig.direction === "asc" ? "↑" : "↓")}
         </button>
       </div>
 
-    <Table responsive striped>
-          <thead>
-            <tr>
-              <th>Id</th>
-              <th onClick={() => sortBy("countries")} style={{ cursor: "pointer" }}>
-              Countries {sortConfig.key === "countries" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+      <Table responsive striped>
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th onClick={() => sortBy("username")} style={{ cursor: "pointer" }}>
+              Username {sortConfig.key === "username" && (sortConfig.direction === "asc" ? "↑" : "↓")}
             </th>
-            <th onClick={() => sortBy("years")} style={{ cursor: "pointer" }}>
-              Years {sortConfig.key === "years" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+            <th onClick={() => sortBy("email")} style={{ cursor: "pointer" }}>
+              Email {sortConfig.key === "email" && (sortConfig.direction === "asc" ? "↑" : "↓")}
             </th>
-              <th>Awards</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
           {users.map((user) => (
             <tr key={user.id} id={`row${user.id}`}>
               <td>{user.id}</td>
-              <td>{user.countries}</td>
-              <td>{user.years}</td>
-              <td>{user.awards}</td>
+              <td>{user.username}</td>
+              <td>{user.email}</td>
               <td>
+                <button className="btn btn-primary">
+                  <span className="d-flex align-items-center">
+                    <TiMail className="me-2" />
+                    Send Email
+                  </span>
+                </button>
                 <button
                   className="btn btn-success mx-2"
                   id={`editBtn${user.id}`}
@@ -111,10 +115,9 @@ function TableAwards() {
             </tr>
           ))}
         </tbody>
-        </Table>
-        </div>
+      </Table>
+    </div>
   );
 }
 
-
-export default TableAwards;
+export default TableUsers;

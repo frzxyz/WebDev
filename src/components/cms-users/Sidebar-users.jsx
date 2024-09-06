@@ -57,7 +57,7 @@ function Sidebar() {
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link className="text-white active" href="#">
+              <Nav.Link className="text-white" href="/cms-countries">
                 <IoEarth />
                 <span className="ms-2">Countries</span>
               </Nav.Link>
@@ -87,7 +87,7 @@ function Sidebar() {
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link className="text-white" href="/cms-users">
+              <Nav.Link className="text-white active" href="/cms-users">
                 <IoPerson />
                 <span className="ms-2">Users</span>
               </Nav.Link>

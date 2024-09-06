@@ -67,7 +67,7 @@
 }
 
 .add-country{
-    margin-top: 10%;
+    margin-top: 2%;
     margin-bottom: 3%;
     margin-left: 2%;
 }
@@ -124,4 +124,10 @@
   background-color: #F2F2F2;
   border-radius: 15px;
   margin-top: 20px;
+}
+
+.countries-title {
+  margin-top: 2%;
+  margin-left: 2%;
+  font-weight: bold;
 }

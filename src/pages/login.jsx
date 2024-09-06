@@ -3,9 +3,12 @@
 import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+
 import { IoArrowBackSharp } from "react-icons/io5";
 
 import LoginRegister from '../components/login-register/LoginRegister';
+
+// import 'bootstrap/dist/css/bootstrap.min.css';
 
 // import "../styles/LoginRegister.css";
 
@@ -13,9 +16,9 @@ export default function LoginPage() {
     return (
         <div className='page-container'>
             <Link href="/">
-            <h3 href="./index.jsx" className='back-button'>
-                <IoArrowBackSharp />Back
-            </h3>
+                <h3 className='back-button' style={{ cursor: 'pointer' }}>
+                    <IoArrowBackSharp /> Back
+                </h3>
             </Link>
             <div>
                 <Head>

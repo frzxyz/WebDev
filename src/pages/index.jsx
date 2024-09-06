@@ -7,9 +7,11 @@ import SearchBar from '../components/SearchBar';
 import Filters from '../components/Filters';
 import DramaCard from '../components/DramaCard';
 import { dramas } from '../data/dramas';
+import { EditProvider } from '@/components/cms-global/cms-edit';
 
 export default function HomePage() {
   return (
+    <EditProvider>
     <GlobalLayout>
       <Sidebar />
       <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
@@ -22,5 +24,6 @@ export default function HomePage() {
         </div>
       </main>
     </GlobalLayout>
+    </EditProvider>
   );
 }

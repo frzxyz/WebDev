@@ -15,3 +15,29 @@
     border-radius: 15px;
     margin-top: 20px;
 }
+
+.awards-title {
+    margin-top: 2%;
+    margin-left: 2%;
+    font-weight: bold;
+}
+
+/* Styles untuk tombol Sort By */
+.sort-buttons {
+    display: flex;
+    justify-content: flex-start; /* Menempatkan tombol di sebelah kiri */
+    margin-top: 1rem; /* Memberi jarak bawah */
+  }
+  
+  .sort-button {
+    background-color: #051941; /* Warna latar belakang kuning */
+    color:#ffffff; /* Warna teks hitam */
+    padding: 0.5rem 1rem; /* Padding untuk tombol */
+    margin-right: 0.5rem; 
+    cursor: pointer; 
+    border-radius: 15px;
+  }
+  
+  .sort-button:hover {
+    background-color: #495057;
+  }
