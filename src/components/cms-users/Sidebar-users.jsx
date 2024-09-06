@@ -38,8 +38,8 @@ function Sidebar() {
                 <img
                   alt=""
                   src={Logo}
-                  width="50"
-                  height="50"
+                  width="45"
+                  height="45"
                   className="me-2"
                 />
                 <h1 className="d-inline-block align-top m-0 text-white">MovieNow</h1>

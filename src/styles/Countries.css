@@ -21,6 +21,7 @@
 }
 
 .sidebar .h1{
+  font-size: 20px;
     color: antiquewhite;
 }
 
@@ -45,6 +46,15 @@
   font-size: 18px;
 }
 
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    position: relative;
+    height: 100vh;
+  }
+  
+}
+
 @media (max-width: 1200px) {
     .sidebar {
         padding-left: 10px;
@@ -66,6 +76,23 @@
     }
 }
 
+@media (max-width: 1370px) {
+  .sidebar h1 {
+      font-size: 30px;
+      text-align: center;
+      font-weight: 500;
+  }
+
+  .sidebar img {
+      width: 40px;
+      height: 40px;
+  }
+
+  .sidebar .nav-link {
+      font-size: 18px; 
+  }
+}
+
 .add-country{
     margin-top: 2%;
     margin-bottom: 3%;
@@ -76,21 +103,16 @@
     margin-top: 2%;
     margin-bottom: 3%;
     margin-left: 2%;
+    color: #333333; /* Warna teks tabel */
+    border-radius: 15px; /* Sudut membulat pada tabel */
 }
 
-.table-countries table {
-  background-color: #ffffff; /* Warna latar belakang tabel */
-  color: #333333; /* Warna teks tabel */
-  border-radius: 15px; /* Sudut membulat pada tabel */
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Bayangan untuk tabel */
-}
-
-.table-countries table thead {
+.table-responsive th {
   background-color: #0d6efd; /* Warna latar belakang untuk header tabel */
   color: #ffffff; /* Warna teks untuk header tabel */
 }
 
-.table-countries table tbody tr {
+.table-countries tbody tr {
   background-color: #f8f9fa; /* Warna latar belakang untuk baris tabel */
   transition: background-color 0.3s ease;
 }

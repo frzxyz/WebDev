@@ -72,7 +72,7 @@ function TableUsers() {
               <td>{user.username}</td>
               <td>{user.email}</td>
               <td>
-                <button className="btn btn-primary">
+                <button className="btn btn-warning">
                   <span className="d-flex align-items-center">
                     <TiMail className="me-2" />
                     Send Email
