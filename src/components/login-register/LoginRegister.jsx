@@ -25,8 +25,8 @@ const LoginRegister = () => {
           <h1>Create Account</h1>
           <div className="social-icons">
             <a href="#" className="icon"><i className="fa-brands fa-google"></i></a>
-            <a href="#" className="icon"><i className="fa-brands fa-facebook"></i></a>
-            <a href="#" className="icon"><i className="fa-brands fa-github"></i></a>
+            {/* <a href="#" className="icon"><i className="fa-brands fa-facebook"></i></a>
+            <a href="#" className="icon"><i className="fa-brands fa-github"></i></a> */}
           </div>
           <span>or use email for registration</span>
           <input type="text" placeholder="Name" />
@@ -40,8 +40,8 @@ const LoginRegister = () => {
           <h1>Sign In</h1>
           <div className="social-icons">
             <a href="#" className="icon"><i className="fa-brands fa-google"></i></a>
-            <a href="#" className="icon"><i className="fa-brands fa-facebook"></i></a>
-            <a href="#" className="icon"><i className="fa-brands fa-github"></i></a>
+            {/* <a href="#" className="icon"><i className="fa-brands fa-facebook"></i></a>
+            <a href="#" className="icon"><i className="fa-brands fa-github"></i></a> */}
           </div>
           <span>or use email for login</span>
           <input type="text" placeholder="Name" />

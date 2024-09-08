@@ -36,13 +36,13 @@ function Sidebar() {
         <Nav.Item className="text-center my-3">
               <Nav.Link href="#" className="d-flex align-items-center justify-content-center text-white">
                 <img
-                  alt=""
-                  src={Logo}
+                  alt="Logo"
+                  src="https://i.imgur.com/fUTK20b.png"
                   width="50"
                   height="50"
                   className="me-2"
                 />
-                <h1 className="d-inline-block align-top m-0 text-white">MovieNow</h1>
+                <h1 className="d-inline-block align-top m-0 text-white">MovNow</h1>
               </Nav.Link>
             </Nav.Item>
           <hr />

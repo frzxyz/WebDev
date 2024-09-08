@@ -11,7 +11,7 @@
 }
 
 body{
-    background-color: #D3D7FA ;
+    background-color: #24242c !important;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -25,7 +25,7 @@ h1{
     justify-content: center;
     align-items: center;
     font-weight: 700 !important;
-    font-size: 32px;
+    font-size: 32px !important;
 }
 
 .container{
@@ -253,7 +253,9 @@ h1{
 
 .back-button {
     align-self: flex-start; /* Membuat tombol back ada di kiri */
-    cursor: pointer; /* Memberikan gaya kursor untuk menandakan itu bisa diklik */
     margin-bottom: 20px; /* Memberikan jarak antara tulisan 'Back' dan komponen berikutnya */
-    color: #051941; /* Warna teks, sesuaikan dengan desain Anda */
+    color:antiquewhite; /* Warna teks, sesuaikan dengan desain Anda */
+    font-size: 19px;
+    font-weight: 600;
+    text-decoration: none;
 }
