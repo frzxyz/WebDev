@@ -50,7 +50,7 @@ function Sidebar() {
             <Nav.Item>
               <Nav.Link
                 className="text-white"
-                href="/cms-movies"
+                href="cms-movies"
               >
                 <BiSolidCameraMovie />
                 <span className="ms-2">Movies</span>
@@ -69,7 +69,7 @@ function Sidebar() {
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link className="text-white" href="/cms-genres">
+              <Nav.Link className="text-white active" href="/cms-genres">
                 <MdTheaterComedy />
                 <span className="ms-2">Genre</span>
               </Nav.Link>
@@ -87,7 +87,7 @@ function Sidebar() {
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link className="text-white active" href="/cms-users">
+              <Nav.Link className="text-white" href="/cms-users">
                 <IoPerson />
                 <span className="ms-2">Users</span>
               </Nav.Link>

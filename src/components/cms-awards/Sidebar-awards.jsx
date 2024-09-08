@@ -50,7 +50,7 @@ function SidebarAwards() {
             <Nav.Item>
               <Nav.Link
                 className="text-white"
-                href="#"
+                href="/cms-movies"
               >
                 <BiSolidCameraMovie />
                 <span className="ms-2">Movies</span>
@@ -69,19 +69,19 @@ function SidebarAwards() {
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link className="text-white" href="#">
+              <Nav.Link className="text-white" href="cms-genres">
                 <MdTheaterComedy />
                 <span className="ms-2">Genre</span>
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link className="text-white" href="#">
+              <Nav.Link className="text-white" href="cms-actors">
                 <IoPeople />
                 <span className="ms-2">Actors</span>
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link className="text-white" href="#">
+              <Nav.Link className="text-white" href="cms-comments">
                 <IoChatboxEllipses />
                 <span className="ms-2">Comments</span>
               </Nav.Link>

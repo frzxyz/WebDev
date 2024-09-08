@@ -49,7 +49,7 @@ function Sidebar() {
           <Nav className="nav nav-pills flex-column">
             <Nav.Item>
               <Nav.Link
-                className="text-white"
+                className="text-white active"
                 href="/cms-movies"
               >
                 <BiSolidCameraMovie />
@@ -87,7 +87,7 @@ function Sidebar() {
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link className="text-white active" href="/cms-users">
+              <Nav.Link className="text-white" href="/cms-users">
                 <IoPerson />
                 <span className="ms-2">Users</span>
               </Nav.Link>
