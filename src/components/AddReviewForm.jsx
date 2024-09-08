@@ -56,7 +56,7 @@ export default function AddReviewForm({ dramaId, onAddReview }) {
         <select
           className="form-select"
           value={rating}
-          onChange={(e) => setRating(e.target.value)}
+          onChange={(e) => setRating(parseInt(e.target.value))}
           required
         >
           <option value={0}>Select rating</option>
@@ -77,7 +77,7 @@ export default function AddReviewForm({ dramaId, onAddReview }) {
           required
         ></textarea>
       </div>
-      <button type="submit" className="btn btn-primary">Submit</button>
+      <button type="submit" className="btn btn-secondary">Submit</button>
     </form>
   );
 }

@@ -58,7 +58,7 @@ export default function DramaDetails({ drama, initialReviews }) {
   const cast = drama.actors;
 
   return (
-    <div className="container-fluid bg-white">
+    <div className="container-fluid bg-dark text-white">
       <div className="row">
         <Sidebar />
         <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
