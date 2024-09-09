@@ -13,13 +13,14 @@ model Drama {
   alternativeTitle String?
   urlPhoto     String?
   year         Int
-  country      String
+  countryId    Int
+  country      Country   @relation(fields: [countryId], references: [id])
   synopsis     String?
   availability String
   genres       Genre[]
   actors       Actor[]
   trailerLink  String?
-  award        String?
+  awards       Award[]   // Relation to awards
   rating       Float?
   reviews      Review[]
   views        Int
@@ -49,3 +50,16 @@ model Review {
   dramaId  Int
 }
 
+model Award {                // New Award model
+  id       Int    @id @default(autoincrement())
+  name     String
+  year     Int
+  drama    Drama   @relation(fields: [dramaId], references: [id])
+  dramaId  Int
+}
+
+model Country {              // New Country model
+  id     Int     @id @default(autoincrement())
+  name   String
+  dramas Drama[]
+}
