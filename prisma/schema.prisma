@@ -24,6 +24,7 @@ model Drama {
   rating       Float?
   reviews      Review[]
   views        Int
+  duration     Int
 }
 
 model Genre {
@@ -50,16 +51,19 @@ model Review {
   dramaId  Int
 }
 
-model Award {                // New Award model
+model Award {
   id       Int    @id @default(autoincrement())
   name     String
   year     Int
   drama    Drama   @relation(fields: [dramaId], references: [id])
   dramaId  Int
+  country  Country @relation(fields: [countryId], references: [id])  // Adding relation to Country
+  countryId Int
 }
 
-model Country {              // New Country model
+model Country {
   id     Int     @id @default(autoincrement())
   name   String
   dramas Drama[]
+  awards Award[]
 }
