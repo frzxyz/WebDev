@@ -1,4 +1,6 @@
+
 import { useState, useEffect } from 'react';
+
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
@@ -13,21 +15,28 @@ export default function Filters({ onFilterChange }) {
   const [startDate, setStartDate] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
+
   const [sortOption, setSortOption] = useState('alphabetic'); 
+
 
   const handleYearChange = (date) => {
     setStartDate(date);
     setIsModalOpen(false);
+
     onFilterChange({ year: date ? date.getFullYear() : null, genres: selectedGenres, availability: selectedAvailability, sortOption });
+
   };
 
   const handleClearYear = () => {
     setStartDate(null);
+
     onFilterChange({ year: null, genres: selectedGenres, availability: selectedAvailability, sortOption });
+
   };
 
   const handleGenreChange = (genre) => {
     setSelectedGenres((prevSelectedGenres) => {
+
       if (prevSelectedGenres.includes(genre)) {
         return prevSelectedGenres.filter(g => g !== genre);
       } else {
@@ -40,20 +49,24 @@ export default function Filters({ onFilterChange }) {
     const sort = e.target.value;
     setSortOption(sort);
     onFilterChange({ year: startDate ? startDate.getFullYear() : null, genres: selectedGenres, availability: selectedAvailability, sortOption: sort });
+
   };
 
   const handleAvailabilityChange = (platform) => {
     setSelectedAvailability((prevSelectedAvailability) => {
+
       if (prevSelectedAvailability.includes(platform)) {
         return prevSelectedAvailability.filter(p => p !== platform);
       } else {
         return [...prevSelectedAvailability, platform];
       }
+
     });
   };
 
   const toggleDropdown = (dropdownName) => {
     if (openDropdown === dropdownName) {
+
       setOpenDropdown(null);
     } else {
       setOpenDropdown(dropdownName);
@@ -76,11 +89,14 @@ export default function Filters({ onFilterChange }) {
 
         <button 
           className="btn btn-outline-secondary text-white mb-1 me-2 ms-2" 
+
           style={{ width: 'auto' }}
           onClick={() => setIsModalOpen(true)}
         >
           {startDate ? format(startDate, 'yyyy') : 'Year'}
         </button>
+
+
 
         <Modal
           isOpen={isModalOpen}
@@ -117,6 +133,7 @@ export default function Filters({ onFilterChange }) {
           )}
         </Modal>
 
+
         <div className="dropdown d-inline-block w-auto me-2 ms-2 mb-1 bg-dark">
           <button
             className="btn dropdown-toggle btn-outline-secondary text-white mb-1"
@@ -146,6 +163,7 @@ export default function Filters({ onFilterChange }) {
             ))}
           </ul>
         </div>
+
 
         <div className="dropdown d-inline-block w-auto me-2 ms-2 mb-1 bg-dark">
           <button
@@ -177,12 +195,15 @@ export default function Filters({ onFilterChange }) {
           </ul>
         </div>
 
+
         <select className="form-select d-inline-block w-auto me-2 ms-2 mb-1 shadow-sm bg-dark border text-white border-secondary">
+
           <option>Status</option>
         </select>
         <select className="form-select d-inline-block w-auto me-2 ms-2 mb-1 shadow-sm bg-dark border text-white border-secondary">
           <option>Award</option>
         </select>
+
       </div>
       <div className="col text-end">
         <label>Sorted by:</label>

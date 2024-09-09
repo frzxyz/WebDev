@@ -1,9 +1,12 @@
+
 import { useState, useEffect } from 'react';
+
 import GlobalLayout from '../components/GlobalLayout';
 import Sidebar from '../components/Sidebar';
 import SearchBar from '../components/SearchBar';
 import Filters from '../components/Filters';
 import DramaCard from '../components/DramaCard';
+
 import prisma from '../../lib/prisma';
 
 export async function getServerSideProps() {
@@ -26,6 +29,7 @@ export default function HomePage({ dramas }) {
   const handleFilterChange = (filters) => {
     let filtered = [...dramas];
 
+
     // Filter by year
     if (filters.year) {
       filtered = filtered.filter(drama => drama.year === filters.year);
@@ -34,6 +38,7 @@ export default function HomePage({ dramas }) {
     // Filter by genres
     if (filters.genres && filters.genres.length > 0) {
       filtered = filtered.filter(drama =>
+
         filters.genres.every(genre => drama.genres.map(g => g.name).includes(genre))
       );
     }
@@ -54,10 +59,12 @@ export default function HomePage({ dramas }) {
       filtered = filtered.sort((a, b) => b.rating - a.rating);
     }
 
+
     setFilteredDramas(filtered);
   };
 
   return (
+    <EditProvider>
     <GlobalLayout>
       <Sidebar />
       <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
@@ -70,5 +77,6 @@ export default function HomePage({ dramas }) {
         </div>
       </main>
     </GlobalLayout>
+    </EditProvider>
   );
 }

@@ -1,4 +1,14 @@
-
+.cms-countries {
+    display: flex;
+    background-color: #ced4d8; /* Warna biru keputihan */
+  }
+  
+.main-content {
+    margin-left: 270px; /* Sesuaikan dengan lebar sidebar */
+    padding: 20px;
+    background-color: #ced4d8; /* Warna biru keputihan */
+    min-height: 100vh;
+}
 
 .sidebar {
     height: 100vh;
@@ -11,6 +21,7 @@
 }
 
 .sidebar .h1{
+  font-size: 20px;
     color: antiquewhite;
 }
 
@@ -21,7 +32,7 @@
 
 .sidebar .nav-link.active {
     font-weight: bold;
-    background-color: #e9ecef;
+    background-color: #0D6EFD;
     color: #495057;
     border-radius: 4px; 
 }
@@ -35,7 +46,16 @@
   font-size: 18px;
 }
 
-@media (max-width: 1060px) {
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    position: relative;
+    height: 100vh;
+  }
+  
+}
+
+@media (max-width: 1200px) {
     .sidebar {
         padding-left: 10px;
     }
@@ -56,13 +76,80 @@
     }
 }
 
-/* .add-country{
-    margin-top: 10%;
+@media (max-width: 1370px) {
+  .sidebar h1 {
+      font-size: 30px;
+      text-align: center;
+      font-weight: 500;
+  }
+
+  .sidebar img {
+      width: 40px;
+      height: 40px;
+  }
+
+  .sidebar .nav-link {
+      font-size: 18px; 
+  }
+}
+
+.add-country{
+    margin-top: 2%;
     margin-bottom: 3%;
     margin-left: 2%;
 }
 
-.list-countries{
+.table-countries{
     margin-top: 2%;
     margin-bottom: 3%;
-} */
+    margin-left: 2%;
+    color: #333333; /* Warna teks tabel */
+    border-radius: 15px; /* Sudut membulat pada tabel */
+}
+
+.table-responsive th {
+  background-color: #0d6efd; /* Warna latar belakang untuk header tabel */
+  color: #ffffff; /* Warna teks untuk header tabel */
+}
+
+.table-countries tbody tr {
+  background-color: #f8f9fa; /* Warna latar belakang untuk baris tabel */
+  transition: background-color 0.3s ease;
+}
+
+.table-countries table tbody tr:hover {
+  background-color: #e6f0ff; /* Warna latar belakang saat baris di-hover */
+}
+
+.table-countries table tbody tr td,
+.table-countries table thead th {
+  padding: 12px;
+  border-bottom: 1px solid #dee2e6; /* Warna garis bawah antar baris */
+}
+
+.table-countries .btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.table-countries .btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.table-countries .btn-success:hover,
+.table-countries .btn-danger:hover {
+  opacity: 0.8; /* Efek hover pada tombol */
+}
+
+.card {
+  background-color: #F2F2F2;
+  border-radius: 15px;
+  margin-top: 20px;
+}
+
+.countries-title {
+  margin-top: 2%;
+  margin-left: 2%;
+  font-weight: bold;
+}

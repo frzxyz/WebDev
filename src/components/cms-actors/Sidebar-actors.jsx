@@ -38,8 +38,8 @@ function Sidebar() {
                 <img
                   alt="Logo"
                   src="https://i.imgur.com/fUTK20b.png"
-                  width="50"
-                  height="50"
+                  width="45"
+                  height="45"
                   className="me-2"
                 />
                 <h1 className="d-inline-block align-top m-0 text-white">MovNow</h1>
@@ -57,7 +57,7 @@ function Sidebar() {
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link className="text-white active" href="/cms-countries">
+              <Nav.Link className="text-white" href="/cms-countries">
                 <IoEarth />
                 <span className="ms-2">Countries</span>
               </Nav.Link>
@@ -75,7 +75,7 @@ function Sidebar() {
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link className="text-white" href="/cms-actors">
+              <Nav.Link className="text-white active" href="/cms-actors">
                 <IoPeople />
                 <span className="ms-2">Actors</span>
               </Nav.Link>

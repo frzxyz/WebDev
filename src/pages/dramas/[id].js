@@ -1,4 +1,6 @@
 import { useRouter } from 'next/router';
+
+
 import Sidebar from '../../components/Sidebar';
 import SearchBar from '../../components/SearchBar';
 import Filters from '../../components/RatingFilter';
@@ -6,6 +8,7 @@ import ReviewList from '../../components/ReviewList';
 import AddReviewForm from '../../components/AddReviewForm';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../styles/custom.css';
+
 import prisma from '../../../lib/prisma'; // Pastikan path ini sesuai
 import { useState } from 'react';
 
@@ -25,6 +28,7 @@ export async function getServerSideProps(context) {
     },
   });
 
+
   // Format tanggal di sisi server sebelum mengirim ke klien
   drama.reviews = drama.reviews.map(review => ({
     ...review,
@@ -43,6 +47,7 @@ export default function DramaDetails({ drama, initialReviews }) {
   const router = useRouter();
   const { id } = router.query;
   const [minRating, setMinRating] = useState(0);
+
   const [reviews, setReviews] = useState(initialReviews);
   const [filteredReviews, setFilteredReviews] = useState(initialReviews);
 
@@ -51,11 +56,14 @@ export default function DramaDetails({ drama, initialReviews }) {
     setFilteredReviews((prevFiltered) => [...prevFiltered, newReview]);
   };
 
+
   if (!drama) {
     return <div>Drama not found</div>;
   }
 
+
   const cast = drama.actors;
+
 
   return (
     <div className="container-fluid bg-dark text-white">
@@ -66,6 +74,7 @@ export default function DramaDetails({ drama, initialReviews }) {
           <div className="row mt-4">
             <div className="col-md-4">
               <img src={drama.urlPhoto} alt={drama.title} className="img-fluid mb-4" />
+
             </div>
             <div className="col-md-8">
               <h1 className="display-4">{drama.title}</h1>
@@ -74,7 +83,9 @@ export default function DramaDetails({ drama, initialReviews }) {
               <p><strong>Genres:</strong> {drama.genres.map(genre => genre.name).join(', ')}</p>
               <p><strong>Rating:</strong> {drama.rating}</p>
               <p><strong>Availability:</strong> {drama.availability}</p>
+
               <p style={{ textAlign: 'justify' }}><strong>Description:</strong> {drama.synopsis}</p>
+
             </div>
           </div>
 
@@ -88,7 +99,9 @@ export default function DramaDetails({ drama, initialReviews }) {
                       src={actor.photo} 
                       alt={actor.name} 
                       className="img-fluid rounded-circle mb-2" 
+
                       style={{ objectFit: 'cover', width: '50px', height: '50px' }} 
+
                     />
                     <p className="mb-0 text-truncate">{actor.name}</p>
                     <small className="text-muted">{actor.role}</small>
@@ -104,10 +117,12 @@ export default function DramaDetails({ drama, initialReviews }) {
               <div className="embed-responsive embed-responsive-16by9">
                 <iframe
                   className="embed-responsive-item"
+
                   src={convertToEmbedUrl(drama.trailerLink)} // Pastikan URL ini diubah menjadi format yang benar
                   allowFullScreen
                   title="Drama Trailer"
                   style={{ width: '70%', height: '30vw', border: 'none' }}
+
                 ></iframe>
               </div>
             </div>
@@ -115,6 +130,7 @@ export default function DramaDetails({ drama, initialReviews }) {
 
           {/* Review dan Tambah Review Form */}
           <div className="row mt-4">
+
           <h4>People think about this drama</h4>
           <Filters onFilterChange={(rating) => setFilteredReviews(reviews.filter(r => r.rating >= rating))} />
           <ReviewList reviews={filteredReviews} />
@@ -124,12 +140,15 @@ export default function DramaDetails({ drama, initialReviews }) {
           <h4>Add yours!</h4>
           <AddReviewForm dramaId={drama.id} onAddReview={handleAddReview} />
         </div>
+
         </main>
       </div>
     </div>
   );
 }
 
+
 function convertToEmbedUrl(url) {
   return url.replace("watch?v=", "embed/");
 }
+

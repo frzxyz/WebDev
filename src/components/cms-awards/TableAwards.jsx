@@ -1,19 +1,19 @@
 import React, { useState } from "react";
 import Table from "react-bootstrap/Table";
 import { TiEdit, TiTrash } from "react-icons/ti";
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { useEdit } from "../cms-global/cms-edit";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 import "../../styles/Countries.css";
 import "../../styles/Awards.css";
+import { useEdit } from "../cms-global/cms-edit";
 
-function TableCountries() {
-  const { cancelEdit, edit, saveEdit } = useEdit(); // Destructure dari objek
+function TableAwards() {
+  const { cancelEdit, edit, saveEdit } = useEdit();
 
   const [users, setUsers] = useState([
-    { id: 1, countries: "Japan" },
-    { id: 2, countries: "Korea" },
-    { id: 3, countries: "China" },
+    { id: 1, countries: "Japan", years: "2024", awards: "Japanese Drama Awards Spring 2024" },
+    { id: 2, countries: "Korea", years: "2020", awards: "Korean Drama Awards Baeksang 2020" },
+    { id: 3, countries: "China", years: "2022", awards: "Chinese Drama Awards Summer 2022" },
   ]); 
 
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
@@ -38,24 +38,31 @@ function TableCountries() {
     setSortConfig({ key, direction });
     setUsers(sortedUsers);
   };
-
+  
   return (
     <div className="table-countries">
-      <h4 >List Countries</h4>
+      <h4 >List Awards</h4>
 
       <div className="sort-buttons">
         <button className="sort-button" onClick={() => sortBy("countries")}>
           Sort By Countries {sortConfig.key === "countries" && (sortConfig.direction === "asc" ? "↑" : "↓")}
         </button>
+        <button className="sort-button" onClick={() => sortBy("years")}>
+          Sort By Years {sortConfig.key === "years" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+        </button>
       </div>
 
-        <Table responsive striped>
+    <Table responsive striped>
           <thead>
             <tr>
               <th>Id</th>
               <th onClick={() => sortBy("countries")} style={{ cursor: "pointer" }}>
               Countries {sortConfig.key === "countries" && (sortConfig.direction === "asc" ? "↑" : "↓")}
             </th>
+            <th onClick={() => sortBy("years")} style={{ cursor: "pointer" }}>
+              Years {sortConfig.key === "years" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+            </th>
+              <th>Awards</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -64,6 +71,8 @@ function TableCountries() {
             <tr key={user.id} id={`row${user.id}`}>
               <td>{user.id}</td>
               <td>{user.countries}</td>
+              <td>{user.years}</td>
+              <td>{user.awards}</td>
               <td>
                 <button
                   className="btn btn-success mx-2"
@@ -103,8 +112,9 @@ function TableCountries() {
           ))}
         </tbody>
         </Table>
-    </div>
+        </div>
   );
 }
 
-export default TableCountries;
+
+export default TableAwards;
