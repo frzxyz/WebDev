@@ -125,4 +125,6 @@ body.dark .container-fluid {
   max-height: 100%;
   max-width: 100%;
   object-fit: contain; /* Ensure the image fits within the container without being cropped */
+
 }
+

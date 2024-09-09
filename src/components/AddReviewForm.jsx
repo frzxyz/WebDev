@@ -1,24 +1,46 @@
 import { useState } from 'react';
 
 export default function AddReviewForm({ dramaId, onAddReview }) {
+
+  const [userName, setUserName] = useState('');
+=======
   const [name, setName] = useState('');
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     const newReview = {
-      dramaId, // Link the review to the specific drama
-      userName: name,
-      date: new Date().toISOString().split('T')[0], // Format the date as YYYY-MM-DD
+      dramaId,
+      userName,
+      rating: parseInt(rating),
       comment,
-      rating,
     };
-    onAddReview(newReview); // Pass the new review to the parent component
-    // Clear form fields after submission
-    setName('');
-    setRating(0);
-    setComment('');
+
+    try {
+      const response = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newReview),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit review');
+      }
+
+      const addedReview = await response.json();
+      onAddReview(addedReview);
+
+      setUserName('');
+      setRating(0);
+      setComment('');
+    } catch (error) {
+      console.error('Failed to submit review:', error);
+    }
+
   };
 
   return (
@@ -28,8 +50,8 @@ export default function AddReviewForm({ dramaId, onAddReview }) {
         <input
           type="text"
           className="form-control"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={userName}
+          onChange={(e) => setUserName(e.target.value)}
           required
         />
       </div>

@@ -1,28 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useRouter } from 'next/router';
+import prisma from '../../lib/prisma'; // Pastikan path ini sesuai dengan struktur proyek Anda
 import Sidebar from '../components/Sidebar';
 import SearchBar from '../components/SearchBar';
 import DramaCard from '../components/DramaCard';
-import { dramas } from '../data/dramas'; // Replace with actual search results
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-export default function SearchResults() {
-  const router = useRouter();
-  const { query } = router.query; // Extract the query parameter from the URL
-  const [filteredDramas, setFilteredDramas] = useState([]);
+export async function getServerSideProps(context) {
+  const { query } = context.query;
 
-  useEffect(() => {
-    if (query) {
-      // Filter dramas based only on the title
-      const results = dramas.filter(drama =>
-        drama.title.toLowerCase().includes(query.toLowerCase())
-      );
-      setFilteredDramas(results);
-    } else {
-      setFilteredDramas(dramas); // Display all dramas if no query is provided
-    }
-  }, [query]);
+  // Jika ada query, filter drama berdasarkan title
+  const dramas = await prisma.drama.findMany({
+    where: {
+      title: {
+        contains: query, // Mencari judul yang mengandung kata yang dicari
+        mode: 'insensitive', // Agar pencarian tidak case-sensitive
+      },
+    },
+    include: {
+      genres: true, // Termasuk genres jika diperlukan
+      actors: true, // Termasuk actors jika diperlukan
+    },
+  });
 
+  return {
+    props: {
+      query: query || '', // Kirim query ke komponen
+      dramas,
+    },
+  };
+}
+
+export default function SearchResults({ dramas, query }) {
   return (
     <div className="container-fluid bg-dark">
       <div className="row">
@@ -31,8 +40,8 @@ export default function SearchResults() {
           <SearchBar />
           <h5 className="my-4">Searched/Tagged with "{query}"</h5>
           <div className="row">
-            {filteredDramas.length > 0 ? (
-              filteredDramas.map((drama) => (
+            {dramas.length > 0 ? (
+              dramas.map((drama) => (
                 <DramaCard key={drama.id} drama={drama} />
               ))
             ) : (

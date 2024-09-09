@@ -1,0 +1,69 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Drama {
+  id           Int      @id @default(autoincrement())
+  title        String
+  alternativeTitle String?
+  urlPhoto     String?
+  year         Int
+  countryId    Int
+  country      Country   @relation(fields: [countryId], references: [id])
+  synopsis     String?
+  availability String
+  genres       Genre[]
+  actors       Actor[]
+  trailerLink  String?
+  awards       Award[]   // Relation to awards
+  rating       Float?
+  reviews      Review[]
+  views        Int
+  duration     Int
+}
+
+model Genre {
+  id     Int    @id @default(autoincrement())
+  name   String
+  dramas Drama[]
+}
+
+model Actor {
+  id     Int    @id @default(autoincrement())
+  name   String
+  role   String
+  photo  String?
+  dramas Drama[]
+}
+
+model Review {
+  id       Int    @id @default(autoincrement())
+  userName String
+  rating   Int
+  comment  String
+  date     DateTime @default(now())
+  drama    Drama    @relation(fields: [dramaId], references: [id])
+  dramaId  Int
+}
+
+model Award {
+  id       Int    @id @default(autoincrement())
+  name     String
+  year     Int
+  drama    Drama   @relation(fields: [dramaId], references: [id])
+  dramaId  Int
+  country  Country @relation(fields: [countryId], references: [id])  // Adding relation to Country
+  countryId Int
+}
+
+model Country {
+  id     Int     @id @default(autoincrement())
+  name   String
+  dramas Drama[]
+  awards Award[]
+}
