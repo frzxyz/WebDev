@@ -128,3 +128,24 @@ body.dark .container-fluid {
 
 }
 
+.page-link {
+  padding: 10px 20px;
+  margin: 5px;
+  text-decoration: none;
+  color: #007bff;
+}
+
+.page-link.disabled {
+  pointer-events: none;
+  color: #6c757d;  /* Disabled button style */
+}
+
+.page-link:hover {
+  text-decoration: underline;
+}
+
+.disabled {
+  pointer-events: none;   /* Disable clicking */
+  opacity: 0.5;           /* Make it look disabled */
+}
+

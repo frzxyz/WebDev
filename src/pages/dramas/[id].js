@@ -73,7 +73,12 @@ export default function DramaDetails({ drama, initialReviews }) {
           <SearchBar />
           <div className="row mt-4">
             <div className="col-md-4">
-              <img src={drama.urlPhoto} alt={drama.title} className="img-fluid mb-4" />
+            <img 
+              src={drama.urlPhoto} 
+              alt={drama.title} 
+              className="img-fluid mb-4" 
+              style={{ width: "200px", height: "300px", objectFit: "cover" }} 
+            />
 
             </div>
             <div className="col-md-8">

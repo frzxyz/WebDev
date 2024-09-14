@@ -34,11 +34,12 @@ model Genre {
 }
 
 model Actor {
-  id     Int    @id @default(autoincrement())
-  name   String
-  role   String
-  photo  String?
-  dramas Drama[]
+  id       Int    @id @default(autoincrement())
+  name     String
+  photo    String?
+  dramas   Drama[]
+  country  Country @relation(fields: [countryId], references: [id])  // Relation to Country
+  countryId Int
 }
 
 model Review {
@@ -57,13 +58,14 @@ model Award {
   year     Int
   drama    Drama   @relation(fields: [dramaId], references: [id])
   dramaId  Int
-  country  Country @relation(fields: [countryId], references: [id])  // Adding relation to Country
+  country  Country @relation(fields: [countryId], references: [id])  // Relation to Country
   countryId Int
 }
 
 model Country {
-  id     Int     @id @default(autoincrement())
-  name   String
-  dramas Drama[]
-  awards Award[]
+  id       Int     @id @default(autoincrement())
+  name     String
+  dramas   Drama[]
+  awards   Award[]
+  actors   Actor[]  // Add reverse relation to Actor
 }

@@ -6,26 +6,43 @@ import Sidebar from '../components/Sidebar';
 import SearchBar from '../components/SearchBar';
 import Filters from '../components/Filters';
 import DramaCard from '../components/DramaCard';
-
+import '../styles/custom.css';
 import prisma from '../../lib/prisma';
+import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';  // Import icons
 
-export async function getServerSideProps() {
+export async function getServerSideProps(context) {
+  const page = parseInt(context.query.page) || 1;  // Get the page number from query params
+  const pageSize = 25;  // Number of items per page
+
+  // Calculate the offset (which items to fetch)
+  const skip = (page - 1) * pageSize;
+
+  // Fetch movies with pagination
   const dramas = await prisma.drama.findMany({
+    skip: skip,
+    take: pageSize,  // Fetch 25 items per page
     include: {
       genres: true,
     },
   });
 
+  // Get the total count of dramas for pagination
+  const totalDramas = await prisma.drama.count();
+
   return {
     props: {
       dramas,
+      totalDramas,
+      currentPage: page,
+      pageSize,
     },
   };
 }
 
-export default function HomePage({ dramas }) {
-  const [filteredDramas, setFilteredDramas] = useState(dramas);
 
+export default function HomePage({ dramas, totalDramas, currentPage, pageSize }) {
+  const [filteredDramas, setFilteredDramas] = useState(dramas);
+  const totalPages = Math.ceil(totalDramas / pageSize);  // Calculate total pages
   const handleFilterChange = (filters) => {
     let filtered = [...dramas];
 
@@ -74,6 +91,26 @@ export default function HomePage({ dramas }) {
             <DramaCard key={drama.id} drama={drama} />
           ))}
         </div>
+      {/* Pagination Controls */}
+      <div className="pagination d-flex justify-content-center align-items-center mt-4">
+        {/* Previous Button */}
+        <a
+          href={`/?page=${currentPage > 1 ? currentPage - 1 : 1}`}
+          className={`${currentPage === 1 ? 'disabled' : ''}`}
+          style={{ marginRight: '15px', cursor: 'pointer' }}
+        >
+          <AiOutlineLeft size={30} /> {/* Previous Icon */}
+        </a>
+
+        {/* Next Button */}
+        <a
+          href={`/?page=${currentPage < totalPages ? currentPage + 1 : totalPages}`}
+          className={`${currentPage === totalPages ? 'disabled' : ''}`}
+          style={{ marginLeft: '15px', cursor: 'pointer' }}
+        >
+          <AiOutlineRight size={30} /> {/* Next Icon */}
+        </a>
+      </div>
       </main>
     </GlobalLayout>
   );
