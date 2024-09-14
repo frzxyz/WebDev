@@ -3,7 +3,6 @@ import { useState } from 'react';
 export default function AddReviewForm({ dramaId, onAddReview }) {
 
   const [userName, setUserName] = useState('');
-=======
   const [name, setName] = useState('');
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
