@@ -195,6 +195,9 @@ export default function Filters({ genres,availabilities,onFilterChange }) {
 
 
         
+        <select className="form-select d-inline-block w-auto me-2 ms-2 mb-1 shadow-sm bg-dark border text-white border-secondary">
+          <option>Award</option>
+        </select>
 
       </div>
       <div className="col text-end">

@@ -122,32 +122,44 @@ export default function HomePage({ allDramas, countries, genres, availabilities,
 
   return (
     <GlobalLayout>
-      <Sidebar countries={countries} onCountrySelect={handleCountrySelect} />
-      <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-        <SearchBar />
-        <Filters genres={genres} availabilities={availabilities} onFilterChange={handleFilterChange} />
+      <div className="container-fluid">
         <div className="row">
-          {paginatedDramas.map(drama => (
-            <DramaCard key={drama.id} drama={drama} />
-          ))}
+          {/* Sidebar (2 columns wide) */}
+          <div className="col-lg-2">
+            <Sidebar countries={countries} onCountrySelect={handleCountrySelect} />
+          </div>
+          
+          {/* Main Content (9 columns wide) */}
+          <main className="col-md-9 col-lg-10 ms-sm-auto px-md-4">
+            <SearchBar />
+            <Filters genres={genres} availabilities={availabilities} onFilterChange={handleFilterChange} />
+            <div className="row">
+              {paginatedDramas.map(drama => (
+                <DramaCard key={drama.id} drama={drama} />
+              ))}
+            </div>
+            
+            {/* Pagination */}
+            <div className="pagination d-flex justify-content-center align-items-center mt-4">
+              <a
+                href={`/?page=${currentPage > 1 ? currentPage - 1 : 1}`}
+                className={`${currentPage === 1 ? 'disabled' : ''}`}
+                style={{ marginRight: '15px', cursor: 'pointer' }}
+              >
+                <AiOutlineLeft size={30} />
+              </a>
+              <a
+                href={`/?page=${currentPage < totalPages ? currentPage + 1 : totalPages}`}
+                className={`${currentPage === totalPages ? 'disabled' : ''}`}
+                style={{ marginLeft: '15px', cursor: 'pointer' }}
+              >
+                <AiOutlineRight size={30} />
+              </a>
+            </div>
+          </main>
         </div>
-        <div className="pagination d-flex justify-content-center align-items-center mt-4">
-          <a
-            href={`/?page=${currentPage > 1 ? currentPage - 1 : 1}`}
-            className={`${currentPage === 1 ? 'disabled' : ''}`}
-            style={{ marginRight: '15px', cursor: 'pointer' }}
-          >
-            <AiOutlineLeft size={30} />
-          </a>
-          <a
-            href={`/?page=${currentPage < totalPages ? currentPage + 1 : totalPages}`}
-            className={`${currentPage === totalPages ? 'disabled' : ''}`}
-            style={{ marginLeft: '15px', cursor: 'pointer' }}
-          >
-            <AiOutlineRight size={30} />
-          </a>
-        </div>
-      </main>
+      </div>
     </GlobalLayout>
   );
+  
 }
