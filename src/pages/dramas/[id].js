@@ -86,6 +86,7 @@ export default function DramaDetails({ drama, initialReviews }) {
               <p><strong>Alternative Titles:</strong> {drama.alternativeTitle}</p>
               <p><strong>Year:</strong> {drama.year}</p>
               <p><strong>Genres:</strong> {drama.genres.map(genre => genre.name).join(', ')}</p>
+              <p><strong>Duration:</strong> {drama.duration} Minutes</p>
               <p><strong>Rating:</strong> {drama.rating}</p>
               <p><strong>Availability:</strong> {drama.availability}</p>
 

@@ -149,3 +149,34 @@ body.dark .container-fluid {
   opacity: 0.5;           /* Make it look disabled */
 }
 
+.nav-link.active {
+  background-color: #007bff;  /* Primary color background */
+  color: white !important;  /* White text */
+}
+
+.nav-link:hover {
+  text-decoration: none;
+}
+
+.nav-link.active:hover {
+  background-color: #0056b3;  /* Darker blue on hover */
+}
+
+.genre-scroll-container {
+  max-height: 250px; /* Adjust height to fit approximately 10 genres */
+  overflow-y: auto;  /* Enables vertical scrolling when content overflows */
+}
+
+.genre-scroll-container::-webkit-scrollbar {
+  width: 6px; /* Optional: Styling the scrollbar */
+}
+
+.genre-scroll-container::-webkit-scrollbar-thumb {
+  background-color: #888; /* Optional: Styling the scrollbar thumb */
+  border-radius: 4px;
+}
+
+.genre-scroll-container::-webkit-scrollbar-thumb:hover {
+  background-color: #555; /* Optional: Styling on hover */
+}
+

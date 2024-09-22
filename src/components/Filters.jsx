@@ -1,14 +1,12 @@
 
 import { useState, useEffect } from 'react';
-
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
 import Modal from 'react-modal';
+import '../styles/custom.css';
 
-export default function Filters({ onFilterChange }) {
-  const genres = ['Historical', 'Romance', 'Drama', 'Slice of Life', 'Crime', 'Comedy', 'Fantasy', 'Horror', 'Thriller'];
-  const availabilities = ['Netflix', 'Amazon Prime', 'Disney+'];
+export default function Filters({ genres,availabilities,onFilterChange }) {
 
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [selectedAvailability, setSelectedAvailability] = useState([]);
@@ -54,13 +52,11 @@ export default function Filters({ onFilterChange }) {
 
   const handleAvailabilityChange = (platform) => {
     setSelectedAvailability((prevSelectedAvailability) => {
-
       if (prevSelectedAvailability.includes(platform)) {
         return prevSelectedAvailability.filter(p => p !== platform);
       } else {
         return [...prevSelectedAvailability, platform];
       }
-
     });
   };
 
@@ -140,69 +136,65 @@ export default function Filters({ onFilterChange }) {
             type="button"
             id="dropdownGenres"
             aria-expanded={openDropdown === 'genres'}
-            onClick={() => toggleDropdown('genres')}
+            onClick={() => setOpenDropdown(openDropdown === 'genres' ? null : 'genres')}
           >
             Genre
           </button>
           <ul className={`dropdown-menu ${openDropdown === 'genres' ? 'show' : ''}`} aria-labelledby="dropdownGenres">
-            {genres.map((genre) => (
-              <li key={genre} className="dropdown-item">
-                <div className="form-check">
-                  <input
-                    type="checkbox"
-                    id={`genre-${genre}`}
-                    className="form-check-input"
-                    value={genre}
-                    onChange={() => handleGenreChange(genre)}
-                  />
-                  <label htmlFor={`genre-${genre}`} className="form-check-label">
-                    {genre}
-                  </label>
-                </div>
-              </li>
-            ))}
+            <div className="genre-scroll-container"> {/* Custom class for scrollable container */}
+              {genres.map((genre) => (
+                <li key={genre} className="dropdown-item">
+                  <div className="form-check">
+                    <input
+                      type="checkbox"
+                      id={`genre-${genre}`}
+                      className="form-check-input"
+                      value={genre}
+                      onChange={() => handleGenreChange(genre)}
+                    />
+                    <label htmlFor={`genre-${genre}`} className="form-check-label">
+                      {genre}
+                    </label>
+                  </div>
+                </li>
+              ))}
+            </div>
           </ul>
         </div>
 
 
         <div className="dropdown d-inline-block w-auto me-2 ms-2 mb-1 bg-dark">
-          <button
-            className="btn dropdown-toggle btn-outline-secondary text-white mb-1"
-            type="button"
-            id="dropdownAvailability"
-            aria-expanded={openDropdown === 'availability'}
-            onClick={() => toggleDropdown('availability')}
-          >
-            Availability
-          </button>
-          <ul className={`dropdown-menu ${openDropdown === 'availability' ? 'show' : ''}`} aria-labelledby="dropdownAvailability">
-            {availabilities.map((platform) => (
-              <li key={platform} className="dropdown-item">
-                <div className="form-check">
-                  <input
-                    type="checkbox"
-                    id={`availability-${platform}`}
-                    className="form-check-input"
-                    value={platform}
-                    onChange={() => handleAvailabilityChange(platform)}
-                  />
-                  <label htmlFor={`availability-${platform}`} className="form-check-label">
-                    {platform}
-                  </label>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <button
+          className="btn dropdown-toggle btn-outline-secondary text-white mb-1"
+          type="button"
+          id="dropdownAvailability"
+          aria-expanded={openDropdown === 'availability'}
+          onClick={() => toggleDropdown('availability')}
+        >
+          Availability
+        </button>
+        <ul className={`dropdown-menu ${openDropdown === 'availability' ? 'show' : ''}`} aria-labelledby="dropdownAvailability">
+          {availabilities.map((platform) => (
+            <li key={platform} className="dropdown-item">
+              <div className="form-check">
+                <input
+                  type="checkbox"
+                  id={`availability-${platform}`}
+                  className="form-check-input"
+                  value={platform}
+                  onChange={() => handleAvailabilityChange(platform)}
+                />
+                <label htmlFor={`availability-${platform}`} className="form-check-label">
+                  {platform}
+                </label>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
 
 
-        <select className="form-select d-inline-block w-auto me-2 ms-2 mb-1 shadow-sm bg-dark border text-white border-secondary">
-
-          <option>Status</option>
-        </select>
-        <select className="form-select d-inline-block w-auto me-2 ms-2 mb-1 shadow-sm bg-dark border text-white border-secondary">
-          <option>Award</option>
-        </select>
+        
 
       </div>
       <div className="col text-end">
