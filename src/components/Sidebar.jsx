@@ -60,7 +60,7 @@ export default function Sidebar({ countries = [], onCountrySelect }) {
 
             {/* Login button */}
             <li className="nav-item mt-4">
-              <a href="/login" className="nav-link btn btn-primary text-white d-flex align-items-center justify-content-left">
+              <a href="/login" className="btn btn-primary btn-filter text-white d-flex align-items-center justify-content-left">
                 <FaSignInAlt className="me-2" />  {/* Ensure the React icon is here */}
                 Login
               </a>

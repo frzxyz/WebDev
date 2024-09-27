@@ -18,8 +18,8 @@ function FormsGenres({ onAddGenre }) {
   };
 
   return (
-    <div className="add-genre">
-      <h4>Add Genre</h4>
+    <div className="add-country">
+      <h5>Add Genre</h5>
       <div className="card">
         <div className="card-body">
           <Form onSubmit={handleSubmit}>

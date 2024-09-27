@@ -15,7 +15,7 @@ export default function SearchBar() {
 
   return (
     <form onSubmit={handleSearch} className="d-flex justify-content-end align-items-center pt-3 pb-2 mb-3 ">
-      <div className="input-group custom-search-bar ">
+      <div className="input-group custom-search-bar">
         <input 
           type="search" 
           className="form-control custom-input" 

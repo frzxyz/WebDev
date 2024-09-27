@@ -19,8 +19,8 @@ function FormsActors({ onAddActor }) {
   };
 
   return (
-    <div className="add-actor">
-      <h4>Add Actor</h4>
+    <div className="add-country">
+      <h5>Add Actor</h5>
       <div className="card">
         <div className="card-body">
           <Form onSubmit={handleSubmit}>

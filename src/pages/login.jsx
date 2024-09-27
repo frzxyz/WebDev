@@ -13,11 +13,6 @@ import "../styles/LoginRegister.css";
 export default function LoginPage() {
     return (
         <div className='page-container'>
-            <Link href="/">
-                <h3 className='back-button'>
-                    <IoArrowBackSharp />Back to Home
-                </h3>
-            </Link>
             <div>
             <Head>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />

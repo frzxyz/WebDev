@@ -38,8 +38,8 @@ function FormsMovies({ onAddMovie }) {
   };
 
   return (
-    <div className="add-movie">
-      <h4>Add Movie</h4>
+    <div className="add-country">
+      <h5>Add Movie</h5>
       <div className="card">
         <div className="card-body">
           <Form onSubmit={handleSubmit}>

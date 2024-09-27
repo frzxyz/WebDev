@@ -84,7 +84,7 @@ export default function Filters({ genres,availabilities,onFilterChange }) {
         <label>Filtered by :</label>
 
         <button 
-          className="btn btn-outline-secondary text-white mb-1 me-2 ms-2" 
+          className="btn btn-outline-secondary text-white mb-1 me-2 ms-2 btn-filter" 
 
           style={{ width: 'auto' }}
           onClick={() => setIsModalOpen(true)}
@@ -132,7 +132,7 @@ export default function Filters({ genres,availabilities,onFilterChange }) {
 
         <div className="dropdown d-inline-block w-auto me-2 ms-2 mb-1 bg-dark">
           <button
-            className="btn dropdown-toggle btn-outline-secondary text-white mb-1"
+            className="btn dropdown-toggle btn-outline-secondary text-white mb-1 btn-filter"
             type="button"
             id="dropdownGenres"
             aria-expanded={openDropdown === 'genres'}
@@ -165,7 +165,7 @@ export default function Filters({ genres,availabilities,onFilterChange }) {
 
         <div className="dropdown d-inline-block w-auto me-2 ms-2 mb-1 bg-dark">
         <button
-          className="btn dropdown-toggle btn-outline-secondary text-white mb-1"
+          className="btn dropdown-toggle btn-outline-secondary text-white mb-1 btn-filter"
           type="button"
           id="dropdownAvailability"
           aria-expanded={openDropdown === 'availability'}
@@ -195,7 +195,7 @@ export default function Filters({ genres,availabilities,onFilterChange }) {
 
 
         
-        <select className="form-select d-inline-block w-auto me-2 ms-2 mb-1 shadow-sm bg-dark border text-white border-secondary">
+        <select className="form-select d-inline-block w-auto me-2 ms-2 mb-1 shadow-sm bg-dark border text-white border-secondary btn-filter">
           <option>Award</option>
         </select>
 

@@ -12,7 +12,7 @@ export default function Genres() {
         <div className="cms-awards">
           <Sidebar/>
           <main className="col-2 col-10 px-md-4 main-content">
-          <h1 className='awards-title'>GENRES</h1>
+          <h3 className='awards-title'>GENRES</h3>
             <FormsGenres />
             <EditProvider>
             <TableGenres />

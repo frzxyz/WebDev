@@ -41,7 +41,7 @@ function TableAwards() {
   
   return (
     <div className="table-countries">
-      <h4 >List Awards</h4>
+      <h5 >List Awards</h5>
 
       <div className="sort-buttons">
         <button className="sort-button" onClick={() => sortBy("countries")}>

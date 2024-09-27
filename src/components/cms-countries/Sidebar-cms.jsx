@@ -42,7 +42,7 @@ function Sidebar() {
                   height="50"
                   className="me-2"
                 />
-                <h1 className="d-inline-block align-top m-0 text-white">MovNow</h1>
+                <h1 className="d-inline-block align-top m-0 text-white" style={{fontSize: "30px"}}>MovNow</h1>
               </Nav.Link>
             </Nav.Item>
           <hr />

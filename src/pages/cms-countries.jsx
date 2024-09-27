@@ -12,7 +12,7 @@ export default function Countries() {
     <div className="cms-countries">
       <Sidebar/>
       <main className="col-2 col-10 px-md-4 main-content">
-      <h1 className='countries-title'>COUNTRIES</h1>
+      <h3 className='countries-title'>COUNTRIES</h3>
         <AddCountry />
         <EditProvider>
         <TableCountry />

@@ -4,14 +4,16 @@
   }
   
 .main-content {
-    margin-left: 270px; /* Sesuaikan dengan lebar sidebar */
-    padding: 20px;
+    flex-grow: 1;
     background-color: #ced4d8; /* Warna biru keputihan */
     min-height: 100vh;
+    margin-left: 210px;
+    padding: 10px;
 }
 
 .sidebar {
-    height: 100vh;
+    min-height: 100vh;
+    height: auto;
     position: fixed;
     top: 0;
     left: 0;
@@ -26,7 +28,7 @@
 }
 
 .sidebar .nav-link {
-    font-size: 18px;
+    font-size: 16px;
     margin: 5px 0;
 }
 
@@ -43,14 +45,29 @@
 
 .table{
   margin-top: 20px;
-  font-size: 18px;
+  font-size: 14px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1199px) {
   .sidebar {
+    height: auto;
     width: 100%;
     position: relative;
-    height: 100vh;
+  }
+
+  .sidebar h1 {
+    font-size: 20px;
+    text-align: center;
+    font-weight: 500;
+  }
+
+  .sidebar img {
+    width: 23px;
+    height: 23px;
+  }
+
+  .main-content {
+    margin-left: 0px;
   }
   
 }
@@ -58,6 +75,7 @@
 @media (max-width: 1200px) {
     .sidebar {
         padding-left: 10px;
+        height: auto;
     }
 
     .sidebar h1 {
@@ -74,11 +92,19 @@
     .sidebar .nav-link {
         font-size: 15px;
     }
+
+    .main-content {
+      margin-left: 0px;
+    }
 }
 
 @media (max-width: 1370px) {
+  .sidebar {
+    height: auto;
+  }
+
   .sidebar h1 {
-      font-size: 30px;
+      font-size: 25px;
       text-align: center;
       font-weight: 500;
   }
@@ -89,8 +115,9 @@
   }
 
   .sidebar .nav-link {
-      font-size: 18px; 
+      font-size: 16px; 
   }
+
 }
 
 .add-country{
@@ -127,14 +154,22 @@
   border-bottom: 1px solid #dee2e6; /* Warna garis bawah antar baris */
 }
 
+.table-countries .btn-warning {
+  background-color: #f1ee2fe5;
+  border-color: #f1ee2fe5;
+  font-size: 14px;
+}
+
 .table-countries .btn-success {
   background-color: #28a745;
   border-color: #28a745;
+  font-size: 14px;
 }
 
 .table-countries .btn-danger {
   background-color: #dc3545;
   border-color: #dc3545;
+  font-size: 14px;
 }
 
 .table-countries .btn-success:hover,

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import '../styles/custom.css';
 
 export default function AddReviewForm({ dramaId, onAddReview }) {
 
@@ -80,7 +81,7 @@ export default function AddReviewForm({ dramaId, onAddReview }) {
           required
         ></textarea>
       </div>
-      <button type="submit" className="btn btn-secondary">Submit</button>
+      <button type="submit" className="btn btn-secondary btn-filter">Submit</button>
     </form>
   );
 }

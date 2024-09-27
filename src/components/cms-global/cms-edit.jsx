@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
+import axios from 'axios'; // Untuk HTTP request
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -85,35 +86,40 @@ export const EditProvider = ({ children }) => {
     
   };
 
-  const saveEdit = (id) => {
-    const tr = document.getElementById(`row${id}`);
-    const tds = tr.getElementsByTagName("td");
+  // const saveEdit = async (id, setCountries, countries) => {
+  //   const tr = document.getElementById(`row${id}`);
+  //   const tds = tr.getElementsByTagName("td");
+  //   let updatedCountryName = ""; // Variabel untuk menyimpan nilai negara baru
 
-    for (let i = 1; i < tds.length - 1; i++) {
-      const td = tds[i];
-      const input = td.getElementsByTagName("input")[0];
-      if (input) {
-        const newValue = input.value;
-        td.innerHTML = newValue; // Ubah input menjadi teks biasa
-      }
-    }
+  //   for (let i = 1; i < tds.length - 1; i++) {
+  //     const td = tds[i];
+  //     const input = td.getElementsByTagName("input")[0];
+  //     if (input) {
+  //       const newValue = input.value;
+  //       updatedCountryName = newValue; // Simpan nilai baru
+  //       td.innerHTML = newValue; // Ubah input menjadi teks biasa
+  //     }
+  //   }
 
-    // Setelah berhasil save, ubah tombol
-    const editBtn = document.getElementById(`editBtn${id}`);
-    const saveBtn = document.getElementById(`saveBtn${id}`);
-    const deleteBtn = document.getElementById(`deleteBtn${id}`);
-    const cancelBtn = document.getElementById(`cancelBtn${id}`);
+  //   // Panggil fungsi updateCountry untuk melakukan PUT request
+  //   updateCountry(id, updatedCountryName);
 
-    if (editBtn) editBtn.classList.remove("d-none");
-    if (saveBtn) saveBtn.classList.add("d-none");
-    if (deleteBtn) deleteBtn.classList.remove("d-none");
-    if (cancelBtn) cancelBtn.classList.add("d-none");
+  //   // Setelah berhasil save, ubah tombol
+  //   const editBtn = document.getElementById(`editBtn${id}`);
+  //   const saveBtn = document.getElementById(`saveBtn${id}`);
+  //   const deleteBtn = document.getElementById(`deleteBtn${id}`);
+  //   const cancelBtn = document.getElementById(`cancelBtn${id}`);
 
-    setLastEdit(null);
-  };
+  //   if (editBtn) editBtn.classList.remove("d-none");
+  //   if (saveBtn) saveBtn.classList.add("d-none");
+  //   if (deleteBtn) deleteBtn.classList.remove("d-none");
+  //   if (cancelBtn) cancelBtn.classList.add("d-none");
+
+  //   setLastEdit(null);
+  // };
 
   return (
-    <EditContext.Provider value={{ last_edit, cancelEdit, edit, saveEdit }}>
+    <EditContext.Provider value={{ last_edit, cancelEdit, edit}}>
       {children}
     </EditContext.Provider>
   );

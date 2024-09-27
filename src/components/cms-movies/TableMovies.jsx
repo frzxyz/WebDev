@@ -35,8 +35,17 @@ function TableMovies() {
   };
 
   return (
-    <div className="table-movies">
-      <h4>List of Dramas</h4>
+    <div className="table-countries">
+      <h5>List of Dramas</h5>
+
+      <div className="sort-buttons">
+        <button className="sort-button" onClick={() => sortBy("title")}>
+          Sort By Title {sortConfig.key === "title" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+        </button>
+        <button className="sort-button" onClick={() => sortBy("year")}>
+          Sort By Year {sortConfig.key === "year" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+        </button>
+      </div>
 
       <Table responsive striped bordered>
         <thead>

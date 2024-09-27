@@ -12,7 +12,7 @@ export default function Movies() {
         <div className="cms-awards">
           <Sidebar/>
           <main className="col-2 col-10 px-md-4 main-content">
-          <h1 className='awards-title'>MOVIES</h1>
+          <h3 className='awards-title'>MOVIES</h3>
             <FormsUsers />
             <EditProvider>
             <TableUsers />

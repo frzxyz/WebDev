@@ -5,6 +5,7 @@ import Sidebar from '../components/Sidebar';
 import SearchBar from '../components/SearchBar';
 import DramaCard from '../components/DramaCard';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import '../styles/custom.css';
 
 export async function getServerSideProps(context) {
   const { query } = context.query;

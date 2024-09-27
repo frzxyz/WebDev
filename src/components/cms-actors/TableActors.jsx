@@ -60,8 +60,8 @@ function TableActors() {
   };
 
   return (
-    <div className="table-actors">
-      <h4>List of Actors</h4>
+    <div className="table-countries">
+      <h5>List of Actors</h5>
 
       <div className="sort-buttons">
         <button className="sort-button" onClick={() => sortBy("name")}>

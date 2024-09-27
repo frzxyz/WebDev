@@ -40,8 +40,8 @@ function TableComments() {
   };
 
   return (
-    <div className="table-comments">
-      <h4>List Comments</h4>
+    <div className="table-countries">
+      <h5>List Comments</h5>
 
       <div className="sort-buttons">
         <button className="sort-button" onClick={() => sortBy("username")}>

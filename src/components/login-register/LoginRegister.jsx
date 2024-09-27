@@ -55,12 +55,12 @@ const LoginRegister = () => {
         <div className="toggle">
           <div className="toggle-panel toggle-left">
             <h1>Welcome Back!</h1>
-            <p>If you are already member, easily login</p>
+            <p>If you are already MovNow member, easily login</p>
             <button className="hidden" id="login">Sign In</button>
           </div>
           <div className="toggle-panel toggle-right">
             <h1>Hello!</h1>
-            <p>Register to use all of site features</p>
+            <p>Register to use all of MovNow features</p>
             <button className="hidden" id="register">Sign Up</button>
           </div>
         </div>

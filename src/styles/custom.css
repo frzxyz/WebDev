@@ -1,14 +1,33 @@
 .custom-search-bar {
-  border-radius: 25px; /* Rounded corners for the entire input group */
-  overflow: hidden; /* Ensure the rounded corners work correctly */
-  background-color: #001744; /* Background color for the search bar */
+  border-radius: 25px; 
+  overflow: hidden; 
+  background-color: #001f3f; 
+  border: 2px solid #0d6efd; 
+  transition: all 0.3s ease; 
 }
 
 .custom-input {
-  border: none; /* Remove default border */
-  background-color: white; /* Background color for the input field */
-  color: #ecf0f1; /* Light text color */
-  padding-left: 20px; /* Add padding inside the input */
+  border: none; 
+  background-color: #1e1e1e; 
+  color: white; 
+  padding-left: 20px; 
+  transition: all 0.3s ease;
+}
+
+.custom-input::placeholder {
+  color: #b0c4de; 
+}
+
+.custom-input:focus {
+  outline: none; 
+  box-shadow: 0 0 10px #0d6efd; 
+  background-color: #1e1e1e; 
+  color: white;
+}
+
+.custom-search-bar:hover {
+  border-color: #0d6efd; 
+  box-shadow: 0 0 10px #0d6efd; 
 }
 
 .custom-input::placeholder {
@@ -97,6 +116,7 @@ body.dark .container-fluid {
 .card-img-top {
   max-height: 200px; /* Adjust max height if necessary */
   object-fit: contain;
+  border: 1px solid #0d6efd; /* Border biru */
 }
 
 .card-body {
@@ -104,6 +124,13 @@ body.dark .container-fluid {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  border: 1px solid #0d6efd; /* Border biru */
+  box-shadow: 0 0 6px #5699fe; /* Efek glow biru */
+  transition: box-shadow 0.3s ease; /* Transisi halus saat hover */
+}
+
+.card-body:hover {
+  box-shadow: 0 0 25px rgba(13, 110, 253, 0.8); /* Efek glow lebih kuat saat hover */
 }
 
 .col-md-3 {
@@ -149,13 +176,18 @@ body.dark .container-fluid {
   opacity: 0.5;           /* Make it look disabled */
 }
 
+.nav-link {
+  border-radius: 4px; 
+}
 .nav-link.active {
   background-color: #007bff;  /* Primary color background */
   color: white !important;  /* White text */
+  box-shadow: 0 0 7px #5699fe; /* Efek border glow */
 }
 
 .nav-link:hover {
   text-decoration: none;
+  background-color: #495057;
 }
 
 .nav-link.active:hover {
@@ -181,5 +213,18 @@ body.dark .container-fluid {
 }
 
 
+.btn-filter {
+  background-color: #0d6efd; 
+  color: white; 
+  border: 1px solid #5699fe; 
+  transition: all 0.3s ease; 
+  box-shadow: 0 0 7px #5699fe; 
+}
 
+.btn-filter:hover {
+  background-color: #495057; 
+  color: black; 
+  border: 1px solid #b0c4de; 
+  box-shadow: 0 0 10px #b0c4de; 
+}
 

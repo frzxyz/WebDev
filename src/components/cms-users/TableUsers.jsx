@@ -41,7 +41,7 @@ function TableUsers() {
 
   return (
     <div className="table-countries">
-      <h4>List Users</h4>
+      <h5>List Users</h5>
       
       <div className="sort-buttons">
         <button className="sort-button" onClick={() => sortBy("username")}>
