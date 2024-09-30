@@ -68,7 +68,9 @@ export default function DramaDetails({ drama, initialReviews }) {
   return (
     <div className="container-fluid bg-dark text-white">
       <div className="row">
-        <Sidebar />
+      <div className="col-lg-2">
+            <Sidebar />
+          </div>
         <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
           <SearchBar />
           <div className="row mt-4">
@@ -77,7 +79,7 @@ export default function DramaDetails({ drama, initialReviews }) {
               src={drama.urlPhoto} 
               alt={drama.title} 
               className="img-fluid mb-4" 
-              style={{ width: "200px", height: "300px", objectFit: "cover" }} 
+              style={{ width: "300px", height: "450px", objectFit: "cover" }} 
             />
 
             </div>

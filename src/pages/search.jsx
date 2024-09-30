@@ -36,7 +36,9 @@ export default function SearchResults({ dramas, query }) {
   return (
     <div className="container-fluid bg-dark">
       <div className="row">
-        <Sidebar />
+        <div className="col-lg-2">
+            <Sidebar/>
+          </div>
         <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
           <SearchBar />
           <h5 className="my-4">Searched/Tagged with "{query}"</h5>

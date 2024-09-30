@@ -228,3 +228,26 @@ body.dark .container-fluid {
   box-shadow: 0 0 10px #b0c4de; 
 }
 
+/* Set a fixed height for the scrollable area */
+.scrollable-dropdown {
+  max-height: 200px;             /* Approx height to show 7 items */
+  overflow-y: auto;              /* Enable vertical scrolling */
+}
+
+/* Truncate the text with ellipsis */
+.availability-label, .award-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;              /* Adjust max width as needed */
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Adjust checkbox size */
+.form-check-input {
+  width: 15px;                  
+  height: 15px;
+  margin-right: 8px;
+}
+
