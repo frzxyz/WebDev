@@ -7,6 +7,22 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model User {
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
+  password String  // Bisa di-hash untuk keamanan
+  name     String?
+  role     Role    @relation(fields: [roleId], references: [id]) // Relasi dengan Role
+  roleId   Int     // Foreign key untuk Role
+  reviews  Review[] // Relasi ke review (hanya untuk Writer dan Admin)
+}
+
+model Role {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  users User[]
+}
+
 model Drama {
   id           Int      @id @default(autoincrement())
   title        String
@@ -30,6 +46,7 @@ model Drama {
 model Genre {
   id     Int    @id @default(autoincrement())
   name   String
+  description String?
   dramas Drama[]
 }
 
@@ -50,6 +67,8 @@ model Review {
   date     DateTime @default(now())
   drama    Drama    @relation(fields: [dramaId], references: [id])
   dramaId  Int
+  user     User     @relation(fields: [userId], references: [id])
+  userId   Int
 }
 
 model Award {

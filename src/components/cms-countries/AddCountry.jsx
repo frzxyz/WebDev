@@ -69,6 +69,7 @@ const AddCountry = () => {
                 className=" mr-sm-2"
                 value={countryName}
                 onChange={(e) => setCountryName(e.target.value)} // Update state saat input berubah
+                required
               />
             </Col>
             <Col >
