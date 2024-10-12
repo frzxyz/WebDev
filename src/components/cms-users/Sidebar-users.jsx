@@ -14,6 +14,7 @@ import {
   IoLogOut,
 } from "react-icons/io5";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { signOut } from "next-auth/react";
 
 function Sidebar() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -26,7 +27,7 @@ function Sidebar() {
   const handleConfirmLogout = () => {
     setShowLogoutModal(false);
     // Here you can add the logic to log the user out, e.g., redirect to logout page
-    window.location.href = "/logout";
+    signOut({ callbackUrl: '/' });
   };
 
   return (

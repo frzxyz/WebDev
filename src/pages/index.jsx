@@ -6,6 +6,7 @@ import SearchBar from '../components/SearchBar';
 import Filters from '../components/Filters';
 import DramaCard from '../components/DramaCard';
 import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
+// import { SessionProvider } from "next-auth/react";
 
 export async function getServerSideProps(context) {
   const page = parseInt(context.query.page) || 1;

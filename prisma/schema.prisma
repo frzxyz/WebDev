@@ -10,7 +10,7 @@ generator client {
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
-  password  String   // Bisa di-hash untuk keamanan
+  password  String?   // Bisa di-hash untuk keamanan
   username  String   @unique
   createdAt DateTime @default (now())
   role      Role     @relation(fields: [roleId], references: [id]) // Relasi dengan Role

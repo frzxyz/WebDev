@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import Button from "react-bootstrap/Button";
+import { signIn, useSession } from 'next-auth/react';
 
 import "../../styles/LoginRegister.css";
 
@@ -10,7 +10,33 @@ const LoginRegister = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  // const { data: session, status } = useSession();
   const router = useRouter();
+
+  // Jika user sudah login, redirect ke halaman utama
+  // useEffect(() => {
+  //   if (session) {
+  //     router.push('/'); // Redirect ke halaman utama jika sudah login
+  //   }
+  // }, [session, router]);
+
+  // Fungsi untuk menangani login dengan Google
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signIn('google', { redirect: false });
+
+      if (result?.error) {
+        // Tampilkan pesan error jika terjadi masalah
+        alert(result.error);
+      } else {
+        // Jika sukses, redirect ke halaman utama
+        router.push('/');
+      }
+    } catch (error) {
+      console.error('Error during Google login:', error);
+      alert('Terjadi kesalahan saat login menggunakan Google.');
+    }
+  };
 
   // Fungsi untuk menangani submit form registrasi
   const handleRegister = async (e) => {
@@ -63,11 +89,20 @@ const LoginRegister = () => {
         alert('Login berhasil');
         // Simpan token di local storage atau state jika diperlukan
 
-        router.push('/').then(() => {
+        // Redirect berdasarkan roleId
+      if (data.roleId === 1) {
+        // Jika roleId adalah 1 (Admin), redirect ke halaman admin
+        router.push('/cms-users').then(() => {
           // Reload halaman setelah navigasi berhasil
           window.location.reload();
         });
-        
+      } else {
+        // Jika bukan admin, redirect ke halaman utama atau halaman lain
+        router.push('/').then(() => {
+          window.location.reload();
+        });
+      }
+
       } else {
         const data = await res.json();
         alert(data.message);
@@ -91,6 +126,12 @@ const LoginRegister = () => {
     });
   }, []);
 
+  // Tampilkan loading jika status session sedang dalam proses
+  // if (status === 'loading') return <p>Loading...</p>;
+
+  // // Jangan tampilkan form login jika sudah ada session
+  // if (session) return null;
+
   return (
     <div className="container" id="container">
       {/* Form Registrasi */}
@@ -98,7 +139,7 @@ const LoginRegister = () => {
         <form onSubmit={handleRegister}>
           <h1>Create Account</h1>
           <div className="social-icons">
-            <a href="#" className="icon"><i className="fa-brands fa-google"></i></a>
+            <a href="#" className="icon" onClick={handleGoogleLogin} ><i className="fa-brands fa-google"></i></a>
             {/* <a href="#" className="icon"><i className="fa-brands fa-facebook"></i></a>
             <a href="#" className="icon"><i className="fa-brands fa-github"></i></a> */}
           </div>
@@ -133,7 +174,7 @@ const LoginRegister = () => {
         <form onSubmit={handleLogin}>
           <h1>Sign In</h1>
           <div className="social-icons">
-            <a href="#" className="icon"><i className="fa-brands fa-google"></i></a>
+            <a href="#" className="icon" onClick={handleGoogleLogin} ><i className="fa-brands fa-google"></i></a>
             {/* <a href="#" className="icon"><i className="fa-brands fa-facebook"></i></a>
             <a href="#" className="icon"><i className="fa-brands fa-github"></i></a> */}
           </div>
