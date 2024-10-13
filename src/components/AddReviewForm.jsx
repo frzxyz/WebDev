@@ -1,19 +1,27 @@
 import { useState } from 'react';
+import { useSession } from 'next-auth/react';
 import '../styles/custom.css';
 
 export default function AddReviewForm({ dramaId, onAddReview }) {
-
-  const [userName, setUserName] = useState('');
-  const [name, setName] = useState('');
+  const { data: session } = useSession(); // Dapatkan session user
+  const [userName, setUserName] = useState(session?.user?.name || '');
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
+
+  console.log('Session User ID:', session?.user?.id); // Pastikan ID integer
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!session) {
+      alert('Silakan login terlebih dahulu untuk menambahkan review.');
+      return;
+    }
+
     const newReview = {
       dramaId,
-      userName,
+      userId: session.user.id, // Pastikan ID integer digunakan
+      userName: session.user.name,
       rating: parseInt(rating),
       comment,
     };
@@ -34,13 +42,11 @@ export default function AddReviewForm({ dramaId, onAddReview }) {
       const addedReview = await response.json();
       onAddReview(addedReview);
 
-      setUserName('');
       setRating(0);
       setComment('');
     } catch (error) {
       console.error('Failed to submit review:', error);
     }
-
   };
 
   return (
@@ -51,7 +57,7 @@ export default function AddReviewForm({ dramaId, onAddReview }) {
           type="text"
           className="form-control"
           value={userName}
-          onChange={(e) => setUserName(e.target.value)}
+          disabled
           required
         />
       </div>
@@ -66,7 +72,7 @@ export default function AddReviewForm({ dramaId, onAddReview }) {
           <option value={0}>Select rating</option>
           {[...Array(5)].map((_, i) => (
             <option key={i + 1} value={i + 1}>
-              {i + 1} Star{ i + 1 > 1 ? 's' : ''}
+              {i + 1} Star{i + 1 > 1 ? 's' : ''}
             </option>
           ))}
         </select>
@@ -81,7 +87,9 @@ export default function AddReviewForm({ dramaId, onAddReview }) {
           required
         ></textarea>
       </div>
-      <button type="submit" className="btn btn-secondary btn-filter">Submit</button>
+      <button type="submit" className="btn btn-secondary btn-filter">
+        Submit
+      </button>
     </form>
   );
 }

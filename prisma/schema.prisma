@@ -8,15 +8,16 @@ generator client {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        Int      @id @default(autoincrement()) // Integer autoincrement ID
   email     String   @unique
-  password  String?   // Bisa di-hash untuk keamanan
   username  String   @unique
-  createdAt DateTime @default (now())
-  role      Role     @relation(fields: [roleId], references: [id]) // Relasi dengan Role
-  roleId    Int      // Foreign key untuk Role
-  reviews   Review[] // Relasi ke review (hanya untuk Writer dan Admin)
+  password  String?
+  createdAt DateTime @default(now())
+  role      Role     @relation(fields: [roleId], references: [id])
+  roleId    Int
+  reviews   Review[]
 }
+
 
 model Role {
   id    Int    @id @default(autoincrement())
@@ -61,7 +62,7 @@ model Actor {
 }
 
 model Review {
-  id       Int    @id @default(autoincrement())
+  id       Int      @id @default(autoincrement())
   userName String
   rating   Int
   comment  String
@@ -69,7 +70,7 @@ model Review {
   drama    Drama    @relation(fields: [dramaId], references: [id])
   dramaId  Int
   user     User     @relation(fields: [userId], references: [id])
-  userId   Int
+  userId   Int   // Ubah ke String
 }
 
 model Award {

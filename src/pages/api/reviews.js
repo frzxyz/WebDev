@@ -2,29 +2,38 @@ import prisma from '../../../lib/prisma';
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
-    const { dramaId, userName, rating, comment } = req.body;
+    const { dramaId, userId, userName, rating, comment } = req.body;
+
+    console.log('User ID yang diterima:', userId); // Log untuk debugging
 
     try {
+      const user = await prisma.user.findUnique({
+        where: { id: userId }, // ID harus integer
+      });
+
+      if (!user) {
+        console.log('User tidak ditemukan:', userId);
+        return res.status(404).json({ error: 'User tidak ditemukan.' });
+      }
+
       const newReview = await prisma.review.create({
         data: {
           userName,
-          rating: parseInt(rating), // Ensure rating is stored as an integer
+          rating,
           comment,
-          drama: {
-            connect: {
-              id: dramaId, // Use the correct drama ID to associate the review
-            },
-          },
+          drama: { connect: { id: dramaId } },
+          user: { connect: { id: userId } }, // Pastikan ID adalah integer
         },
       });
 
-      res.status(201).json(newReview);
+      console.log('Review berhasil ditambahkan:', newReview);
+      return res.status(201).json(newReview);
     } catch (error) {
       console.error('Error creating review:', error);
-      res.status(500).json({ error: 'Failed to create review' });
+      return res.status(500).json({ error: 'Gagal membuat review.' });
     }
   } else {
     res.setHeader('Allow', ['POST']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+    res.status(405).end(`Method ${req.method} Tidak Diizinkan.`);
   }
 }
