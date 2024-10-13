@@ -1,28 +1,29 @@
-import { FaSignInAlt, FaBars, FaCaretDown } from 'react-icons/fa';  // Import additional React icons
+import { FaSignInAlt, FaSignOutAlt, FaBars, FaCaretDown } from 'react-icons/fa';  
 import { useState } from 'react';
+import { useSession, signIn, signOut } from 'next-auth/react';  // Import next-auth hooks
 
 export default function Sidebar({ countries = [], onCountrySelect }) {
   const [selectedCountry, setSelectedCountry] = useState(null);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);  // State to manage dropdown visibility
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const { data: session } = useSession();  // Get session data
 
   const handleCountrySelect = (country) => {
     if (selectedCountry === country) {
-      setSelectedCountry(null);  // Deselect the filter
-      onCountrySelect(null);  // Pass null to clear the filter
+      setSelectedCountry(null);
+      onCountrySelect(null);
     } else {
-      setSelectedCountry(country);  // Select the new country
-      onCountrySelect(country);  // Pass the selected country for filtering
+      setSelectedCountry(country);
+      onCountrySelect(country);
     }
   };
 
   const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);  // Toggle the dropdown visibility
+    setIsDropdownOpen(!isDropdownOpen);
   };
 
   return (
     <div>
-      {/* Sidebar for larger screens */}
-      <nav className="col-md-2 d-md-block sidebar bg-dark" style={{ minWidth: '220px' }}>  {/* Increase sidebar width */}
+      <nav className="col-md-2 d-md-block sidebar bg-dark" style={{ minWidth: '220px' }}>
         <div className="position-sticky">
           <h3 className="sidebar-heading px-3 py-2 d-flex align-items-center">
             <img
@@ -35,7 +36,6 @@ export default function Sidebar({ countries = [], onCountrySelect }) {
             </a>
           </h3>
 
-          {/* Dropdown for small screens */}
           <button
             className="btn btn-dark d-md-none w-100 d-flex justify-content-between align-items-center"
             onClick={toggleDropdown}
@@ -44,7 +44,6 @@ export default function Sidebar({ countries = [], onCountrySelect }) {
             <FaCaretDown className="text-white" />
           </button>
 
-          {/* Dropdown content (countries + login) */}
           <ul className={`nav flex-column ${isDropdownOpen ? 'd-block' : 'd-none'} d-md-block mt-2`}>
             {countries.map((country, index) => (
               <li key={index} className="nav-item">
@@ -58,12 +57,23 @@ export default function Sidebar({ countries = [], onCountrySelect }) {
               </li>
             ))}
 
-            {/* Login button */}
+            {/* Login/Logout Button */}
             <li className="nav-item mt-4">
-              <a href="/login" className="btn btn-primary btn-filter text-white d-flex align-items-center justify-content-left">
-                <FaSignInAlt className="me-2" />  {/* Ensure the React icon is here */}
-                Login
-              </a>
+              {session ? (
+                <button
+                  onClick={() => signOut()}
+                  className="btn btn-primary btn-filter text-white d-flex align-items-center justify-content-left"
+                >
+                  <FaSignOutAlt className="me-2" /> Logout
+                </button>
+              ) : (
+                <button
+                  onClick={() => signIn()}
+                  className="btn btn-primary btn-filter text-white d-flex align-items-center justify-content-left"
+                >
+                  <FaSignInAlt className="me-2" /> Login
+                </button>
+              )}
             </li>
           </ul>
         </div>
