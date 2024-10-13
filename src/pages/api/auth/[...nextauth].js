@@ -1,6 +1,8 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import prisma from "../../../../lib/prisma"; // Prisma Client
+import CredentialsProvider from "next-auth/providers/credentials";
+import prisma from "../../../../lib/prisma";
+import bcrypt from "bcryptjs";
 
 export default NextAuth({
   providers: [
@@ -8,55 +10,54 @@ export default NextAuth({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        const { email, password } = credentials;
+
+        // Cari user di database
+        const user = await prisma.user.findUnique({
+          where: { email },
+        });
+
+        if (!user) {
+          throw new Error("Email atau password salah");
+        }
+
+        const isValidPassword = await bcrypt.compare(password, user.password);
+        if (!isValidPassword) {
+          throw new Error("Email atau password salah");
+        }
+
+        return { id: user.id, email: user.email, name: user.username }; // Return user object
+      },
+    }),
   ],
   session: {
-    strategy: "jwt", // Gunakan JWT untuk sesi
+    strategy: "jwt",
   },
   pages: {
     signIn: "/login", // Arahkan ke halaman login custom
   },
   callbacks: {
-    async signIn({ user, account }) {
-      try {
-        // Cari user berdasarkan email
-        let existingUser = await prisma.user.findUnique({
-          where: { email: user.email },
-        });
-
-        if (!existingUser) {
-          // Buat user baru jika tidak ditemukan
-          existingUser = await prisma.user.create({
-            data: {
-              email: user.email,
-              username: user.name || "Anonymous",
-              roleId: 2, // Role writer
-            },
-          });
-        }
-
-        return true; // Login berhasil
-      } catch (error) {
-        console.error("Error during sign-in:", error);
-        return false; // Gagal login
-      }
-    },
-    async session({ session, token }) {
-      // Cari user di database berdasarkan email dari token
-      const dbUser = await prisma.user.findUnique({
-        where: { email: token.email },
-      });
-
-      if (dbUser) {
-        session.user.id = dbUser.id; // Set session dengan ID integer user
-      }
-
-      return session;
-    },
     async jwt({ token, user }) {
       if (user) {
-        token.email = user.email; // Simpan email di token untuk digunakan nanti
+        token.id = user.id; // Simpan user ID di JWT token
+        token.email = user.email;
       }
       return token;
+    },
+    async session({ session, token }) {
+      session.user.id = token.id; // Set session user ID dari token
+      session.user.email = token.email;
+      return session;
+    },
+    async redirect({ url, baseUrl }) {
+      return baseUrl; // Redirect ke halaman utama setelah login
     },
   },
 });

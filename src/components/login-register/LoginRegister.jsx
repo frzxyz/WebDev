@@ -74,41 +74,18 @@ const LoginRegister = () => {
     }
   };
 
-  // Fungsi untuk menangani submit form login
   const handleLogin = async (e) => {
     e.preventDefault();
-    try {
-      const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
+    const result = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
 
-      if (res.ok) {
-        const data = await res.json();
-        alert('Login berhasil');
-        // Simpan token di local storage atau state jika diperlukan
-
-        // Redirect berdasarkan roleId
-      if (data.roleId === 1) {
-        // Jika roleId adalah 1 (Admin), redirect ke halaman admin
-        router.push('/cms-users').then(() => {
-          // Reload halaman setelah navigasi berhasil
-          window.location.reload();
-        });
-      } else {
-        // Jika bukan admin, redirect ke halaman utama atau halaman lain
-        router.push('/').then(() => {
-          window.location.reload();
-        });
-      }
-
-      } else {
-        const data = await res.json();
-        alert(data.message);
-      }
-    } catch (error) {
-      alert('Terjadi kesalahan saat login');
+    if (result.error) {
+      setError(result.error); // Tampilkan error jika gagal login
+    } else {
+      router.push("/"); // Redirect ke halaman utama
     }
   };
 
