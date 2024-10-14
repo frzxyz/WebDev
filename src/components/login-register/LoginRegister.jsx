@@ -85,7 +85,7 @@ const LoginRegister = () => {
     if (result.error) {
       setError(result.error); // Tampilkan error jika gagal login
     } else {
-      router.push("/"); // Redirect ke halaman utama
+      window.location.href = "/";; // Redirect ke halaman utama
     }
   };
 
@@ -170,7 +170,7 @@ const LoginRegister = () => {
             onChange={(e) => setPassword(e.target.value)} // Update state saat ada perubahan input
             required
           />
-          <a href="#">Forget Your Password?</a>
+          <a href="/forgot-password">Forget Your Password?</a>
           <button type="submit">Sign In</button>
         </form>
       </div>

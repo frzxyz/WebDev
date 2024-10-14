@@ -26,8 +26,8 @@ function Sidebar() {
   const handleClose = () => setShowLogoutModal(false);
   const handleConfirmLogout = () => {
     setShowLogoutModal(false);
-    // Here you can add the logic to log the user out, e.g., redirect to logout page
-    signOut({ callbackUrl: '/' });
+    signOut();
+    window.location.href = "/";
   };
 
   return (

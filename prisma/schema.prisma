@@ -90,3 +90,12 @@ model Country {
   awards   Award[]
   actors   Actor[]  // Add reverse relation to Actor
 }
+
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  email     String
+  token     String   @unique
+  createdAt DateTime @default(now())
+  expiration DateTime
+  userId    Int?     // Optional foreign key to link to the User
+}
