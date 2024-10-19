@@ -25,12 +25,12 @@ export default NextAuth({
         });
 
         if (!user) {
-          throw new Error("Email atau password salah");
+          throw new Error("Email salah atau tidak terdaftar");
         }
 
         const isValidPassword = await bcrypt.compare(password, user.password);
         if (!isValidPassword) {
-          throw new Error("Email atau password salah");
+          throw new Error("Password salah");
         }
 
         return { id: user.id, email: user.email, name: user.username }; // Return user object

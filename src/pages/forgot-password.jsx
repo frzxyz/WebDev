@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import "../styles/LoginRegister.css";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -26,19 +27,24 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div>
-      <h1>Lupa Password</h1>
+    <div className="forgotpass-container">
+    <div className="forgotpassform-container">
       <form onSubmit={handleSubmit}>
-        <label>Email</label>
+      <img src="../assets/logo-movienow.png" alt="Logo" className="forgotpass-logo" />
+        <h1>Forgot Password</h1>
+        <span>Enter your email to receive a reset link</span>
         <input
           type="email"
+          placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <button type="submit">Kirim Tautan Reset Password</button>
+        {message && <p>{message}</p>}
+        <button type="submit">Send Reset Link</button>
+        <a href="/login" >Back to Login</a>
       </form>
-      {message && <p>{message}</p>}
+    </div>
     </div>
   );
 }

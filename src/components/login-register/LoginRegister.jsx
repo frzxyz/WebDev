@@ -9,16 +9,10 @@ const LoginRegister = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   // const { data: session, status } = useSession();
   const router = useRouter();
-
-  // Jika user sudah login, redirect ke halaman utama
-  // useEffect(() => {
-  //   if (session) {
-  //     router.push('/'); // Redirect ke halaman utama jika sudah login
-  //   }
-  // }, [session, router]);
 
   // Fungsi untuk menangani login dengan Google
   const handleGoogleLogin = async () => {
@@ -76,6 +70,8 @@ const LoginRegister = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError('');
+
     const result = await signIn("credentials", {
       redirect: false,
       email,
@@ -85,7 +81,7 @@ const LoginRegister = () => {
     if (result.error) {
       setError(result.error); // Tampilkan error jika gagal login
     } else {
-      window.location.href = "/";; // Redirect ke halaman utama
+      window.location.href = "/"; // Redirect ke halaman utama
     }
   };
 
@@ -102,12 +98,6 @@ const LoginRegister = () => {
       container.classList.remove("active");
     });
   }, []);
-
-  // Tampilkan loading jika status session sedang dalam proses
-  // if (status === 'loading') return <p>Loading...</p>;
-
-  // // Jangan tampilkan form login jika sudah ada session
-  // if (session) return null;
 
   return (
     <div className="container" id="container">
@@ -170,6 +160,7 @@ const LoginRegister = () => {
             onChange={(e) => setPassword(e.target.value)} // Update state saat ada perubahan input
             required
           />
+          {error && <p style={{ color: 'red', fontSize: '16px' }}>{error}</p>}
           <a href="/forgot-password">Forget Your Password?</a>
           <button type="submit">Sign In</button>
         </form>
@@ -179,7 +170,7 @@ const LoginRegister = () => {
         <div className="toggle">
           <div className="toggle-panel toggle-left">
             <h1>Welcome Back!</h1>
-            <p>If you are already MovNow member, easily login</p>
+            <p>Easily login if you are already member</p>
             <button className="hidden" id="login">Sign In</button>
           </div>
           <div className="toggle-panel toggle-right">
