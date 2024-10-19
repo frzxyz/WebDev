@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   const { method } = req;
 
   switch (method) {
-    case 'GET': // Ambil semua users
+    case 'GET': // Read - Ambil semua users
       try {
         const users = await prisma.user.findMany();
         res.status(200).json(users);
@@ -13,15 +13,20 @@ export default async function handler(req, res) {
       }
       break;
 
-    case 'POST': // Tambah user baru
+    case 'POST': // Create - Tambah user baru
       try {
-        const { username, email } = req.body;
-        if (!username || !email) {
-          return res.status(400).json({ error: 'Username and Email are required' });
+        const { username, email, roleId } = req.body;
+        if (!username || !email || !roleId) {
+          return res.status(400).json({ error: 'All fields are required' });
         }
 
         const newUser = await prisma.user.create({
-          data: { username, email },
+          data: {
+            username,
+            email,
+            roleId: parseInt(roleId), // Simpan role sebagai integer
+            createdAt: new Date(), // Simpan waktu pembuatan
+          },
         });
         res.status(201).json(newUser);
       } catch (error) {
@@ -29,16 +34,20 @@ export default async function handler(req, res) {
       }
       break;
 
-    case 'PUT': // Update user
+    case 'PUT': // Update - Ubah data user
       try {
-        const { id, username, email } = req.body;
-        if (!id || !username || !email) {
-          return res.status(400).json({ error: 'ID, Username, and Email are required' });
+        const { id, username, email, role } = req.body;
+        if (!id || !username || !email || !role) {
+          return res.status(400).json({ error: 'ID, username, email, and role are required' });
         }
 
         const updatedUser = await prisma.user.update({
           where: { id: parseInt(id) },
-          data: { username, email },
+          data: {
+            username,
+            email,
+            role: parseInt(role),
+          },
         });
 
         res.status(200).json(updatedUser);
@@ -51,7 +60,7 @@ export default async function handler(req, res) {
       }
       break;
 
-    case 'DELETE': // Hapus user
+    case 'DELETE': // Delete - Hapus user
       try {
         const { id } = req.query;
         if (!id) {

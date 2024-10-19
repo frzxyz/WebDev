@@ -130,9 +130,6 @@ function TableUsers() {
         <button className="sort-button" onClick={() => sortBy("username")}>
           Sort By Username {sortConfig.key === "username" && (sortConfig.direction === "asc" ? "↑" : "↓")}
         </button>
-        <button className="sort-button" onClick={() => sortBy("id")}>
-          Sort By id {sortConfig.key === "id" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-        </button>
       </div>
 
       <Table responsive striped>
@@ -149,9 +146,9 @@ function TableUsers() {
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => (
+          {users.map((user, index) => (
             <tr key={user.id} id={`row${user.id}`}>
-              <td>{user.id}</td>
+              <td>{index + 1}</td>
               <td>{user.username}</td>
               <td>{user.email}</td>
               <td>

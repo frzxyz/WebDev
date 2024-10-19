@@ -8,14 +8,21 @@ import "../../styles/Awards.css";
 function FormsUsers() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const [role, setRole] = useState('2');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!username.trim()) {
+      alert("Please enter a valid country name.");
+      return;
+    }
+
     try {
-      const res = await fetch('/api/cms-users', {
+      const res = await fetch('/api/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email }),
+        body: JSON.stringify({ username, email, roleId: role }),
       });
 
       if (res.ok) {
@@ -23,9 +30,9 @@ function FormsUsers() {
         alert('User successfully added');
         setUsername('');
         setEmail('');
+        setRole('2');
       } else {
-        const errorData = await res.json();
-        alert(errorData.error);
+        throw new Error(`Error: ${response.status}`);
       }
     } catch (error) {
       console.error('Error adding user:', error);
@@ -58,6 +65,17 @@ function FormsUsers() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formGroupRole">
+              <Form.Label>Role</Form.Label>
+              <Form.Select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                required
+              >
+                <option value="1">Admin</option>
+                <option value="2">Writer</option>
+              </Form.Select>
             </Form.Group>
           <button type="submit" class="btn btn-primary">Submit</button>
         </Form>
