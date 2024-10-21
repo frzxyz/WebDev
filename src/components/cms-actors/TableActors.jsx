@@ -6,14 +6,16 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../styles/Countries.css";
 import "../../styles/Awards.css";
 import { useEdit } from "../cms-global/cms-edit"; 
+import Pagination from 'react-bootstrap/Pagination'; 
 
 function TableActors() {
   const { cancelEdit, edit } = useEdit();
   const [actors, setActors] = useState([]);
   const [editingActorId, setEditingActorId] = useState(null);
   const [newName, setNewName] = useState(""); // Store the new name during edit
-
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+  const [currentPage, setCurrentPage] = useState(1);  
+  const [actorsPerPage] = useState(30);
 
   // Fungsi untuk melakukan sorting
   const sortBy = (key) => {
@@ -105,6 +107,15 @@ function TableActors() {
     setEditingActorId(null); 
   };
 
+  // Pagination
+  const indexOfLastActor = currentPage * actorsPerPage;
+  const indexOfFirstActor = indexOfLastActor - actorsPerPage;
+  const currentActors = actors.slice(indexOfFirstActor, indexOfLastActor);
+
+  const totalPages = Math.ceil(actors.length / actorsPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
     <div className="table-countries">
       <h5>List of Actors</h5>
@@ -130,9 +141,10 @@ function TableActors() {
           </tr>
         </thead>
         <tbody>
-          {actors.map((actor, index) => (
+        {currentActors.length > 0 ? (
+          currentActors.map((actor, index) => (
             <tr key={actor.id} id={`row${actor.id}`}>
-              <td>{index + 1}</td>
+              <td>{indexOfFirstActor + index + 1}</td>
               <td>
                 <img src={actor.photo || "default_poster_url.jpg"} alt={actor.name} width="100" />
               </td>
@@ -149,7 +161,9 @@ function TableActors() {
                 )}
               </td>
               <td>{actor.country?.name}</td>
-              <td>{actor.movies}</td>
+              <td>{actor.dramas.length > 0
+                  ? actor.dramas.map(drama => drama.title).join(', ')
+                  : 'No movies available'}</td>
               <td>
                 {editingActorId === actor.id ? (
                   <>
@@ -180,9 +194,26 @@ function TableActors() {
                 )}
               </td>
             </tr>
-          ))}
+          ))
+        ) : (
+          <tr>
+            <td colSpan="8" className="text-center">
+              No actor available
+            </td>
+          </tr>
+        )}
         </tbody>
       </Table>
+
+      {/* Pagination Component */}
+      <Pagination>
+        {[...Array(totalPages).keys()].map(number => (
+          <Pagination.Item key={number + 1} active={number + 1 === currentPage} onClick={() => paginate(number + 1)}>
+            {number + 1}
+          </Pagination.Item>
+        ))}
+      </Pagination>
+
     </div>
   );
 }

@@ -6,7 +6,16 @@ export default async function handler(req, res) {
   switch (method) {
     case 'GET': // Read - Ambil semua actor
       try {
-        const actors = await prisma.actor.findMany();
+        const actors = await prisma.actor.findMany({
+          include: {
+            country: true, // Include the country relation
+            dramas: {       // Include the dramas (movies) relation
+              select: {
+                title: true,
+            },
+          },
+        },
+        });
         res.status(200).json(actors);
       } catch (error) {
         res.status(500).json({ error: 'Failed to fetch actors' });
