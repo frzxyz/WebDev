@@ -43,8 +43,8 @@ function FormsUsers() {
   return (
     <div className="add-country">
       <h5 >Add Users</h5>
-    <div class="card">
-      <div class="card-body">
+    <div className="card">
+      <div className="card-body">
         <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3" controlId="formGroupUsername">
               <Form.Label>Username</Form.Label>
@@ -77,7 +77,7 @@ function FormsUsers() {
                 <option value="2">Writer</option>
               </Form.Select>
             </Form.Group>
-          <button type="submit" class="btn btn-primary">Submit</button>
+          <button type="submit" className="btn btn-primary">Submit</button>
         </Form>
       </div>
     </div>

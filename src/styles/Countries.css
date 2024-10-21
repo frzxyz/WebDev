@@ -188,3 +188,44 @@
   margin-left: 2%;
   font-weight: bold;
 }
+
+
+/* actors grid for cms-movies */
+.selected-actors-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columns layout */
+  gap: 10px; /* Space between items */
+  margin-top: 15px;
+}
+
+.selected-actor-item {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  position: relative;
+}
+
+.selected-actor-item img.actor-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.selected-actor-item button {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.selected-actor-item button:hover {
+  background-color: darkred;
+}
