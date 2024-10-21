@@ -52,7 +52,12 @@ export default NextAuth({
       return token;
     },
     async session({ session, token }) {
-      session.user.id = token.id; // Set session user ID dari token
+      const dbUser = await prisma.user.findUnique({
+        where: { email: token.email },
+      });
+      if (dbUser) {
+        session.user.id = dbUser.id; // Set session dengan ID integer user
+      }
       session.user.email = token.email;
       return session;
     },
