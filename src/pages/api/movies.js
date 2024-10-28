@@ -41,22 +41,41 @@ export default async function handler(req, res) {
         } = req.body;
 
         // Ensure that all necessary fields are provided
-        if (!title || !year || !countryId) {
-          return res.status(400).json({ error: 'Title, year, and country are required' });
+        if (!title || !year || !countryId || !urlPhoto || !synopsis  || !genres  || !actors) {
+          return res.status(400).json({ error: 'Title, year, synopsis, genres, actors, country, and url photo are required' });
+        }
+
+        // Validate data types
+        if (typeof title !== 'string' || typeof alternativeTitle !== 'string' || typeof synopsis !== 'string' || typeof awards !== 'string') {
+          return res.status(400).json({ error: 'Title, alternative title, and synopsis must be strings' });
+        }
+        if (isNaN(parseInt(year)) || isNaN(parseInt(countryId)) || isNaN(parseFloat(rating)) || isNaN(parseInt(views)) || isNaN(parseInt(duration))) {
+          return res.status(400).json({ error: 'Year, rating, views, and duration must be numbers' });
+        }
+
+        // Check for duplicate drama by title and year
+        const existingDrama = await prisma.drama.findFirst({
+          where: { title, year: parseInt(year) },
+        });
+
+        if (existingDrama) {
+          return res.status(409).json({ error: 'A drama with the same title and year already exists' });
         }
 
         const parsedAwards = awards.map(award => {
-            const [category, name, year] = award.split(',').map(item => item.trim()); // Split by commas and trim whitespace
-            
-            if (!category || !name || !year || isNaN(parseInt(year))) {
-              throw new Error('Invalid awards format. Use: Category, Award Name, Year');
-            }
-            return {
-              name,  // Award name
-              year: parseInt(year), // Convert year to integer
-              category // Category of the award
-            };
-          });
+          const [category, name, year] = award.split(',').map(item => item.trim());
+          
+          if (!category || !name || !year || isNaN(parseInt(year))) {
+            throw new Error('Invalid awards format. Use: Category, Award Name, Year');
+          }
+          
+          return {
+            name,
+            year: parseInt(year),
+            category
+          };
+        });
+        
 
         const newDrama = await prisma.drama.create({
           data: {
@@ -103,8 +122,8 @@ export default async function handler(req, res) {
           countryId,
           synopsis,
           availability,
-          genres,
-          actors,
+          genres = [], 
+          actors = [],
           trailerLink,
           rating,
           views,
@@ -128,11 +147,9 @@ export default async function handler(req, res) {
             synopsis,
             availability,
             genres: {
-              set: [],  // Clear previous genres before connecting new ones
               connect: genres.map((genreId) => ({ id: parseInt(genreId) })),
             },
             actors: {
-              set: [],  // Clear previous actors before connecting new ones
               connect: actors.map((actorId) => ({ id: parseInt(actorId) })),
             },
             trailerLink,
@@ -144,8 +161,12 @@ export default async function handler(req, res) {
 
         res.status(200).json(updatedDrama);
       } catch (error) {
-        console.error(error);
+        if (error.code === 'P2025') {
+          res.status(404).json({ error: 'Movie not found'});
+        } else {
+        console.error("Error updating drama:", error);
         res.status(500).json({ error: 'Failed to update drama' });
+        }
       }
       break;
 

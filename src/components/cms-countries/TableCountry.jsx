@@ -139,9 +139,9 @@ function TableCountries() {
             </tr>
           </thead>
           <tbody>
-          {countries.map((country) => (
+          {countries.map((country, index) => (
             <tr key={country.id} id={`row${country.id}`}>
-              <td>{country.id}</td>
+              <td>{index + 1}</td>
               <td name="name">{country.name}</td>
               <td>
                 <button

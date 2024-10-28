@@ -209,9 +209,7 @@
 }
 
 .selected-actor-item img.actor-photo {
-  width: 40px;
   height: 40px;
-  border-radius: 50%;
   margin-right: 10px;
 }
 
@@ -219,7 +217,7 @@
   position: absolute;
   right: 10px;
   top: 10px;
-  background-color: red;
+  background-color: #051941;
   color: white;
   border: none;
   border-radius: 3px;
@@ -227,5 +225,5 @@
 }
 
 .selected-actor-item button:hover {
-  background-color: darkred;
+  background-color: #495057;
 }

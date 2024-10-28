@@ -48,7 +48,6 @@ function FormsActors() {
         setFormData({
           actorName: "",
           photo: "",
-          countryId: "",
         });
       } else {
         throw new Error(`Error: ${res.status}`);
@@ -87,23 +86,6 @@ function FormsActors() {
                 onChange={(e) => setFormData({ ...formData, photo: e.target.value })}
                 required
               />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formGroupCountry">
-              <Form.Label>Country</Form.Label>
-              <Form.Control
-                as="select"
-                name="countryId"
-                value={formData.countryId}
-                onChange={(e) => setFormData({ ...formData, countryId: e.target.value })}
-                required
-              >
-                <option value="">Select a country</option>
-                {countries.map((country) => (
-                  <option key={country.id} value={country.id}>
-                    {country.name}
-                  </option>
-                ))}
-              </Form.Control>
             </Form.Group>
             <button type="submit" className="btn btn-primary">Submit</button>
           </Form>

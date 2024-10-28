@@ -3,15 +3,18 @@ import Table from "react-bootstrap/Table";
 import { TiEdit, TiTrash } from "react-icons/ti";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from 'axios';
-import { useEdit } from "../cms-global/cms-edit";
 import Pagination from 'react-bootstrap/Pagination'; 
 
 function TableMovies() {
-  const { cancelEdit, edit } = useEdit();
   const [movies, setMovies] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [currentPage, setCurrentPage] = useState(1);  
   const [moviesPerPage] = useState(30);
+  const [newTitle, setNewTitle] = useState("");
+  const [newYear, setNewYear] = useState("");
+  const [newSynopsis, setNewSynopsis] = useState("");
+  const [newUrlPhoto, setNewUrlPhoto] = useState("");
+  const [editingMovieId, setEditingMovieId] = useState(null);
   
   // Function for sorting the table
   const sortBy = (key) => {
@@ -66,58 +69,53 @@ function TableMovies() {
   };
 
   const saveEdit = async (id) => {
-    const tr = document.getElementById(`row${id}`);
-    const tds = tr.getElementsByTagName("td");
-
-    let updatedTitle = "";
-    let updatedYear = "";
-
-    for (let i = 1; i < tds.length - 1; i++) {
-      const td = tds[i];
-      const input = td.getElementsByTagName("input")[0];
-      if (input) {
-        if (i === 1) {
-          updatedTitle = input.value;
-        } else if (i === 2) {
-          updatedYear = input.value;
-        }
-        td.innerHTML = input.value; // Change input back to plain text
-      }
+    if (!id) {
+      alert("Missing movie ID for update.");
+      return;
     }
 
-    // Send PUT request to update the movie
     try {
       const response = await axios.put('/api/movies', {
         id,
-        title: updatedTitle,
-        year: updatedYear,
+        title: newTitle.trim(),
+        year: parseInt(newYear, 10),
+        synopsis: newSynopsis.trim(),
+        urlPhoto: newUrlPhoto.trim(),
       });
 
       if (response.status >= 200 && response.status < 300) {
         setMovies(
           movies.map((movie) =>
-            movie.id === id ? { ...movie, title: updatedTitle, year: updatedYear } : movie
+            movie.id === id
+              ? { ...movie, title: newTitle, year: newYear, synopsis: newSynopsis, urlPhoto: newUrlPhoto }
+              : movie
           )
         );
         alert("Movie updated successfully!");
+        setEditingMovieId(null); // Exit edit mode
       } else {
         alert("Failed to update movie.");
       }
     } catch (error) {
       console.error("Error updating movie:", error);
-      alert("Failed to update movie.");
+      alert("Failed to update movie");
     }
+  };
 
-    // Toggle the edit and save buttons
-    const editBtn = document.getElementById(`editBtn${id}`);
-    const saveBtn = document.getElementById(`saveBtn${id}`);
-    const deleteBtn = document.getElementById(`deleteBtn${id}`);
-    const cancelBtn = document.getElementById(`cancelBtn${id}`);
+  const handleEditClick = (movie) => {
+    setEditingMovieId(movie.id);
+    setNewTitle(movie.title);
+    setNewYear(movie.year);
+    setNewSynopsis(movie.synopsis);
+    setNewUrlPhoto(movie.urlPhoto);
+  };
 
-    if (editBtn) editBtn.classList.remove("d-none");
-    if (saveBtn) saveBtn.classList.add("d-none");
-    if (deleteBtn) deleteBtn.classList.remove("d-none");
-    if (cancelBtn) cancelBtn.classList.add("d-none");
+  const handleCancelEdit = () => {
+    setEditingMovieId(null);
+    setNewTitle("");
+    setNewYear("");
+    setNewSynopsis("");
+    setNewUrlPhoto("");
   };
 
   // Pagination
@@ -171,52 +169,70 @@ function TableMovies() {
               <tr key={movie.id}>
                 <td>{indexOfFirstMovie + index + 1}</td>
                 <td>
+                {editingMovieId === movie.id ? (
+                  <input
+                    type="text"
+                    value={newUrlPhoto}
+                    onChange={(e) => setNewUrlPhoto(e.target.value)}
+                  />
+                ) : (
                   <img src={movie.urlPhoto || "default_poster_url.jpg"} alt={movie.title} width="100" />
+                )}
                 </td>
-                <td>{movie.title}</td>
-                <td>{movie.year}</td>
+                <td>
+                  {editingMovieId === movie.id ? (
+                  <input
+                    type="text"
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                  />
+                ) : (movie.title)}
+                </td>
+                <td>
+                  {editingMovieId === movie.id ? (
+                  <input
+                    type="text"
+                    value={newYear}
+                    onChange={(e) => setNewYear(e.target.value)}
+                  />
+                ) : (movie.year)}
+                </td>
                 <td>{movie.genres.map(genre => genre.name).join(', ')}</td>
                 <td>{movie.actors.map(actor => actor.name).join(', ')}</td>
-                <td>{movie.synopsis}</td>
                 <td>
-                <button
-                  className="btn btn-success mx-2"
-                  id={`editBtn${movie.id}`}
-                  onClick={() => edit(movie.id)}
-                >
-                  <span className="d-flex align-items-center">
-                    <TiEdit className="me-2" />
-                    Edit
-                  </span>
-                </button>
-                <button
-                  className="btn btn-success mx-2 d-none"
-                  id={`cancelBtn${movie.id}`}
-                  onClick={() => cancelEdit(movie.id)}
-                >
-                  <span className="d-flex align-items-center">
-                    <TiEdit className="me-2" />
-                    Cancel
-                  </span>
-                </button>
-                <button className="btn btn-success mx-2 d-none" id={`saveBtn${movie.id}`}
-                  onClick={() => saveEdit(movie.id)}>
-                  <span className="d-flex align-items-center">
-                    <TiEdit className="me-2" />
-                    Save
-                  </span>
-                </button>
-                <button 
-                  className="btn btn-danger mx-2"
-                  id={`deleteBtn${movie.id}`}
-                  onClick={() => deleteMovie(movie.id)}
-                  >
-                  <span className="d-flex align-items-center">
-                    <TiTrash className="me-2" />
-                    Delete
-                  </span>
-                </button>
-                </td>
+                {editingMovieId === movie.id ? (
+                  <input
+                    type="text"
+                    value={newSynopsis}
+                    onChange={(e) => setNewSynopsis(e.target.value)}
+                  />
+                ) : (
+                  movie.synopsis
+                )}
+              </td>
+              <td>
+                {editingMovieId === movie.id ? (
+                  <>
+                    <button className="btn btn-success mx-2" onClick={() => saveEdit(movie.id)}>
+                      Save
+                    </button>
+                    <button className="btn btn-warning mx-2" onClick={handleCancelEdit}>
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button className="btn btn-success mx-2" onClick={() => handleEditClick(movie)}>
+                      <TiEdit className="me-2" />
+                      Edit
+                    </button>
+                    <button className="btn btn-danger mx-2" onClick={() => deleteMovie(movie.id)}>
+                      <TiTrash className="me-2" />
+                      Delete
+                    </button>
+                  </>
+                )}
+              </td>
               </tr>
             ))
           ) : (
@@ -225,7 +241,8 @@ function TableMovies() {
                 No movies available
               </td>
             </tr>
-          )}
+          )
+        }
         </tbody>
       </Table>
 

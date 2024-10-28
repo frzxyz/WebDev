@@ -135,8 +135,8 @@ function TableActors() {
             <th>Id</th>
             <th>Photo</th>
             <th>Name</th>
-            <th>Country</th>
             <th>Movies Acted</th>
+            <th>Country</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -160,10 +160,10 @@ function TableActors() {
                   actor.name
                 )}
               </td>
-              <td>{actor.country?.name}</td>
               <td>{actor.dramas.length > 0
                   ? actor.dramas.map(drama => drama.title).join(', ')
                   : 'No movies available'}</td>
+              <td>{actor.country?.name}</td>
               <td>
                 {editingActorId === actor.id ? (
                   <>

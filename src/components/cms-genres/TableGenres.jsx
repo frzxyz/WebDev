@@ -147,9 +147,9 @@ function TableGenres() {
           </tr>
         </thead>
         <tbody>
-          {genres.map((genre) => (
+          {genres.map((genre, index) => (
             <tr key={genre.id} id={`row${genre.id}`}>
-              <td>{genre.id}</td>
+              <td>{index + 1}</td>
               <td>{genre.name}</td>
               <td>{genre.description}</td>
               <td>

@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../styles/Countries.css";
 import "../../styles/Awards.css";
 
-function FormsMovies({ onAddMovie }) {
+function FormsMovies() {
   const [formData, setFormData] = useState({
     title: "",
     year: "",
@@ -22,6 +22,7 @@ function FormsMovies({ onAddMovie }) {
   const [actors, setActors] = useState([]);
   const [selectedActors, setSelectedActors] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [genreRequired, setGenreRequired] = useState(false);
 
   useEffect(() => {
     const fetchGenres = async () => {
@@ -55,6 +56,7 @@ function FormsMovies({ onAddMovie }) {
       const updatedGenres = prevFormData.genre.includes(genreId)
         ? prevFormData.genre.filter((id) => id !== genreId)
         : [...prevFormData.genre, genreId];
+        setGenreRequired(updatedGenres.length === 0);
       return { ...prevFormData, genre: updatedGenres };
     });
   };
@@ -78,27 +80,30 @@ function FormsMovies({ onAddMovie }) {
     }
   };
 
-  const handleAddMovie = async (movieData) => {
-    try {
-      const response = await fetch('/api/movies', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(movieData),
-      });
-  
-      if (response.ok) {
-        const newMovie = await response.json();
-        console.log('Movie successfully added:', newMovie);
-      } else {
-        console.error('Failed to add movie');
-      }
-    } catch (error) {
-      console.error('Error adding movie:', error);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (formData.genre.length === 0) {
+      setGenreRequired(true); // Tampilkan error jika genre kosong
+      return;
+    }
+
+    // Prepare the awards if necessary
+  const parsedAwards = formData.award
+  ? formData.award.split(',').map((award) => {
+      const [category, name, year] = award.split(',').map((item) => item.trim());
+      return { category, name, year: parseInt(year) };
+    })
+  : [];
+
+  const movieData = {
+    ...formData,
+    awards: parsedAwards,
+    views: parseInt(formData.views) || 0, // Ensure views are an integer
+    year: parseInt(formData.year),         // Ensure year is an integer
+    rating: parseFloat(formData.rating),   // Ensure rating is a float
+    duration: parseInt(formData.duration), // Ensure duration is an integer
+  };
 
     try {
       const response = await fetch('/api/movies', {
@@ -157,7 +162,7 @@ function FormsMovies({ onAddMovie }) {
                   <Form.Control
                     type="text"
                     name="poster"
-                    onChange={(e) => setFormData({ ...formData, urlPhoto: e.target.value })}
+                    onChange={(e) => setFormData({ ...formData, poster: e.target.value })}
                     placeholder="Enter poster URL"
                     required
                   />
@@ -272,7 +277,6 @@ function FormsMovies({ onAddMovie }) {
                     value={formData.award}
                     onChange={(e) => setFormData({ ...formData, award: e.target.value })}
                     placeholder="Enter Category, Award, Year (ex. Best Animated Feature, Annie Awards, 2023)"
-                    required
                   />
                 </Form.Group>
               </Col>
@@ -295,6 +299,9 @@ function FormsMovies({ onAddMovie }) {
                       </Col>
                     ))}
                   </Row>
+                  {genreRequired && (
+                    <p style={{ color: 'red' }}>Please select at least one genre.</p>
+                  )}
                 </Form.Group>
               </Col>
             </Row>
@@ -338,6 +345,7 @@ function FormsMovies({ onAddMovie }) {
                     placeholder="Search Actor Names"
                     list="actors-list"
                     onChange={(e) => handleActorSelect(e)}
+                    required
                   />
                   <datalist id="actors-list">
                     {actors.map((actor) => (
