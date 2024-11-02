@@ -29,7 +29,7 @@ function FormsGenres({ onAddGenre }) {
 
     // Mengirim request POST ke API untuk menambahkan genre baru
     try {
-      const response = await fetch('/api/genre', {
+      const response = await fetch('/api/cms/genre', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

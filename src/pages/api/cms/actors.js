@@ -1,4 +1,4 @@
-import prisma from '../../../lib/prisma';
+import prisma from '../../../../lib/prisma';
 
 export default async function handler(req, res) {
   const { method } = req;
@@ -51,14 +51,14 @@ export default async function handler(req, res) {
 
     case 'PUT': // Update - Ubah data actor
       try {
-        const { id, name } = req.body;
-        if (!id || !name || name.trim() === '') {
+        const { id, name, photo } = req.body;
+        if (!id || !name || name.trim() === '' || photo.trim() === '') {
           return res.status(400).json({ error: 'ID and actor name are required' });
         }
 
         const updatedActor = await prisma.actor.update({
           where: { id: parseInt(id) },
-          data: { name },
+          data: { name, photo },
         });
 
         res.status(200).json(updatedActor);

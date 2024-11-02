@@ -35,18 +35,18 @@ function FormsMovies() {
 
   useEffect(() => {
     const fetchGenres = async () => {
-      const res = await fetch("/api/genre");
+      const res = await fetch("/api/cms/genre");
       const data = await res.json();
       setGenres(data);
     };
     const fetchCountries = async () => {
-      const res = await fetch("/api/countries");
+      const res = await fetch("/api/cms/countries");
       const data = await res.json();
       setCountries(data);
     };
     const fetchActors = async () => {
       try {
-        const res = await fetch("/api/actors");
+        const res = await fetch("/api/cms/actors");
         const data = await res.json();
         console.log("Actors fetched: ", data); // Add this line to check if actors are being fetched
         setActors(data);
@@ -137,7 +137,7 @@ function FormsMovies() {
   };
 
     try {
-      const response = await fetch('/api/movies', {
+      const response = await fetch('/api/cms/movies', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(movieData),

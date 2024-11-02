@@ -37,7 +37,7 @@ function TableCountries() {
   // Fungsi untuk mengambil data dari API
   const fetchCountries = async () => {
     try {
-      const response = await axios.get('/api/countries'); // Mengambil data negara dari API
+      const response = await axios.get('/api/cms/countries'); // Mengambil data negara dari API
       setCountries(response.data); // Set data negara ke state
     } catch (error) {
       console.error("Failed to fetch countries:", error);
@@ -55,7 +55,7 @@ function TableCountries() {
     
     if (isConfirmed) {
       try {
-        await axios.delete(`/api/countries?id=${id}`); // Menghapus negara melalui API
+        await axios.delete(`/api/cms/countries?id=${id}`); // Menghapus negara melalui API
         setCountries(countries.filter(country => country.id !== id)); // Menghapus dari state
         alert("Country deleted successfully!");
       } catch (error) {
@@ -85,7 +85,7 @@ function TableCountries() {
 
     // Kirim request PUT ke API untuk menyimpan perubahan
     try {
-      const response = await axios.put('/api/countries', {
+      const response = await axios.put('/api/cms/countries', {
         id, // Kirim ID negara yang akan diperbarui
         name: updatedCountryName // Kirim nama negara yang baru
       });

@@ -31,7 +31,7 @@ const AddCountry = () => {
     }
 
     try {
-      const response = await fetch('/api/countries', {
+      const response = await fetch('/api/cms/countries', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

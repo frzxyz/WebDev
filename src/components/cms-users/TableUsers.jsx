@@ -40,7 +40,7 @@ function TableUsers() {
   // Fungsi untuk mengambil data dari API
   const fetchUsers = async () => {
     try {
-      const response = await axios.get('/api/users'); // Mengambil data users dari API
+      const response = await axios.get('/api/cms/users'); // Mengambil data users dari API
       setUsers(response.data); // Set data users ke state
     } catch (error) {
       console.error("Failed to fetch users:", error);
@@ -58,7 +58,7 @@ function TableUsers() {
     
     if (isConfirmed) {
       try {
-        await axios.delete(`/api/users?id=${id}`); // Menghapus user melalui API
+        await axios.delete(`/api/cms/users?id=${id}`); // Menghapus user melalui API
         setUsers(users.filter(user => user.id !== id)); // Menghapus dari state
         alert("User deleted successfully!");
       } catch (error) {
@@ -92,7 +92,7 @@ function TableUsers() {
     }
 
     try {
-      const response = await axios.put('/api/users', {
+      const response = await axios.put('/api/cms/users', {
         id,
         username: newUsername,
         email: newEmail

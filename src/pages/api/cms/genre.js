@@ -1,4 +1,4 @@
-import prisma from '../../../lib/prisma'; // Pastikan path prisma sudah benar
+import prisma from '../../../../lib/prisma'; // Pastikan path prisma sudah benar
 
 export default async function handler(req, res) {
   const { method } = req;

@@ -38,7 +38,7 @@ function TableActors() {
   // Fetch actors from the API
   const fetchActors = async () => {
     try {
-      const response = await axios.get('/api/actors'); 
+      const response = await axios.get('/api/cms/actors'); 
       setActors(response.data);
     } catch (error) {
       console.error("Failed to fetch actors:", error);
@@ -55,7 +55,7 @@ function TableActors() {
     const isConfirmed = window.confirm("Are you sure you want to delete this actor?");
     if (isConfirmed) {
       try {
-        await axios.delete(`/api/actors?id=${id}`); 
+        await axios.delete(`/api/cms/actors?id=${id}`); 
         setActors(actors.filter((actor) => actor.id !== id)); 
         alert("Actor deleted successfully!");
       } catch (error) {
@@ -87,7 +87,7 @@ function TableActors() {
     }
 
     try {
-      const response = await axios.put('/api/actors', {
+      const response = await axios.put('/api/cms/actors', {
         id, // Send actor ID
         name: newName, // Send updated actor name
         photo: newUrlPhoto,
@@ -152,6 +152,7 @@ function TableActors() {
                     type="text"
                     value={newUrlPhoto}
                     onChange={(e) => setNewUrlPhoto(e.target.value)}
+                    placeholder="Enter new URL photo"
                   />
                 ) : (
                   <img src={actor.photo || "default_poster_url.jpg"} alt={actor.name} width="100" />

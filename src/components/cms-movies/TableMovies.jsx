@@ -40,7 +40,7 @@ function TableMovies() {
   // Fetch movies from the API
   const fetchMovies = async () => {
     try {
-      const response = await axios.get('/api/movies');
+      const response = await axios.get('/api/cms/movies');
       setMovies(response.data); // Set data from API
     } catch (error) {
       console.error("Failed to fetch movies:", error);
@@ -58,7 +58,7 @@ function TableMovies() {
     
     if (isConfirmed) {
       try {
-        await axios.delete(`/api/movies?id=${id}`);
+        await axios.delete(`/api/cms/movies?id=${id}`);
         setMovies(movies.filter(movie => movie.id !== id)); // Remove movie from state
         alert("Movie deleted successfully!");
       } catch (error) {
@@ -75,7 +75,7 @@ function TableMovies() {
     }
 
     try {
-      const response = await axios.put('/api/movies', {
+      const response = await axios.put('/api/cms/movies', {
         id,
         title: newTitle.trim(),
         year: parseInt(newYear, 10),

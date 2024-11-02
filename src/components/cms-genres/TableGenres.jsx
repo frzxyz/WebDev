@@ -39,7 +39,7 @@ function TableGenres() {
   // Fungsi untuk mengambil data genres dari API
   const fetchGenres = async () => {
     try {
-      const response = await axios.get('/api/genre'); // Mengambil semua genre
+      const response = await axios.get('/api/cms/genre'); // Mengambil semua genre
       setGenres(response.data);
     } catch (error) {
       console.error("Failed to fetch genres:", error);
@@ -56,7 +56,7 @@ function TableGenres() {
 
     if (isConfirmed) {
       try {
-        await axios.delete('/api/genre', { data: { id } });
+        await axios.delete('/api/cms/genre', { data: { id } });
         setGenres(genres.filter((genre) => genre.id !== id)); // Update state setelah dihapus
         alert("Genre deleted successfully!");
       } catch (error) {
@@ -90,7 +90,7 @@ function TableGenres() {
     }
 
     try {
-      const response = await axios.put("/api/genre", {
+      const response = await axios.put("/api/cms/genre", {
         id,
         name: newName,
         description: newDescription,

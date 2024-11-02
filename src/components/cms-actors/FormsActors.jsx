@@ -16,7 +16,7 @@ function FormsActors() {
   useEffect(() => {
     const fetchCountries = async () => {
       try {
-        const res = await fetch("/api/countries");
+        const res = await fetch("/api/cms/countries");
         const data = await res.json();
         setCountries(data);
       } catch (error) {
@@ -36,7 +36,7 @@ function FormsActors() {
     }
 
     try {
-      const res = await fetch("/api/actors", {
+      const res = await fetch("/api/cms/actors", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, photo, countryId }), // Send countryId
