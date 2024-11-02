@@ -116,6 +116,23 @@ function TableUsers() {
     setEditingUserId(null);
   };
 
+  const toggleSuspendUser = async (id, isSuspended) => {
+    try {
+      const response = await axios.put('/api/cms/users', {
+        id,
+        isSuspended: !isSuspended, // Toggle the suspended status
+      });
+  
+      if (response.status === 200) {
+        setUsers(users.map(user => user.id === id ? { ...user, isSuspended: !isSuspended } : user));
+        alert(`User ${!isSuspended ? 'suspended' : 'unsuspended'} successfully!`);
+      }
+    } catch (error) {
+      console.error("Failed to suspend/unsuspend user:", error);
+      alert("Failed to update suspend status.");
+    }
+  };  
+
   return (
     <div className="table-countries">
       <h5>List Users</h5>
@@ -166,8 +183,12 @@ function TableUsers() {
                 )}
               </td>
               <td>
-                <button className="btn btn-warning mx-2">
-                    Suspend
+                <button
+                  className={`btn ${user.isSuspended ? 'btn-info' : 'btn-warning'} mx-2`}
+                  style={{ fontSize: 'inherit' }} 
+                  onClick={() => toggleSuspendUser(user.id, user.isSuspended)}
+                >
+                  {user.isSuspended ? 'Unsuspend' : 'Suspend'}
                 </button>
                 {editingUserId === user.id ? (
                   <>

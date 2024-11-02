@@ -34,21 +34,25 @@ export default async function handler(req, res) {
       }
       break;
 
-    case 'PUT': // Update - Ubah data user
+      case 'PUT': // Update - Ubah data user
       try {
-        const { id, username, email, role } = req.body;
-        if (!id || !username || !email) {
-          return res.status(400).json({ error: 'ID, username and email are required' });
+        const { id, username, email, isSuspended } = req.body;
+    
+        // Ensure `id` is provided, but allow other fields to be optional
+        if (!id) {
+          return res.status(400).json({ error: 'ID is required' });
         }
-
+    
+        const dataToUpdate = {};
+        if (username !== undefined) dataToUpdate.username = username;
+        if (email !== undefined) dataToUpdate.email = email;
+        if (isSuspended !== undefined) dataToUpdate.isSuspended = isSuspended;
+    
         const updatedUser = await prisma.user.update({
           where: { id: parseInt(id) },
-          data: {
-            username,
-            email,
-          },
+          data: dataToUpdate,
         });
-
+    
         res.status(200).json(updatedUser);
       } catch (error) {
         if (error.code === 'P2025') {
@@ -57,7 +61,7 @@ export default async function handler(req, res) {
           res.status(500).json({ error: 'Failed to update user' });
         }
       }
-      break;
+      break;    
 
     case 'DELETE': // Delete - Hapus user
       try {
