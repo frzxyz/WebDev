@@ -139,9 +139,9 @@ function TableCountries() {
             </tr>
           </thead>
           <tbody>
-          {countries.map((country) => (
+          {countries.map((country, index) => (
             <tr key={country.id} id={`row${country.id}`}>
-              <td>{country.id}</td>
+              <td>{index + 1}</td>
               <td name="name">{country.name}</td>
               <td>
                 <button
@@ -155,19 +155,17 @@ function TableCountries() {
                   </span>
                 </button>
                 <button
-                  className="btn btn-danger mx-2 d-none"
+                  className="btn btn-warning mx-2 d-none"
                   id={`cancelBtn${country.id}`}
                   onClick={() => cancelEdit(country.id)}
                 >
                   <span className="d-flex align-items-center">
-                    <TiEdit className="me-2" />
                     Cancel
                   </span>
                 </button>
                 <button className="btn btn-success mx-2 d-none" id={`saveBtn${country.id}`}
                   onClick={() => saveEdit(country.id, setCountries, countries)}>
                   <span className="d-flex align-items-center">
-                    <TiEdit className="me-2" />
                     Save
                   </span>
                 </button>

@@ -29,26 +29,29 @@ function FormsGenres({ onAddGenre }) {
 
     // Mengirim request POST ke API untuk menambahkan genre baru
     try {
-      const response = await axios.post("/api/genre", {
-        name: genreName,
-        description: description,
+      const response = await fetch('/api/genre', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          name: genreName,
+          description: description, }), // Kirim nama negara ke API
       });
 
-      console.log("Response:", response);
-      // Jika response berhasil, tambahkan genre ke tabel
-      onAddGenre(response.data);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
 
-      // Tampilkan pesan berhasil menggunakan alert
-      alert(`Genre "${response.data.name}" added successfully!`);
-      
+      const result = await response.json();
+      alert(`Genre "${result.name}" added successfully!`);
+
       // Reset form setelah submit
       setGenreName("");
       setDescription("");
     } catch (error) {
       if (error.response && error.response.status === 400) {
         alert("Genre already exists!"); // Jika genre duplikat
-      } else {
-        alert("Failed to add genre. Please try again.");
       }
       console.error("Failed to add genre", error);
     }
@@ -66,6 +69,8 @@ function FormsGenres({ onAddGenre }) {
                 type="text"
                 name="genreName"
                 placeholder="Enter genre name"
+                value={genreName}
+                onChange={(e) => setGenreName(e.target.value)}
                 required
               />
             </Form.Group>
@@ -75,6 +80,8 @@ function FormsGenres({ onAddGenre }) {
                 type="text"
                 name="description"
                 placeholder="Enter genre description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
                 required
               />
             </Form.Group>

@@ -1,21 +1,63 @@
+import React, { useState, useEffect } from "react";
 import Form from "react-bootstrap/Form";
 import "bootstrap/dist/css/bootstrap.min.css";
-
 import "../../styles/Countries.css";
 import "../../styles/Awards.css";
 
-function FormsActors({ onAddActor }) {
-  const handleSubmit = (event) => {
+function FormsActors() {
+  const [formData, setFormData] = useState({
+    name: "",
+    photo: "",
+    countryId: "",
+  });
+  const [countries, setCountries] = useState([]);
+
+  // Fetch the countries when the component mounts
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const res = await fetch("/api/countries");
+        const data = await res.json();
+        setCountries(data);
+      } catch (error) {
+        console.error("Failed to fetch countries:", error);
+      }
+    };
+    fetchCountries();
+  }, []);
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const actorName = event.target.elements.actorName.value;
-    const dateOfBirth = event.target.elements.dateOfBirth.value;
-    const biography = event.target.elements.biography.value;
+    const { name, photo, countryId } = formData;
 
-    // Call the onAddActor function to add the new actor to the list
-    onAddActor({ actorName, dateOfBirth, biography });
+    if (!name.trim()) {
+      alert("Please enter a valid actor name.");
+      return;
+    }
 
-    // Reset the form after submission
-    event.target.reset();
+    try {
+      const res = await fetch("/api/actors", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, photo, countryId }), // Send countryId
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        alert("Actor successfully added");
+        setFormData({
+          name: "",
+          photo: "",
+          countryId: "",
+        });
+      } else {
+        const errorResponse = await response.json();
+        alert(`Failed to add actor: ${errorResponse.error}`);
+      }
+    } catch (error) {
+      const errorResponse = await response.json();
+      alert(`Failed to add actor: ${errorResponse.error}`);
+    }
   };
 
   return (
@@ -28,31 +70,53 @@ function FormsActors({ onAddActor }) {
               <Form.Label>Actor Name</Form.Label>
               <Form.Control
                 type="text"
-                name="actorName"
+                name="name"
                 placeholder="Enter actor name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 required
               />
             </Form.Group>
-            <Form.Group className="mb-3" controlId="formGroupDateOfBirth">
-              <Form.Label>Date of Birth</Form.Label>
+            <Form.Group className="mb-3" controlId="formGroupPhoto">
+              <Form.Label>Photo URL</Form.Label>
               <Form.Control
-                type="date"
-                name="dateOfBirth"
-                placeholder="Enter date of birth"
+                type="text"
+                name="photo"
+                placeholder="Enter URL Photo"
+                value={formData.photo}
+                onChange={(e) =>
+                  setFormData({ ...formData, photo: e.target.value })
+                }
                 required
               />
             </Form.Group>
-            <Form.Group className="mb-3" controlId="formGroupBiography">
-              <Form.Label>Biography</Form.Label>
+            <Form.Group>
+              <Form.Label>Country</Form.Label>
               <Form.Control
-                as="textarea"
-                name="biography"
-                rows={3}
-                placeholder="Enter biography"
+                as="select"
+                name="countryId"
+                value={formData.countryId}
+                onChange={(e) =>
+                  setFormData({ ...formData, countryId: e.target.value })
+                }
+                placeholder="Enter country"
                 required
-              />
+              >
+                <option value="" disabled hidden>
+                  Select Country
+                </option>
+                {countries.map((country) => (
+                  <option key={country.id} value={country.id}>
+                    {country.name}
+                  </option>
+                ))}
+              </Form.Control>
             </Form.Group>
-            <button type="submit" className="btn btn-primary">Submit</button>
+            <button type="submit" className="btn btn-primary mt-3">
+              Submit
+            </button>
           </Form>
         </div>
       </div>

@@ -1,22 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Table from "react-bootstrap/Table";
 import { TiEdit, TiTrash } from "react-icons/ti";
+import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../styles/Countries.css";
 import "../../styles/Awards.css";
+import { useEdit } from "../cms-global/cms-edit"; 
+import Pagination from 'react-bootstrap/Pagination'; 
 
 function TableActors() {
-  const [actors, setActors] = useState([
-    { id: 1, name: "Leonardo DiCaprio", movies: "Inception, Titanic", biography: "An American actor and producer." },
-    { id: 2, name: "Meryl Streep", movies: "The Devil Wears Prada, Mamma Mia", biography: "One of the most talented actresses." },
-    { id: 3, name: "Tom Hanks", movies: "Forrest Gump, Cast Away", biography: "Actor known for Forrest Gump." },
-  ]);
-
-  const [editActorId, setEditActorId] = useState(null); // Track which actor is being edited
-  const [editFormData, setEditFormData] = useState({ name: "", movies: "", biography: "" });
+  const { cancelEdit, edit } = useEdit();
+  const [actors, setActors] = useState([]);
+  const [editingActorId, setEditingActorId] = useState(null);
+  const [newName, setNewName] = useState("");
+  const [newUrlPhoto, setNewUrlPhoto] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+  const [currentPage, setCurrentPage] = useState(1);  
+  const [actorsPerPage] = useState(30);
 
-  // Handle sorting
+  // Fungsi untuk melakukan sorting
   const sortBy = (key) => {
     let direction = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") {
@@ -33,31 +35,90 @@ function TableActors() {
     setActors(sortedActors);
   };
 
-  // Handle the edit click
-  const handleEditClick = (actor) => {
-    setEditActorId(actor.id);
-    setEditFormData({ name: actor.name, movies: actor.movies, biography: actor.biography });
+  // Fetch actors from the API
+  const fetchActors = async () => {
+    try {
+      const response = await axios.get('/api/actors'); 
+      setActors(response.data);
+    } catch (error) {
+      console.error("Failed to fetch actors:", error);
+    }
   };
 
-  // Handle cancel edit
+  // useEffect to fetch actors when the component is mounted
+  useEffect(() => {
+    fetchActors();
+  }, []);
+
+  // Handle delete actor (DELETE)
+  const deleteActor = async (id) => {
+    const isConfirmed = window.confirm("Are you sure you want to delete this actor?");
+    if (isConfirmed) {
+      try {
+        await axios.delete(`/api/actors?id=${id}`); 
+        setActors(actors.filter((actor) => actor.id !== id)); 
+        alert("Actor deleted successfully!");
+      } catch (error) {
+        console.error("Failed to delete actor:", error);
+        alert("Failed to delete actor.");
+      }
+    }
+  };
+
+  // Handle editing the actor name
+  const handleEditClick = (actorId, actorName, urlPhoto) => {
+    setEditingActorId(actorId); 
+    setNewName(actorName); 
+    setNewUrlPhoto(urlPhoto); 
+  };
+
+  // Cancel editing
   const handleCancelEdit = () => {
-    setEditActorId(null);
+    setEditingActorId(null); 
+    setNewName(""); 
+    setNewUrlPhoto("");
   };
 
-  // Handle save edit
-  const handleSaveEdit = (actorId) => {
-    const updatedActors = actors.map((actor) =>
-      actor.id === actorId ? { ...actor, ...editFormData } : actor
-    );
-    setActors(updatedActors);
-    setEditActorId(null); // Exit edit mode
+  // Handle save edit (PUT)
+  const saveEdit = async (id) => {
+    if (!newName.trim() || !newUrlPhoto.trim()) {
+      alert("Actor name and Url Photo cannot be empty.");
+      return;
+    }
+
+    try {
+      const response = await axios.put('/api/actors', {
+        id, // Send actor ID
+        name: newName, // Send updated actor name
+        photo: newUrlPhoto,
+      });
+
+      if (response.status >= 200 && response.status < 300) {
+        setActors(
+          actors.map((actor) =>
+            actor.id === id ? { ...actor, name: newName, photo: newUrlPhoto } : actor
+          )
+        );
+        alert("Actor updated successfully!");
+      } else {
+        alert("Failed to update actor.");
+      }
+    } catch (error) {
+      console.error("Error updating actor:", error);
+      alert("Failed to update actor.");
+    }
+
+    setEditingActorId(null); 
   };
 
-  // Handle form data change
-  const handleFormChange = (e) => {
-    const { name, value } = e.target;
-    setEditFormData({ ...editFormData, [name]: value });
-  };
+  // Pagination
+  const indexOfLastActor = currentPage * actorsPerPage;
+  const indexOfFirstActor = indexOfLastActor - actorsPerPage;
+  const currentActors = actors.slice(indexOfFirstActor, indexOfLastActor);
+
+  const totalPages = Math.ceil(actors.length / actorsPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div className="table-countries">
@@ -67,78 +128,59 @@ function TableActors() {
         <button className="sort-button" onClick={() => sortBy("name")}>
           Sort By Name {sortConfig.key === "name" && (sortConfig.direction === "asc" ? "↑" : "↓")}
         </button>
-        <button className="sort-button" onClick={() => sortBy("movies")}>
-          Sort By Movies {sortConfig.key === "movies" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-        </button>
       </div>
 
       <Table responsive striped>
         <thead>
           <tr>
             <th>Id</th>
-            <th onClick={() => sortBy("name")} style={{ cursor: "pointer" }}>
-              Name {sortConfig.key === "name" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-            </th>
-            <th onClick={() => sortBy("movies")} style={{ cursor: "pointer" }}>
-              Movies Acted {sortConfig.key === "movies" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-            </th>
-            <th>Biography</th>
+            <th>Photo</th>
+            <th>Name</th>
+            <th>Country</th>
+            <th>Movies Acted</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          {actors.map((actor) => (
+        {currentActors.length > 0 ? (
+          currentActors.map((actor, index) => (
             <tr key={actor.id} id={`row${actor.id}`}>
-              <td>{actor.id}</td>
+              <td>{indexOfFirstActor + index + 1}</td>
               <td>
-                {editActorId === actor.id ? (
+                {editingActorId === actor.id ? (
                   <input
                     type="text"
-                    name="name"
-                    value={editFormData.name}
-                    onChange={handleFormChange}
+                    value={newUrlPhoto}
+                    onChange={(e) => setNewUrlPhoto(e.target.value)}
+                  />
+                ) : (
+                  <img src={actor.photo || "default_poster_url.jpg"} alt={actor.name} width="100" />
+                )}
+              </td>
+              <td>
+                {editingActorId === actor.id ? (
+                  <input
+                    type="text"
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    placeholder="Enter new name"
                   />
                 ) : (
                   actor.name
                 )}
               </td>
-              <td>
-                {editActorId === actor.id ? (
-                  <input
-                    type="text"
-                    name="movies"
-                    value={editFormData.movies}
-                    onChange={handleFormChange}
-                  />
-                ) : (
-                  actor.movies
-                )}
+              <td>{actor.country?.name}</td>
+              <td>{actor.dramas.length > 0
+                  ? actor.dramas.map(drama => drama.title).join(', ')
+                  : 'No movies available'}
               </td>
               <td>
-                {editActorId === actor.id ? (
-                  <input
-                    type="text"
-                    name="biography"
-                    value={editFormData.biography}
-                    onChange={handleFormChange}
-                  />
-                ) : (
-                  actor.biography
-                )}
-              </td>
-              <td>
-                {editActorId === actor.id ? (
+                {editingActorId === actor.id ? (
                   <>
-                    <button
-                      className="btn btn-success mx-2"
-                      onClick={() => handleSaveEdit(actor.id)}
-                    >
+                    <button className="btn btn-success mx-2" onClick={() => saveEdit(actor.id)}>
                       Save
                     </button>
-                    <button
-                      className="btn btn-warning mx-2"
-                      onClick={handleCancelEdit}
-                    >
+                    <button className="btn btn-warning mx-2" onClick={handleCancelEdit}>
                       Cancel
                     </button>
                   </>
@@ -146,14 +188,14 @@ function TableActors() {
                   <>
                     <button
                       className="btn btn-success mx-2"
-                      onClick={() => handleEditClick(actor)}
+                      onClick={() => handleEditClick(actor.id, actor.name)}
                     >
                       <TiEdit className="me-2" />
                       Edit
                     </button>
                     <button
                       className="btn btn-danger mx-2"
-                      onClick={() => setActors(actors.filter((a) => a.id !== actor.id))}
+                      onClick={() => deleteActor(actor.id)}
                     >
                       <TiTrash className="me-2" />
                       Delete
@@ -162,9 +204,26 @@ function TableActors() {
                 )}
               </td>
             </tr>
-          ))}
+          ))
+        ) : (
+          <tr>
+            <td colSpan="8" className="text-center">
+              No actor available
+            </td>
+          </tr>
+        )}
         </tbody>
       </Table>
+
+      {/* Pagination Component */}
+      <Pagination>
+        {[...Array(totalPages).keys()].map(number => (
+          <Pagination.Item key={number + 1} active={number + 1 === currentPage} onClick={() => paginate(number + 1)}>
+            {number + 1}
+          </Pagination.Item>
+        ))}
+      </Pagination>
+
     </div>
   );
 }
