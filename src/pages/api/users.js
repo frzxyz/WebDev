@@ -37,8 +37,8 @@ export default async function handler(req, res) {
     case 'PUT': // Update - Ubah data user
       try {
         const { id, username, email, role } = req.body;
-        if (!id || !username || !email || !role) {
-          return res.status(400).json({ error: 'ID, username, email, and role are required' });
+        if (!id || !username || !email) {
+          return res.status(400).json({ error: 'ID, username and email are required' });
         }
 
         const updatedUser = await prisma.user.update({
@@ -46,7 +46,6 @@ export default async function handler(req, res) {
           data: {
             username,
             email,
-            role: parseInt(role),
           },
         });
 

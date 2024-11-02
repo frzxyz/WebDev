@@ -6,7 +6,7 @@ import "../../styles/Awards.css";
 
 function FormsActors() {
   const [formData, setFormData] = useState({
-    actorName: "",
+    name: "",
     photo: "",
     countryId: "",
   });
@@ -28,36 +28,37 @@ function FormsActors() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const { actorName, photo, countryId } = formData;
-  
-    if (!actorName.trim()) {
+    const { name, photo, countryId } = formData;
+
+    if (!name.trim()) {
       alert("Please enter a valid actor name.");
       return;
     }
-  
+
     try {
-      const res = await fetch('/api/actors', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: actorName, photo, countryId }),  // Send countryId
+      const res = await fetch("/api/actors", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, photo, countryId }), // Send countryId
       });
-  
+
       if (res.ok) {
         const data = await res.json();
-        alert('Actor successfully added');
+        alert("Actor successfully added");
         setFormData({
-          actorName: "",
+          name: "",
           photo: "",
+          countryId: "",
         });
       } else {
-        throw new Error(`Error: ${res.status}`);
+        const errorResponse = await response.json();
+        alert(`Failed to add actor: ${errorResponse.error}`);
       }
     } catch (error) {
-      console.error('Error adding actor:', error);
-      alert('Failed to add actor');
+      const errorResponse = await response.json();
+      alert(`Failed to add actor: ${errorResponse.error}`);
     }
   };
-  
 
   return (
     <div className="add-country">
@@ -69,10 +70,12 @@ function FormsActors() {
               <Form.Label>Actor Name</Form.Label>
               <Form.Control
                 type="text"
-                name="actorName"
+                name="name"
                 placeholder="Enter actor name"
-                value={formData.actorName}
-                onChange={(e) => setFormData({ ...formData, actorName: e.target.value })}
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 required
               />
             </Form.Group>
@@ -83,11 +86,37 @@ function FormsActors() {
                 name="photo"
                 placeholder="Enter URL Photo"
                 value={formData.photo}
-                onChange={(e) => setFormData({ ...formData, photo: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, photo: e.target.value })
+                }
                 required
               />
             </Form.Group>
-            <button type="submit" className="btn btn-primary">Submit</button>
+            <Form.Group>
+              <Form.Label>Country</Form.Label>
+              <Form.Control
+                as="select"
+                name="countryId"
+                value={formData.countryId}
+                onChange={(e) =>
+                  setFormData({ ...formData, countryId: e.target.value })
+                }
+                placeholder="Enter country"
+                required
+              >
+                <option value="" disabled hidden>
+                  Select Country
+                </option>
+                {countries.map((country) => (
+                  <option key={country.id} value={country.id}>
+                    {country.name}
+                  </option>
+                ))}
+              </Form.Control>
+            </Form.Group>
+            <button type="submit" className="btn btn-primary mt-3">
+              Submit
+            </button>
           </Form>
         </div>
       </div>

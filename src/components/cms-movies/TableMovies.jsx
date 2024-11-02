@@ -151,14 +151,14 @@ function TableMovies() {
             <th onClick={() => sortBy("year")} style={{ cursor: "pointer" }}>
               Year {sortConfig.key === "year" && (sortConfig.direction === "asc" ? "↑" : "↓")}
             </th>
-            <th onClick={() => sortBy("genres")} style={{ cursor: "pointer" }}>
-              Genres {sortConfig.key === "genres" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+            <th>
+              Genres
             </th>
-            <th onClick={() => sortBy("actors")} style={{ cursor: "pointer" }}>
-              Actors {sortConfig.key === "actors" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+            <th>
+              Actors
             </th>
-            <th onClick={() => sortBy("synopsis")} style={{ cursor: "pointer" }}>
-              Synopsis {sortConfig.key === "synopsis" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+            <th>
+              Synopsis
             </th>
             <th>Action</th>
           </tr>

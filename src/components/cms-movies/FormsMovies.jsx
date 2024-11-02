@@ -9,12 +9,13 @@ function FormsMovies() {
     title: "",
     year: "",
     genre: [],
-    rating: "",
-    views: "",
-    status: "",
-    poster: "",
+    rating: 0,
+    views: 0,
+    duration: 0,
+    urlPhoto: "",
     countryId: "",
     actors: [],
+    availability: [],
   });
 
   const [genres, setGenres] = useState([]);
@@ -23,6 +24,14 @@ function FormsMovies() {
   const [selectedActors, setSelectedActors] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [genreRequired, setGenreRequired] = useState(false);
+  const [selectedAvailability, setSelectedAvailability] = useState([]);
+  const [openDropdown, setOpenDropdown] = useState(null);
+
+  const availabilities = [
+    "Netflix", "Prime Video", "Vidio", "Amazon Prime", "Apple TV",
+    "Disney+ Hotstar", "Bstation", "Microsoft Store", "Google Play Movies",
+    "Microsoft Store Google Play", "Amazon Prime Video", "Hulu", "Crunchyroll"
+  ];
 
   useEffect(() => {
     const fetchGenres = async () => {
@@ -80,6 +89,26 @@ function FormsMovies() {
     }
   };
 
+  const toggleDropdown = (dropdownName) => {
+    setOpenDropdown(openDropdown === dropdownName ? null : dropdownName);
+  };
+
+  const handleAvailabilityChange = (platform) => {
+    setSelectedAvailability((prevSelectedAvailability) => {
+      if (prevSelectedAvailability.includes(platform)) {
+        return prevSelectedAvailability.filter((p) => p !== platform);
+      } else {
+        return [...prevSelectedAvailability, platform];
+      }
+    });
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      availability: selectedAvailability.includes(platform)
+        ? selectedAvailability.filter((p) => p !== platform)
+        : [...prevFormData.availability, platform],
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -98,11 +127,13 @@ function FormsMovies() {
 
   const movieData = {
     ...formData,
+    genres: formData.genre, 
     awards: parsedAwards,
     views: parseInt(formData.views) || 0, // Ensure views are an integer
     year: parseInt(formData.year),         // Ensure year is an integer
-    rating: parseFloat(formData.rating),   // Ensure rating is a float
-    duration: parseInt(formData.duration), // Ensure duration is an integer
+    rating: formData.rating ? parseFloat(formData.rating) : 0,   // Ensure rating is a float
+    duration: formData.duration ? parseInt(formData.duration) : 0, // Ensure duration is an integer
+    availability: selectedAvailability.join(', '),
   };
 
     try {
@@ -120,15 +151,18 @@ function FormsMovies() {
           title: "",
           year: "",
           genre: [],
-          rating: "",
+          rating: 0,
           views: 0,
-          status: "",
-          poster: "",
+          duration: 0,
+          urlPhoto: "",
           countryId: "",
           actors: [],
+          awards: [],
+          availability: [],
         });
       } else {
-        console.error('Failed to add movie');
+        const errorResponse = await response.json();
+        alert(`Failed to add movie: ${errorResponse.error}`);
       }
     } catch (error) {
       console.error('Error adding movie:', error);
@@ -161,8 +195,8 @@ function FormsMovies() {
                   <Form.Label>Poster URL</Form.Label>
                   <Form.Control
                     type="text"
-                    name="poster"
-                    onChange={(e) => setFormData({ ...formData, poster: e.target.value })}
+                    name="urlPhoto"
+                    onChange={(e) => setFormData({ ...formData, urlPhoto: e.target.value })}
                     placeholder="Enter poster URL"
                     required
                   />
@@ -211,6 +245,9 @@ function FormsMovies() {
                     placeholder="Enter country"
                     required
                     >
+                      <option value="" disabled hidden>
+                        Select Country
+                      </option>
                       {countries.map((country) => (
                       <option key={country.id} value={country.id}>
                         {country.name}
@@ -322,17 +359,47 @@ function FormsMovies() {
               </Col>
 
               <Col md={6}>
-                <Form.Group className="mb-3" controlId="formGroupAvailability">
-                  <Form.Label>Availability on</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="availability"
-                    value={formData.availability}
-                    onChange={(e) => setFormData({ ...formData, availability: e.target.value })}
-                    placeholder="Enter availability (e.g., Netflix, Disney+)"
-                    required
-                  />
-                </Form.Group>
+              <Form.Group className="mb-3" controlId="formGroupAvailability">
+              <Form.Label>Availability on</Form.Label>
+              <div className="dropdown d-inline-block w-auto me-2 ms-2 mb-1 bg-dark">
+                    <button
+                      className="btn dropdown-toggle btn-outline-secondary text-white mb-1 btn-filter"
+                      type="button"
+                      id="dropdownAvailability"
+                      aria-expanded={openDropdown === "availability"}
+                      onClick={() => toggleDropdown("availability")}
+                    >
+                      Availability
+                    </button>
+                    <ul
+                      className={`dropdown-menu ${openDropdown === "availability" ? "show" : ""}`}
+                      aria-labelledby="dropdownAvailability"
+                    >
+                      <div className="scrollable-dropdown">
+                        {availabilities.map((platform) => (
+                          <li key={platform} className="dropdown-item">
+                            <div className="form-check">
+                              <input
+                                type="checkbox"
+                                id={`availability-${platform}`}
+                                className="form-check-input"
+                                value={platform}
+                                checked={selectedAvailability.includes(platform)}
+                                onChange={() => handleAvailabilityChange(platform)}
+                              />
+                              <label
+                                htmlFor={`availability-${platform}`}
+                                className="form-check-label availability-label"
+                              >
+                                {platform}
+                              </label>
+                            </div>
+                          </li>
+                        ))}
+                      </div>
+                    </ul>
+                  </div>
+            </Form.Group>
               </Col>
             </Row>
 

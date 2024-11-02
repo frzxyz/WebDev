@@ -11,6 +11,9 @@ import { useEdit } from "../cms-global/cms-edit";
 function TableUsers() {
   const { cancelEdit, edit } = useEdit(); // Destructure dari objek
   const [users, setUsers] = useState([]);
+  const [editingUserId, setEditingUserId] = useState(null);
+  const [newUsername, setNewUsername] = useState("");
+  const [newEmail, setNewEmail] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
   // Fungsi untuk melakukan sorting
@@ -67,38 +70,38 @@ function TableUsers() {
     }
   };
 
-  // Fungsi untuk menyimpan perubahan (PUT)
-  const saveEdit = async (id) => {
-    const tr = document.getElementById(`row${id}`);
-    const tds = tr.getElementsByTagName("td");
-    let updatedUsername = "";
-    let updatedEmail = "";
+  // Handle edit click
+  const handleEditClick = (userId, username, email) => {
+    setEditingUserId(userId);
+    setNewUsername(username);
+    setNewEmail(email);
+  };
 
-    for (let i = 1; i < tds.length - 1; i++) {
-      const td = tds[i];
-      const input = td.getElementsByTagName("input")[0];
-      if (input) {
-        if (i === 1) {
-          updatedUsername = input.value;
-        } else if (i === 2) {
-          updatedEmail = input.value;
-        }
-        td.innerHTML = input.value; // Ubah input menjadi teks biasa
-      }
+  // Handle cancel edit
+  const handleCancelEdit = () => {
+    setEditingUserId(null);
+    setNewUsername("");
+    setNewEmail("");
+  };
+
+  // Handle save edit
+  const saveEdit = async (id) => {
+    if (!newUsername.trim() || !newEmail.trim()) {
+      alert("Username and email cannot be empty.");
+      return;
     }
 
-    // Kirim request PUT ke API untuk menyimpan perubahan
     try {
       const response = await axios.put('/api/users', {
-        id, // Kirim ID user yang akan diperbarui
-        username: updatedUsername, // Kirim username yang baru
-        email: updatedEmail // Kirim email yang baru
+        id,
+        username: newUsername,
+        email: newEmail
       });
 
       if (response.status >= 200 && response.status < 300) {
         setUsers(
           users.map((user) =>
-            user.id === id ? { ...user, username: updatedUsername, email: updatedEmail } : user
+            user.id === id ? { ...user, username: newUsername, email: newEmail } : user
           )
         );
         alert("User updated successfully!");
@@ -110,16 +113,7 @@ function TableUsers() {
       alert("Failed to update user.");
     }
 
-    // Ubah tombol setelah menyimpan
-    const editBtn = document.getElementById(`editBtn${id}`);
-    const saveBtn = document.getElementById(`saveBtn${id}`);
-    const deleteBtn = document.getElementById(`deleteBtn${id}`);
-    const cancelBtn = document.getElementById(`cancelBtn${id}`);
-
-    if (editBtn) editBtn.classList.remove("d-none");
-    if (saveBtn) saveBtn.classList.add("d-none");
-    if (deleteBtn) deleteBtn.classList.remove("d-none");
-    if (cancelBtn) cancelBtn.classList.add("d-none");
+    setEditingUserId(null);
   };
 
   return (
@@ -149,52 +143,59 @@ function TableUsers() {
           {users.map((user, index) => (
             <tr key={user.id} id={`row${user.id}`}>
               <td>{index + 1}</td>
-              <td>{user.username}</td>
-              <td>{user.email}</td>
               <td>
-                <button className="btn btn-warning">
-                  <span className="d-flex align-items-center">
-                    <TiMail className="me-2" />
-                    Send Email
-                  </span>
+                {editingUserId === user.id ? (
+                  <input
+                    type="text"
+                    value={newUsername}
+                    onChange={(e) => setNewUsername(e.target.value)}
+                  />
+                ) : (
+                  user.username
+                )}
+              </td>
+              <td>
+                {editingUserId === user.id ? (
+                  <input
+                    type="text"
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                  />
+                ) : (
+                  user.email
+                )}
+              </td>
+              <td>
+                <button className="btn btn-warning mx-2">
+                    Suspend
                 </button>
-                <button
-                  className="btn btn-success mx-2"
-                  id={`editBtn${user.id}`}
-                  onClick={() => edit(user.id)}
-                >
-                  <span className="d-flex align-items-center">
-                    <TiEdit className="me-2" />
-                    Edit
-                  </span>
-                </button>
-                <button
-                  className="btn btn-success mx-2 d-none"
-                  id={`cancelBtn${user.id}`}
-                  onClick={() => cancelEdit(user.id)}
-                >
-                  <span className="d-flex align-items-center">
-                    <TiEdit className="me-2" />
-                    Cancel
-                  </span>
-                </button>
-                <button className="btn btn-success mx-2 d-none" id={`saveBtn${user.id}`}
-                  onClick={() => saveEdit(user.id)}>
-                  <span className="d-flex align-items-center">
-                    <TiEdit className="me-2" />
-                    Save
-                  </span>
-                </button>
-                <button 
-                  className="btn btn-danger mx-2"
-                  id={`deleteBtn${user.id}`}
-                  onClick={() => deleteUser(user.id)}
-                  >
-                  <span className="d-flex align-items-center">
-                    <TiTrash className="me-2" />
-                    Delete
-                  </span>
-                </button>
+                {editingUserId === user.id ? (
+                  <>
+                    <button className="btn btn-success mx-2" onClick={() => saveEdit(user.id)}>
+                      Save
+                    </button>
+                    <button className="btn btn-warning mx-2" onClick={handleCancelEdit}>
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      className="btn btn-success mx-2"
+                      onClick={() => handleEditClick(user.id, user.username, user.email)}
+                    >
+                      <TiEdit className="me-2" />
+                      Edit
+                    </button>
+                    <button
+                      className="btn btn-danger mx-2"
+                      onClick={() => deleteUser(user.id)}
+                    >
+                      <TiTrash className="me-2" />
+                      Delete
+                    </button>
+                  </>
+                )}
               </td>
             </tr>
           ))}

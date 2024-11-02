@@ -25,29 +25,29 @@ export default async function handler(req, res) {
         
         const {
           title,
-          alternativeTitle,
+          alternativeTitle = "",
           urlPhoto,
           year,
           countryId,
-          synopsis,
+          synopsis = "",
           availability,
           genres = [],
           actors = [],
-          trailerLink,
+          trailerLink = "",
           awards = [],
           rating = 0,
           views = 0,
-          duration
+          duration = 0
         } = req.body;
 
         // Ensure that all necessary fields are provided
-        if (!title || !year || !countryId || !urlPhoto || !synopsis  || !genres  || !actors) {
-          return res.status(400).json({ error: 'Title, year, synopsis, genres, actors, country, and url photo are required' });
+        if (!title || !year || !countryId || !urlPhoto || !synopsis  || !actors) {
+          return res.status(400).json({ error: 'Title, year, synopsis, actors, country, and url photo are required' });
         }
 
         // Validate data types
-        if (typeof title !== 'string' || typeof alternativeTitle !== 'string' || typeof synopsis !== 'string' || typeof awards !== 'string') {
-          return res.status(400).json({ error: 'Title, alternative title, and synopsis must be strings' });
+        if (typeof title !== 'string' || typeof alternativeTitle !== 'string' || typeof synopsis !== 'string' || !Array.isArray(awards)) {
+          return res.status(400).json({ error: 'Title, alternative title, synopsis must be strings, and awards must be an array' });
         }
         if (isNaN(parseInt(year)) || isNaN(parseInt(countryId)) || isNaN(parseFloat(rating)) || isNaN(parseInt(views)) || isNaN(parseInt(duration))) {
           return res.status(400).json({ error: 'Year, rating, views, and duration must be numbers' });
@@ -63,10 +63,8 @@ export default async function handler(req, res) {
         }
 
         const parsedAwards = awards.map(award => {
-          const [category, name, year] = award.split(',').map(item => item.trim());
-          
-          if (!category || !name || !year || isNaN(parseInt(year))) {
-            throw new Error('Invalid awards format. Use: Category, Award Name, Year');
+          if (!award.category || isNaN(parseInt(award.year))) {
+            throw new Error("Invalid awards format. Each award must have a 'category' and a valid 'year'.");
           }
           
           return {
@@ -111,64 +109,42 @@ export default async function handler(req, res) {
       }
       break;
 
-    case 'PUT': // Update - Modify an existing drama
+      case 'PUT': // Update - Modify an existing drama
       try {
         const {
           id,
           title,
-          alternativeTitle,
           urlPhoto,
           year,
-          countryId,
           synopsis,
-          availability,
-          genres = [], 
-          actors = [],
-          trailerLink,
-          rating,
-          views,
-          duration
         } = req.body;
-
+    
         if (!id) {
           return res.status(400).json({ error: 'ID is required to update drama' });
         }
-
+    
+        const updateData = {
+          title,
+          urlPhoto,
+          year: parseInt(year),
+          synopsis,
+        };
+    
         const updatedDrama = await prisma.drama.update({
           where: { id: parseInt(id) },
-          data: {
-            title,
-            alternativeTitle,
-            urlPhoto,
-            year: parseInt(year),
-            country: {
-              connect: { id: parseInt(countryId) },  // Connect the country
-            },
-            synopsis,
-            availability,
-            genres: {
-              connect: genres.map((genreId) => ({ id: parseInt(genreId) })),
-            },
-            actors: {
-              connect: actors.map((actorId) => ({ id: parseInt(actorId) })),
-            },
-            trailerLink,
-            rating: parseFloat(rating),
-            views: parseInt(views),
-            duration: parseInt(duration),
-          },
+          data: updateData, // Hanya kirim field yang ingin di-update
         });
-
+    
         res.status(200).json(updatedDrama);
       } catch (error) {
         if (error.code === 'P2025') {
-          res.status(404).json({ error: 'Movie not found'});
+          res.status(404).json({ error: 'Movie not found' });
         } else {
-        console.error("Error updating drama:", error);
-        res.status(500).json({ error: 'Failed to update drama' });
+          console.error("Error updating drama:", error);
+          res.status(500).json({ error: 'Failed to update drama' });
         }
       }
-      break;
+      break;    
 
     case 'DELETE': // Delete - Remove a drama
       try {

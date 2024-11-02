@@ -12,7 +12,8 @@ function TableActors() {
   const { cancelEdit, edit } = useEdit();
   const [actors, setActors] = useState([]);
   const [editingActorId, setEditingActorId] = useState(null);
-  const [newName, setNewName] = useState(""); // Store the new name during edit
+  const [newName, setNewName] = useState("");
+  const [newUrlPhoto, setNewUrlPhoto] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
   const [currentPage, setCurrentPage] = useState(1);  
   const [actorsPerPage] = useState(30);
@@ -65,21 +66,23 @@ function TableActors() {
   };
 
   // Handle editing the actor name
-  const handleEditClick = (actorId, actorName) => {
+  const handleEditClick = (actorId, actorName, urlPhoto) => {
     setEditingActorId(actorId); 
     setNewName(actorName); 
+    setNewUrlPhoto(urlPhoto); 
   };
 
   // Cancel editing
   const handleCancelEdit = () => {
     setEditingActorId(null); 
     setNewName(""); 
+    setNewUrlPhoto("");
   };
 
   // Handle save edit (PUT)
   const saveEdit = async (id) => {
-    if (!newName.trim()) {
-      alert("Actor name cannot be empty.");
+    if (!newName.trim() || !newUrlPhoto.trim()) {
+      alert("Actor name and Url Photo cannot be empty.");
       return;
     }
 
@@ -87,12 +90,13 @@ function TableActors() {
       const response = await axios.put('/api/actors', {
         id, // Send actor ID
         name: newName, // Send updated actor name
+        photo: newUrlPhoto,
       });
 
       if (response.status >= 200 && response.status < 300) {
         setActors(
           actors.map((actor) =>
-            actor.id === id ? { ...actor, name: newName } : actor
+            actor.id === id ? { ...actor, name: newName, photo: newUrlPhoto } : actor
           )
         );
         alert("Actor updated successfully!");
@@ -124,9 +128,6 @@ function TableActors() {
         <button className="sort-button" onClick={() => sortBy("name")}>
           Sort By Name {sortConfig.key === "name" && (sortConfig.direction === "asc" ? "↑" : "↓")}
         </button>
-        <button className="sort-button" onClick={() => sortBy("movies")}>
-          Sort By Movies {sortConfig.key === "movies" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-        </button>
       </div>
 
       <Table responsive striped>
@@ -135,8 +136,8 @@ function TableActors() {
             <th>Id</th>
             <th>Photo</th>
             <th>Name</th>
-            <th>Movies Acted</th>
             <th>Country</th>
+            <th>Movies Acted</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -146,7 +147,15 @@ function TableActors() {
             <tr key={actor.id} id={`row${actor.id}`}>
               <td>{indexOfFirstActor + index + 1}</td>
               <td>
-                <img src={actor.photo || "default_poster_url.jpg"} alt={actor.name} width="100" />
+                {editingActorId === actor.id ? (
+                  <input
+                    type="text"
+                    value={newUrlPhoto}
+                    onChange={(e) => setNewUrlPhoto(e.target.value)}
+                  />
+                ) : (
+                  <img src={actor.photo || "default_poster_url.jpg"} alt={actor.name} width="100" />
+                )}
               </td>
               <td>
                 {editingActorId === actor.id ? (
@@ -160,10 +169,11 @@ function TableActors() {
                   actor.name
                 )}
               </td>
+              <td>{actor.country?.name}</td>
               <td>{actor.dramas.length > 0
                   ? actor.dramas.map(drama => drama.title).join(', ')
-                  : 'No movies available'}</td>
-              <td>{actor.country?.name}</td>
+                  : 'No movies available'}
+              </td>
               <td>
                 {editingActorId === actor.id ? (
                   <>
