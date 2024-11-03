@@ -15,6 +15,7 @@ export async function middleware(req) {
     '/cms-global',
     '/cms-movies',
     '/cms-users',
+    '/api/cms'  // Tambahkan folder API CMS
   ];
 
   const { pathname } = req.nextUrl;
@@ -48,5 +49,6 @@ export const config = {
     '/cms-global/:path*',
     '/cms-movies/:path*',
     '/cms-users/:path*',
+    '/api/cms/:path*',  // Tambahkan ini untuk folder API CMS
   ],
 };
