@@ -22,6 +22,7 @@ export default NextAuth({
         // Cari user di database
         const user = await prisma.user.findUnique({
           where: { email },
+          include: { role: true }, // Ambil role user
         });
 
         if (!user) {
@@ -33,7 +34,7 @@ export default NextAuth({
           throw new Error("Password salah");
         }
 
-        return { id: user.id, email: user.email, name: user.username }; // Return user object
+        return { id: user.id, email: user.email, name: user.username, role: user.role.name }; // Return user object dengan role
       },
     }),
   ],
@@ -48,6 +49,7 @@ export default NextAuth({
       if (user) {
         token.id = user.id; // Simpan user ID di JWT token
         token.email = user.email;
+        token.role = user.role; // Simpan role user di JWT token
       }
       return token;
     },
@@ -57,6 +59,7 @@ export default NextAuth({
       });
       if (dbUser) {
         session.user.id = dbUser.id; // Set session dengan ID integer user
+        session.user.role = token.role; // Set role user di session
       }
       session.user.email = token.email;
       return session;

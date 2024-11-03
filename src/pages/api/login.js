@@ -26,20 +26,14 @@ export default async function handler(req, res) {
 
     // Verifikasi password
     const isPasswordValid = await bcrypt.compare(password, user.password);
-
     if (!isPasswordValid) {
       return res.status(401).json({ error: 'Password salah atau tidak terdaftar' });
     }
 
-    // Hanya allow login untuk role Admin (roleId = 1) dan Writer (roleId = 2)
-    if (user.roleId !== 1 && user.roleId !== 2) {
-      return res.status(403).json({ error: 'Role tidak diizinkan untuk login' });
-    }
-
-    // Buat JWT token
+    // Buat JWT token dengan role 'Admin' jika user memiliki role tersebut
     const token = jwt.sign(
-      { userId: user.id, role: user.role.name },
-      process.env.JWT_SECRET || 'secret', // Sebaiknya disimpan di env variable
+      { userId: user.id, role: user.role.name }, // Menyimpan role name di token
+      process.env.JWT_SECRET, // Ambil dari environment variable untuk keamanan
       { expiresIn: '1h' }
     );
 
