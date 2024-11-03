@@ -361,21 +361,19 @@ function FormsMovies() {
               <Col md={6}>
               <Form.Group className="mb-3" controlId="formGroupAvailability">
               <Form.Label>Availability on</Form.Label>
-              <div className="dropdown d-inline-block w-auto me-2 ms-2 mb-1 bg-dark">
+              <div className="dropdown">
                     <button
-                      className="btn dropdown-toggle btn-outline-secondary text-white mb-1 btn-filter"
+                      className="btn dropdown-toggle btn-outline-secondary"
                       type="button"
-                      id="dropdownAvailability"
-                      aria-expanded={openDropdown === "availability"}
-                      onClick={() => toggleDropdown("availability")}
+                      onClick={() => setOpenDropdown(!openDropdown)}
+                      aria-expanded={openDropdown}
                     >
-                      Availability
+                      {selectedAvailability.length > 0
+                        ? selectedAvailability.join(", ")
+                        : "Select Availability"}
                     </button>
-                    <ul
-                      className={`dropdown-menu ${openDropdown === "availability" ? "show" : ""}`}
-                      aria-labelledby="dropdownAvailability"
-                    >
-                      <div className="scrollable-dropdown">
+                    {openDropdown && (
+                      <ul className="dropdown-menu show">
                         {availabilities.map((platform) => (
                           <li key={platform} className="dropdown-item">
                             <div className="form-check">
@@ -383,21 +381,20 @@ function FormsMovies() {
                                 type="checkbox"
                                 id={`availability-${platform}`}
                                 className="form-check-input"
-                                value={platform}
                                 checked={selectedAvailability.includes(platform)}
                                 onChange={() => handleAvailabilityChange(platform)}
                               />
                               <label
                                 htmlFor={`availability-${platform}`}
-                                className="form-check-label availability-label"
+                                className="form-check-label"
                               >
                                 {platform}
                               </label>
                             </div>
                           </li>
                         ))}
-                      </div>
-                    </ul>
+                      </ul>
+                    )}
                   </div>
             </Form.Group>
               </Col>
