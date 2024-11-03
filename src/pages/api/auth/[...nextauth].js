@@ -9,6 +9,19 @@ export default NextAuth({
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      async authorize(credentials) {
+        // Cari user di database berdasarkan email dari Google
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+        });
+
+        // Cek apakah user dalam status suspended
+        if (user && user.isSuspended) {
+          throw new Error("Your account is suspended");
+        }
+
+        return user ? { id: user.id, email: user.email, name: user.username } : null;
+      },
     }),
     CredentialsProvider({
       name: "Credentials",
@@ -29,6 +42,11 @@ export default NextAuth({
           throw new Error("Email salah atau tidak terdaftar");
         }
 
+        // Cek apakah user dalam status suspended
+        if (user.isSuspended) {
+          throw new Error("Your account is suspended");
+        }
+
         const isValidPassword = await bcrypt.compare(password, user.password);
         if (!isValidPassword) {
           throw new Error("Password salah");
@@ -43,10 +61,20 @@ export default NextAuth({
   },
   pages: {
     signIn: "/login", // Arahkan ke halaman login custom
+    error: "/error-suspended",
   },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        // Cari pengguna di database berdasarkan email untuk cek status suspended
+        const dbUser = await prisma.user.findUnique({
+          where: { email: user.email },
+        });
+
+        if (dbUser && dbUser.isSuspended) {
+          throw new Error("Your account is suspended");
+        }
+
         token.id = user.id; // Simpan user ID di JWT token
         token.email = user.email;
         token.role = user.role; // Simpan role user di JWT token
@@ -60,6 +88,7 @@ export default NextAuth({
       if (dbUser) {
         session.user.id = dbUser.id; // Set session dengan ID integer user
         session.user.role = token.role; // Set role user di session
+        session.user.isSuspended = dbUser.isSuspended; // Menyimpan status isSuspended di session
       }
       session.user.email = token.email;
       return session;

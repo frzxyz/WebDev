@@ -21,13 +21,18 @@ export default async function handler(req, res) {
     });
 
     if (!user) {
-      return res.status(401).json({ error: 'Email salah atau tidak terdaftar' });
+      return res.status(401).json({ error: 'Your email is wrong or not registered' });
+    }
+
+    // Cek apakah user dalam status suspended
+    if (user.isSuspended) {
+      return res.status(403).json({ error: 'Your account is suspended' });
     }
 
     // Verifikasi password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ error: 'Password salah atau tidak terdaftar' });
+      return res.status(401).json({ error: 'Password is wrong' });
     }
 
     // Buat JWT token dengan role 'Admin' jika user memiliki role tersebut
