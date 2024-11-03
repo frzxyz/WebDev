@@ -14,14 +14,25 @@ const LoginRegister = () => {
   // const { data: session, status } = useSession();
   const router = useRouter();
 
+  // Redirect to error-suspended page if account is suspended
+  useEffect(() => {
+    if (router.query.error === "Callback") {
+      router.push("/error-suspended");
+    }
+  }, [router.query.error, router]);
+
   // Fungsi untuk menangani login dengan Google
   const handleGoogleLogin = async () => {
     try {
       const result = await signIn('google', { redirect: false });
 
       if (result?.error) {
-        // Tampilkan pesan error jika terjadi masalah
-        alert(result.error);
+        if (result.error === "Your account is suspended") {
+          // Redirect to login with error=suspended if account is suspended
+          router.push('/error-suspended');
+        } else {
+          alert(result.error); // Show other errors as alerts
+        }
       } else {
         // Jika sukses, redirect ke halaman utama
         router.push('/');
@@ -79,10 +90,15 @@ const LoginRegister = () => {
     });
 
     if (result.error) {
-      setError(result.error); // Tampilkan error jika gagal login
+    if (result.error === 'Your account is suspended') {
+      // Redirect to error-suspended page if account is suspended
+      router.push('/error-suspended');
     } else {
-      window.location.href = "/"; // Redirect ke halaman utama
+      setError(result.error); // Display other errors on the login form
     }
+  } else {
+    window.location.href = "/"; // Redirect to the homepage if login is successful
+  }
   };
 
   useEffect(() => {

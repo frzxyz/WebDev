@@ -60,6 +60,7 @@ export default NextAuth({
   },
   pages: {
     signIn: "/login", // Arahkan ke halaman login custom
+    error: "/error-suspended",
   },
   callbacks: {
     async jwt({ token, user }) {
