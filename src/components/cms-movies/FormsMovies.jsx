@@ -29,8 +29,7 @@ function FormsMovies() {
 
   const availabilities = [
     "Netflix", "Prime Video", "Vidio", "Amazon Prime", "Apple TV",
-    "Disney+ Hotstar", "Bstation", "Microsoft Store", "Google Play Movies",
-    "Microsoft Store Google Play", "Amazon Prime Video", "Hulu", "Crunchyroll"
+    "Disney+ Hotstar", "Bstation", "Microsoft Store", "Google Play Movies", "Hulu", "Crunchyroll"
   ];
 
   useEffect(() => {
@@ -183,7 +182,7 @@ function FormsMovies() {
       </Button>
 
       {/* Modal */}
-      <Modal show={showModal} onHide={handleClose} size="lg">
+      <Modal show={showModal} onHide={handleClose} size="lg" className="custom-modal-background">
         <Modal.Header closeButton>
           <Modal.Title>Add New Movie</Modal.Title>
         </Modal.Header>
@@ -363,7 +362,7 @@ function FormsMovies() {
               <Form.Label>Availability on</Form.Label>
               <div className="dropdown">
                     <button
-                      className="btn dropdown-toggle btn-outline-secondary"
+                      className="btn dropdown-toggle availability-button"
                       type="button"
                       onClick={() => setOpenDropdown(!openDropdown)}
                       aria-expanded={openDropdown}

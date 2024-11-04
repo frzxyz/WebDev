@@ -35,7 +35,7 @@ function Sidebar() {
       <nav className="col-auto col-md-2 d-flex justify-content-between flex-column sidebar">
         <div className="position-sticky">
         <Nav.Item className="text-center my-3">
-              <Nav.Link href="#" className="d-flex align-items-center justify-content-center text-white">
+              <Nav.Link href="/" className="d-flex align-items-center justify-content-center text-white">
                 <img
                   alt="Logo"
                   src="https://i.imgur.com/fUTK20b.png"

@@ -1,59 +1,58 @@
 import { useState } from "react";
 import Form from "react-bootstrap/Form";
 import "bootstrap/dist/css/bootstrap.min.css";
-import axios from "axios";
-
 import "../../styles/Countries.css";
 import "../../styles/Awards.css";
 
 function FormsGenres({ onAddGenre }) {
   const [genreName, setGenreName] = useState("");
   const [description, setDescription] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setErrorMessage(""); // Clear any previous error message
 
     if (!genreName.trim()) {
       alert("Please enter a valid genre name.");
       return;
     }
 
-    // Regex untuk memeriksa apakah input valid (huruf, spasi, tanda hubung, apostrof)
+    // Regex to validate the input (letters, spaces, hyphens, apostrophes)
     const validNameRegex = /^[A-Za-z\s'-]+$/;
 
-    // Cek apakah input valid
     if (!validNameRegex.test(genreName)) {
       alert("Genre name must only contain letters, spaces, hyphens, and apostrophes.");
       return;
     }
 
-    // Mengirim request POST ke API untuk menambahkan genre baru
     try {
       const response = await fetch('/api/cms/genre', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           name: genreName,
-          description: description, }), // Kirim nama negara ke API
+          description: description,
+        }),
       });
 
       if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || "Failed to add genre");
+        return;
       }
 
       const result = await response.json();
       alert(`Genre "${result.name}" added successfully!`);
 
-      // Reset form setelah submit
+      // Reset form after successful submit
       setGenreName("");
       setDescription("");
     } catch (error) {
-      if (error.response && error.response.status === 400) {
-        alert("Genre already exists!"); // Jika genre duplikat
-      }
       console.error("Failed to add genre", error);
+      setErrorMessage("An unexpected error occurred. Please try again.");
     }
   };
 
@@ -85,6 +84,11 @@ function FormsGenres({ onAddGenre }) {
                 required
               />
             </Form.Group>
+            {errorMessage && (
+              <div className="alert alert-danger mt-3" role="alert">
+                {errorMessage}
+              </div>
+            )}
             <button type="submit" className="btn btn-primary">
               Submit
             </button>

@@ -1,5 +1,17 @@
 import prisma from '../../../../lib/prisma';
 
+function isValidName(name) {
+  // Check that name contains alphabetic characters and does not contain only numbers or special characters
+  const containsAlphabet = /[a-zA-Z]/.test(name);
+  const isOnlyNumbersOrSpecialChars = /^[^a-zA-Z]*$/.test(name);
+
+  return containsAlphabet && !isOnlyNumbersOrSpecialChars;
+}
+
+function capitalizeName(name) {
+  return name.replace(/\b\w/g, char => char.toUpperCase()); // Capitalize the first letter of each word
+}
+
 export default async function handler(req, res) {
   const { method } = req;
 
@@ -24,13 +36,27 @@ export default async function handler(req, res) {
 
     case 'POST': // Create - Add a new actor
       try {
-        const { name, photo, countryId } = req.body; // Receive countryId from the form
+        let { name, photo, countryId } = req.body; // Receive countryId from the form
         if (!name || name.trim() === '') {
           return res.status(400).json({ error: 'Actor name is required' });
         }
     
         if (!photo || !countryId) {  // Check for required fields photo and countryId
           return res.status(400).json({ error: 'Photo and countryId are required' });
+        }
+
+        // Capitalize the actor's name
+        name = capitalizeName(name.trim());
+
+        const existingActor = await prisma.actor.findFirst({
+          where: { 
+            name,
+            countryId: parseInt(countryId),
+           }
+        });
+
+        if (existingActor) {
+          return res.status(409).json({ error: 'An actor with the same name and country already exists' });
         }
     
         const newActor = await prisma.actor.create({
@@ -52,9 +78,37 @@ export default async function handler(req, res) {
     case 'PUT': // Update - Ubah data actor
       try {
         const { id, name, photo } = req.body;
-        if (!id || !name || name.trim() === '' || photo.trim() === '') {
-          return res.status(400).json({ error: 'ID and actor name are required' });
+
+        if (!id) {
+          return res.status(400).json({ error: 'ID is required' });
         }
+        if (name !== undefined) {
+          if (name.trim() === '' || !isValidName(name)) {
+          return res.status(400).json({ error: 'Invalid name. It must contain alphabetic characters and cannot be only numbers or special characters.' });
+        }
+        const capitalizedName = capitalizeName(name.trim());
+      }
+        if (photo !== undefined && photo.trim() === '') {
+          return res.status(400).json({ error: 'Photo cannot be empty' });
+        }
+
+        if (name && countryId) {
+          const existingActor = await prisma.actor.findFirst({
+            where: {
+              name: capitalizedName,
+              countryId: parseInt(countryId),
+              NOT: { id: parseInt(id) }, // Exclude the current actor from the duplicate check
+            },
+          });
+
+          if (existingActor) {
+            return res.status(409).json({ error: 'An actor with the same name and country already exists' });
+          }
+        }
+
+        const dataToUpdate = {};
+        if (name !== undefined) dataToUpdate.name = capitalizedName;
+        if (photo !== undefined) dataToUpdate.photo = photo.trim();
 
         const updatedActor = await prisma.actor.update({
           where: { id: parseInt(id) },

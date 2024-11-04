@@ -11,10 +11,12 @@ import "../../styles/Countries.css";
 const AddCountry = () => {
   // State untuk menyimpan nama negara yang diinput
   const [countryName, setCountryName] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Fungsi untuk menangani submit form
   const handleSubmit = async (e) => {
     e.preventDefault(); // Mencegah reload halaman
+    setErrorMessage('');
 
     if (!countryName.trim()) {
       alert("Please enter a valid country name.");
@@ -40,7 +42,9 @@ const AddCountry = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || "Failed to add country");
+        return;
       }
 
       const result = await response.json();
@@ -49,8 +53,8 @@ const AddCountry = () => {
       // Reset form
       setCountryName('');
     } catch (error) {
-      console.error("Error adding country:", error);
-      alert("Failed to add country. Please try again.");
+      console.error("Failed to add country", error);
+      setErrorMessage("An unexpected error occurred. Please try again.");
     }
   };
 
@@ -75,6 +79,11 @@ const AddCountry = () => {
             <Col >
               <Button type="submit">Add</Button>
             </Col>
+            {errorMessage && (
+              <div className="alert alert-danger mt-3" role="alert">
+                {errorMessage}
+              </div>
+            )}
           </Row>
         </Form>
       </Container>

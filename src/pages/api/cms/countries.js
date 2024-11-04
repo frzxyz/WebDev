@@ -1,5 +1,9 @@
 import prisma from '../../../../lib/prisma';
 
+function capitalizeWords(str) {
+  return str.replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize the first letter of each word
+}
+
 export default async function handler(req, res) {
   const { method } = req;
 
@@ -15,7 +19,18 @@ export default async function handler(req, res) {
 
     case 'POST': // Create - Tambah negara baru
       try {
-        const { name } = req.body;
+        let { name } = req.body;
+
+        name = capitalizeWords(name.trim());
+
+        const existingCountry = await prisma.country.findFirst({
+          where: { name }
+        });
+
+        if (existingCountry) {
+          return res.status(409).json({ error: 'Country already exists' });
+        }
+
         if (!name || name.trim() === '') {
           return res.status(400).json({ error: 'Country name is required' });
         }
@@ -31,7 +46,27 @@ export default async function handler(req, res) {
 
     case 'PUT': // Update - Ubah data negara
       try {
-        const { id, name } = req.body;
+        const { id, name: originalName } = req.body;
+
+        if (!id) {
+          return res.status(400).json({ error: "ID is required" });
+        }
+
+        // Capitalize each word in the country name
+        const name = capitalizeWords(originalName.trim());
+
+        // Check for duplicate country name, excluding the current country
+        const existingCountry = await prisma.country.findFirst({
+          where: {
+            name,
+            NOT: { id: parseInt(id) } // Exclude the current country from duplicate check
+          },
+        });
+
+        if (existingCountry) {
+          return res.status(409).json({ error: 'Country already exists' });
+        }
+        
         if (!id || !name || name.trim() === '') {
           return res.status(400).json({ error: 'ID and country name are required' });
         }

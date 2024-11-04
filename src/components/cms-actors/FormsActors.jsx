@@ -11,6 +11,7 @@ function FormsActors() {
     countryId: "",
   });
   const [countries, setCountries] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Fetch the countries when the component mounts
   useEffect(() => {
@@ -28,6 +29,8 @@ function FormsActors() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setErrorMessage('');
+
     const { name, photo, countryId } = formData;
 
     if (!name.trim()) {
@@ -51,8 +54,8 @@ function FormsActors() {
           countryId: "",
         });
       } else {
-        const errorResponse = await response.json();
-        alert(`Failed to add actor: ${errorResponse.error}`);
+        const errorData = await res.json();
+        setErrorMessage(errorData.error || 'Failed to add user');
       }
     } catch (error) {
       const errorResponse = await response.json();
@@ -114,6 +117,11 @@ function FormsActors() {
                 ))}
               </Form.Control>
             </Form.Group>
+            {errorMessage && (
+              <div className="alert alert-danger mt-3" role="alert">
+                {errorMessage}
+              </div>
+            )}
             <button type="submit" className="btn btn-primary mt-3">
               Submit
             </button>

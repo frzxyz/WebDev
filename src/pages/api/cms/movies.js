@@ -1,5 +1,7 @@
 import prisma from '../../../../lib/prisma';
 
+const isWhitespace = (str) => !str || !str.trim();
+
 export default async function handler(req, res) {
   const { method } = req;
 
@@ -45,10 +47,17 @@ export default async function handler(req, res) {
           return res.status(400).json({ error: 'Title, year, synopsis, actors, country, and url photo are required' });
         }
 
+        // Validate that required fields are not only whitespace
+        const isWhitespace = (str) => !str || !str.trim();
+        if (isWhitespace(title) || isWhitespace(synopsis) || isWhitespace(urlPhoto) || isWhitespace(trailerLink)) {
+          return res.status(400).json({ error: 'Title, synopsis, URL photo, and trailer link cannot be empty or whitespace' });
+        }
+        
         // Validate data types
         if (typeof title !== 'string' || typeof alternativeTitle !== 'string' || typeof synopsis !== 'string' || !Array.isArray(awards)) {
           return res.status(400).json({ error: 'Title, alternative title, synopsis must be strings, and awards must be an array' });
         }
+
         if (isNaN(parseInt(year)) || isNaN(parseInt(countryId)) || isNaN(parseFloat(rating)) || isNaN(parseInt(views)) || isNaN(parseInt(duration))) {
           return res.status(400).json({ error: 'Year, rating, views, and duration must be numbers' });
         }
@@ -62,29 +71,28 @@ export default async function handler(req, res) {
           return res.status(409).json({ error: 'A drama with the same title and year already exists' });
         }
 
-        const parsedAwards = awards.map(award => {
-          if (!award.category || isNaN(parseInt(award.year))) {
-            throw new Error("Invalid awards format. Each award must have a 'category' and a valid 'year'.");
+        const parsedAwards = awards.map((award) => {
+          const { category, name, year: awardYear } = award;
+          if (!category || typeof category !== 'string' || isWhitespace(category) || !name || typeof name !== 'string' || isWhitespace(name) || isNaN(parseInt(awardYear))) {
+            throw new Error("Invalid awards format. Each award must have a non-empty 'category', 'name', and a valid 'year'.");
           }
-          
           return {
-            name,
-            year: parseInt(year),
-            category
+            category: category.trim(),
+            name: name.trim(),
+            year: parseInt(awardYear),
           };
         });
-        
 
         const newDrama = await prisma.drama.create({
           data: {
-            title,
-            alternativeTitle,
-            urlPhoto,
+            title: title.trim(),
+            alternativeTitle: alternativeTitle.trim(),
+            urlPhoto: urlPhoto.trim(),
             year: parseInt(year),
             country: {
               connect: { id: parseInt(countryId) },  // Connect the country
             },
-            synopsis,
+            synopsis: synopsis.trim(),
             availability,
             genres: {
               connect: genres.map((genreId) => ({ id: parseInt(genreId) })),  // Connect genres
@@ -92,7 +100,7 @@ export default async function handler(req, res) {
             actors: {
               connect: actors.map((actorId) => ({ id: parseInt(actorId) })),  // Connect actors
             },
-            trailerLink,
+            trailerLink: trailerLink.trim(),
             rating: parseFloat(rating),
             views: parseInt(views) || 0,
             duration: parseInt(duration),
@@ -105,7 +113,7 @@ export default async function handler(req, res) {
         res.status(201).json(newDrama);
       } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Failed to create drama' });
+        res.status(500).json({ error: error.message || 'Failed to create drama' });
       }
       break;
 
@@ -122,17 +130,34 @@ export default async function handler(req, res) {
         if (!id) {
           return res.status(400).json({ error: 'ID is required to update drama' });
         }
+
+        // Validate required fields and ensure they are not just whitespace
+        if (!title || isWhitespace(title) || typeof title !== 'string') {
+          return res.status(400).json({ error: 'Title is required and must be a non-empty string' });
+        }
+
+        if (!urlPhoto || isWhitespace(urlPhoto) || typeof urlPhoto !== 'string') {
+          return res.status(400).json({ error: 'URL photo is required and must be a non-empty string' });
+        }
+
+        if (!synopsis || isWhitespace(synopsis) || typeof synopsis !== 'string') {
+          return res.status(400).json({ error: 'Synopsis is required and must be a non-empty string' });
+        }
+
+        if (isNaN(parseInt(year))) {
+          return res.status(400).json({ error: 'Year must be a valid number' });
+        }
     
         const updateData = {
-          title,
-          urlPhoto,
+          title: title.trim(),
+          urlPhoto: urlPhoto.trim(),
           year: parseInt(year),
-          synopsis,
+          synopsis: synopsis.trim(),
         };
     
         const updatedDrama = await prisma.drama.update({
           where: { id: parseInt(id) },
-          data: updateData, // Hanya kirim field yang ingin di-update
+          data: updateData, 
         });
     
         res.status(200).json(updatedDrama);
