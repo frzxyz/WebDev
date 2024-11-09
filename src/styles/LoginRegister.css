@@ -333,3 +333,26 @@ display: flex;
     outline-width: 2px;
     font-size: 13px;
 }
+
+
+/* alert */
+
+.alert-danger {
+    font-size: 0.875rem; /* Mengatur ukuran font lebih kecil */
+    background-color: rgba(255, 0, 0, 0.1); /* Warna merah muda dengan transparansi */
+    color: #a94442; /* Warna teks yang sedikit lebih gelap */
+    border: 1px solid #a94442; /* Warna border sesuai dengan teks */
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+  }
+
+.alert-success {
+    font-size: 0.875rem; /* Ukuran font lebih kecil */
+    background-color: rgba(0, 128, 0, 0.1); /* Warna hijau muda dengan transparansi */
+    color: #3c763d; /* Warna teks hijau gelap */
+    border: 1px solid #3c763d; /* Border warna hijau */
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+}

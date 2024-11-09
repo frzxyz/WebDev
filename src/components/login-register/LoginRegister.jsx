@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { signIn, useSession } from 'next-auth/react';
-
+import "bootstrap/dist/css/bootstrap.min.css";
 import "../../styles/LoginRegister.css";
 
 const LoginRegister = () => {
@@ -10,6 +10,7 @@ const LoginRegister = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   // const { data: session, status } = useSession();
   const router = useRouter();
@@ -51,8 +52,10 @@ const LoginRegister = () => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
 
     if (!passwordRegex.test(password)) {
-      alert('Password harus minimal 8 karakter, mengandung huruf besar, huruf kecil, dan angka');
+      setError('Password must be at least 8 characters and contain uppercase letters, lowercase letters, and numbers');
       return;
+    } else {
+      setError('');
     }
 
     try {
@@ -63,19 +66,22 @@ const LoginRegister = () => {
       });
 
       if (res.ok) {
-        alert('Registrasi berhasil');
+        const data = await res.json();
+        setSuccessMessage(data.message); // Set pesan sukses
+        setError(''); // Clear error message if any
+        // Reset form
+        setUsername('');
+        setEmail('');
+        setPassword('');
       } else {
         const data = await res.json();
-        alert(data.message);
+        setError(data.message); // Set pesan error dari backend
+        setSuccessMessage(''); // Clear success message if any
       }
-
-      // Reset form
-      setUsername('');
-      setEmail('');
-      setPassword('');
-
     } catch (error) {
-      alert('Terjadi kesalahan saat registrasi');
+      console.error('Error during registration:', error);
+      setError('An error occurred during registration.');
+      setSuccessMessage('');
     }
   };
 
@@ -132,6 +138,7 @@ const LoginRegister = () => {
             placeholder="Name"
             value={username} // State dikaitkan dengan value
             onChange={(e) => setUsername(e.target.value)} // Update state saat ada perubahan input
+            autocomplete="name"
             required
           />
           <input
@@ -146,8 +153,23 @@ const LoginRegister = () => {
             placeholder="Password"
             value={password} // State dikaitkan dengan value
             onChange={(e) => setPassword(e.target.value)} // Update state saat ada perubahan input
+            onKeyDown={(e) => {
+              if (e.key === ' ') {
+                e.preventDefault(); // Mencegah input spasi
+              }
+            }}
             required
           />
+          {error && (
+            <div className="alert alert-danger mt-3" role="alert">
+              {error}
+            </div>
+          )}
+          {successMessage && (
+            <div className="alert alert-success mt-3" role="alert">
+              {successMessage}
+            </div>
+          )}
           <button type="submit">Sign Up</button>
         </form>
       </div>
@@ -174,10 +196,19 @@ const LoginRegister = () => {
             placeholder="Password"
             value={password} // State dikaitkan dengan value
             onChange={(e) => setPassword(e.target.value)} // Update state saat ada perubahan input
+            onKeyDown={(e) => {
+              if (e.key === ' ') {
+                e.preventDefault(); // Mencegah input spasi
+              }
+            }}
             required
           />
-          {error && <p style={{ color: 'red', fontSize: '16px' }}>{error}</p>}
-          <a href="/forgot-password">Forget Your Password?</a>
+          {error && (
+              <div className="alert alert-danger mt-3" role="alert">
+                {error}
+              </div>
+            )}
+          <a href="/forgot-password">Forgot Your Password?</a>
           <button type="submit">Sign In</button>
         </form>
       </div>

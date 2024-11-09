@@ -39,7 +39,7 @@ export default NextAuth({
         });
 
         if (!user) {
-          throw new Error("Email salah atau tidak terdaftar");
+          throw new Error("Email is wrong or not registered");
         }
 
         // Cek apakah user dalam status suspended
@@ -64,12 +64,23 @@ export default NextAuth({
     error: "/error-suspended",
   },
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
+    async jwt({ token, user, account }) {
+      if (account && user) {
         // Cari pengguna di database berdasarkan email untuk cek status suspended
-        const dbUser = await prisma.user.findUnique({
+        let dbUser = await prisma.user.findUnique({
           where: { email: user.email },
         });
+
+        // Jika user belum ada, buat user baru
+        if (!dbUser) {
+          dbUser = await prisma.user.create({
+            data: {
+              email: user.email,
+              username: user.name || user.email.split("@")[0], // Membuat username dari bagian depan email
+              role: { connect: { id: 2 } }, // Menyambungkan role default, misalnya role dengan ID 1
+            },
+          });
+        }
 
         if (dbUser && dbUser.isSuspended) {
           throw new Error("Your account is suspended");

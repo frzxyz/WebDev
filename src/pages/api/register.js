@@ -9,7 +9,7 @@ export default async function handler(req, res) {
   const { email, password, username } = req.body;
 
   if (!email || !password || !username) {
-    return res.status(400).json({ message: 'Email, password, dan username harus diisi' });
+    return res.status(400).json({ message: 'Email, password, and username must be filled' });
   }
 
   try {
@@ -19,7 +19,16 @@ export default async function handler(req, res) {
     });
 
     if (existingUser) {
-      return res.status(409).json({ message: 'Email atau Username sudah terdaftar' });
+      return res.status(409).json({ message: 'Email has been registered' });
+    }
+
+    // Cek apakah username sudah terdaftar
+    const existingUsername = await prisma.user.findUnique({
+      where: { username },
+    });
+
+    if (existingUsername) {
+      return res.status(409).json({ message: 'Username already used' });
     }
 
     // Hash password sebelum disimpan
@@ -35,9 +44,9 @@ export default async function handler(req, res) {
       },
     });
 
-    return res.status(201).json({ message: 'User berhasil diregistrasi', user });
+    return res.status(201).json({ message: 'User registered successfully. Please sign in to continue', user });
   } catch (error) {
-    console.error('Error saat registrasi:', error);
-    return res.status(500).json({ message: 'Terjadi kesalahan saat registrasi', error: error.message });
+    console.error('Error during registrasi:', error);
+    return res.status(500).json({ message: 'Error during registration', error: error.message });
   }
 }
