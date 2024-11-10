@@ -251,3 +251,28 @@ body.dark .container-fluid {
   margin-right: 8px;
 }
 
+.custom-input {
+  background-color: #2c2f33; /* Dark background for the input field */
+  color: #ffffff; /* White text color */
+  border: none; /* Remove border */
+}
+
+.form-select {
+  background-color: #2c2f33; /* Match the input field's color */
+  color: #ffffff;
+  border: none;
+  padding: 0.5rem; /* Adjust padding to align with input */
+  border-radius: 0; /* To match the rounded edges of the input, adjust as needed */
+  padding-left: 20px;
+}
+
+.input-group .form-select,
+.input-group .custom-input {
+  border-radius: 0.5rem; /* Ensures the same rounded corners on both elements */
+}
+
+.input-group .form-select:focus,
+.input-group .custom-input:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Optional: add a blue glow on focus */
+}
