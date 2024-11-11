@@ -258,8 +258,8 @@ body.dark .container-fluid {
 }
 
 .form-select {
-  background-color: #2c2f33; /* Match the input field's color */
-  color: #ffffff;
+  background-color: #ffffff; /* Match the input field's color */
+  color: #000;
   border: none;
   padding: 0.5rem; /* Adjust padding to align with input */
   border-radius: 0; /* To match the rounded edges of the input, adjust as needed */
