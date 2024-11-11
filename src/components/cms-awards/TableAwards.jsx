@@ -135,7 +135,7 @@ function TableAwards() {
                     </button>
                     <button className="btn btn-warning mx-2" onClick={() => setEditingAwardId(null)}>
                       Cancel
-                    </button>
+                    </button> 
                   </>
                 ) : (
                   <>
