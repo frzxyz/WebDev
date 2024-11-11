@@ -85,8 +85,9 @@ function TableAwards() {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
-    <div>
-      <h5>List of Awards</h5>
+    <div className="container mt-4">
+      <div className="table-countries">
+      <h5 className="mb-4">List of Awards</h5>
       <Table responsive striped>
         <thead>
           <tr>
@@ -155,6 +156,7 @@ function TableAwards() {
           </Pagination.Item>
         ))}
       </Pagination>
+    </div>
     </div>
   );
 }

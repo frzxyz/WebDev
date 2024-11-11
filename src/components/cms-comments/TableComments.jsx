@@ -47,6 +47,7 @@ function TableComments() {
 
   return (
     <div className="container mt-4">
+      <div className="table-countries">
       <h5 className="mb-4">List of Reviews</h5>
       <Table responsive striped bordered hover>
         <thead className="thead-dark">
@@ -82,6 +83,7 @@ function TableComments() {
           </Pagination.Item>
         ))}
       </Pagination>
+      </div>
     </div>
   );
 }
