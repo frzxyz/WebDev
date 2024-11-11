@@ -130,8 +130,12 @@ function TableAwards() {
               <td>
                 {editingAwardId === award.id ? (
                   <>
-                    <button onClick={() => saveEdit(award.id)}>Save</button>
-                    <button onClick={() => setEditingAwardId(null)}>Cancel</button>
+                  <button className="btn btn-success mx-2" onClick={() => saveEdit(award.id)}>
+                      Save
+                    </button>
+                    <button className="btn btn-warning mx-2" onClick={() => setEditingAwardId(null)}>
+                      Cancel
+                    </button>
                   </>
                 ) : (
                   <>
