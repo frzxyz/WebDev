@@ -36,7 +36,6 @@ export default async function handler(req, res) {
           genres = [],
           actors = [],
           trailerLink = "",
-          awards = [],
           rating = 0,
           views = 0,
           duration = 0
@@ -52,10 +51,15 @@ export default async function handler(req, res) {
         if (isWhitespace(title) || isWhitespace(synopsis) || isWhitespace(urlPhoto) || isWhitespace(trailerLink)) {
           return res.status(400).json({ error: 'Title, synopsis, URL photo, and trailer link cannot be empty or whitespace' });
         }
+
+        // Validate URL photo extension
+        if (!/\.(jpg|jpeg|png)$/i.test(urlPhoto)) {
+          return res.status(400).json({ error: 'Poster URL must end with .jpg, .jpeg, or .png' });
+        }
         
         // Validate data types
-        if (typeof title !== 'string' || typeof alternativeTitle !== 'string' || typeof synopsis !== 'string' || !Array.isArray(awards)) {
-          return res.status(400).json({ error: 'Title, alternative title, synopsis must be strings, and awards must be an array' });
+        if (typeof title !== 'string' || typeof alternativeTitle !== 'string' || typeof synopsis !== 'string') {
+          return res.status(400).json({ error: 'Title, alternative title, and synopsis must be strings must be an array' });
         }
 
         if (isNaN(parseInt(year)) || isNaN(parseInt(countryId)) || isNaN(parseFloat(rating)) || isNaN(parseInt(views)) || isNaN(parseInt(duration))) {
@@ -70,18 +74,6 @@ export default async function handler(req, res) {
         if (existingDrama) {
           return res.status(409).json({ error: 'A drama with the same title and year already exists' });
         }
-
-        const parsedAwards = awards.map((award) => {
-          const { category, name, year: awardYear } = award;
-          if (!category || typeof category !== 'string' || isWhitespace(category) || !name || typeof name !== 'string' || isWhitespace(name) || isNaN(parseInt(awardYear))) {
-            throw new Error("Invalid awards format. Each award must have a non-empty 'category', 'name', and a valid 'year'.");
-          }
-          return {
-            category: category.trim(),
-            name: name.trim(),
-            year: parseInt(awardYear),
-          };
-        });
 
         const newDrama = await prisma.drama.create({
           data: {
@@ -104,9 +96,6 @@ export default async function handler(req, res) {
             rating: parseFloat(rating),
             views: parseInt(views) || 0,
             duration: parseInt(duration),
-            awards: {
-              create: parsedAwards , // Assuming awards come as an array of objects { name, year }
-            },
           },
         });
 
@@ -139,6 +128,11 @@ export default async function handler(req, res) {
         if (!urlPhoto || isWhitespace(urlPhoto) || typeof urlPhoto !== 'string') {
           return res.status(400).json({ error: 'URL photo is required and must be a non-empty string' });
         }
+        
+        // Validate URL photo extension
+        if (!/\.(jpg|jpeg|png)$/i.test(urlPhoto)) {
+          return res.status(400).json({ error: 'Poster URL must end with .jpg, .jpeg, or .png' });
+        }
 
         if (!synopsis || isWhitespace(synopsis) || typeof synopsis !== 'string') {
           return res.status(400).json({ error: 'Synopsis is required and must be a non-empty string' });
@@ -147,7 +141,24 @@ export default async function handler(req, res) {
         if (isNaN(parseInt(year))) {
           return res.status(400).json({ error: 'Year must be a valid number' });
         }
+
+        const currentYear = new Date().getFullYear();
+        if (parseInt(year) > currentYear) {
+          return res.status(400).json({ error: `Year cannot be greater than the current year (${currentYear})` });
+        }
     
+        const existingDrama = await prisma.drama.findFirst({
+          where: {
+            title,
+            year: parseInt(year),
+            NOT: { id: parseInt(id) },  // Exclude the current movie ID
+          },
+        });
+
+        if (existingDrama) {
+          return res.status(409).json({ error: 'A drama with the same title and year already exists' });
+        }
+        
         const updateData = {
           title: title.trim(),
           urlPhoto: urlPhoto.trim(),

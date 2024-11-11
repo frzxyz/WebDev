@@ -17,6 +17,7 @@ function TableActors() {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
   const [currentPage, setCurrentPage] = useState(1);  
   const [actorsPerPage] = useState(30);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Fungsi untuk melakukan sorting
   const sortBy = (key) => {
@@ -111,12 +112,17 @@ function TableActors() {
     setEditingActorId(null); 
   };
 
+  // Filter actors based on the search query
+  const filteredActors = actors.filter(actors =>
+    actors.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   // Pagination
   const indexOfLastActor = currentPage * actorsPerPage;
   const indexOfFirstActor = indexOfLastActor - actorsPerPage;
-  const currentActors = actors.slice(indexOfFirstActor, indexOfLastActor);
+  const currentActors = filteredActors.slice(indexOfFirstActor, indexOfLastActor);
 
-  const totalPages = Math.ceil(actors.length / actorsPerPage);
+  const totalPages = Math.ceil(filteredActors.length / actorsPerPage);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -124,10 +130,19 @@ function TableActors() {
     <div className="table-countries">
       <h5>List of Actors</h5>
 
-      <div className="sort-buttons">
-        <button className="sort-button" onClick={() => sortBy("name")}>
+      <div className="d-flex justify-content-between align-items-center">
+        <div className="d-flex">
+          <button className="sort-button" onClick={() => sortBy("name")}>
           Sort By Name {sortConfig.key === "name" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-        </button>
+          </button>
+        </div>
+        <input
+          type="text"
+          placeholder="Search by Name"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="form-control search-form w-25"
+        />
       </div>
 
       <Table responsive striped>
