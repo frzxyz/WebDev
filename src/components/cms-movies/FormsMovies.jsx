@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button, Form, Row, Col } from "react-bootstrap";
+import { Modal, Button, Form, Row, Col, Alert } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../styles/Countries.css";
 import "../../styles/Awards.css";
@@ -24,8 +24,10 @@ function FormsMovies() {
   const [selectedActors, setSelectedActors] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [genreRequired, setGenreRequired] = useState(false);
+  const [actorRequired, setActorRequired] = useState(false);
   const [selectedAvailability, setSelectedAvailability] = useState([]);
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [errors, setErrors] = useState(null);
 
   const availabilities = [
     "Netflix", "Prime Video", "Vidio", "Amazon Prime", "Apple TV",
@@ -36,7 +38,8 @@ function FormsMovies() {
     const fetchGenres = async () => {
       const res = await fetch("/api/cms/genre");
       const data = await res.json();
-      setGenres(data);
+      const sortedGenres = data.sort((a, b) => a.name.localeCompare(b.name));
+      setGenres(sortedGenres);
     };
     const fetchCountries = async () => {
       const res = await fetch("/api/cms/countries");
@@ -80,6 +83,7 @@ function FormsMovies() {
           ...prevFormData,
           actors: [...prevFormData.actors, actor.id],
         }));
+        setActorRequired(false);
       } else {
         console.error('Actor is already selected');
       }
@@ -111,23 +115,21 @@ function FormsMovies() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    setErrors('');
+
     if (formData.genre.length === 0) {
       setGenreRequired(true); // Tampilkan error jika genre kosong
       return;
     }
 
-    // Prepare the awards if necessary
-  const parsedAwards = formData.award
-  ? formData.award.split(',').map((award) => {
-      const [category, name, year] = award.split(',').map((item) => item.trim());
-      return { category, name, year: parseInt(year) };
-    })
-  : [];
+    if (formData.actors.length === 0) {
+      setActorRequired(true); // Tampilkan error jika genre kosong
+      return;
+    }
 
   const movieData = {
     ...formData,
     genres: formData.genre, 
-    awards: parsedAwards,
     views: parseInt(formData.views) || 0, // Ensure views are an integer
     year: parseInt(formData.year),         // Ensure year is an integer
     rating: formData.rating ? parseFloat(formData.rating) : 0,   // Ensure rating is a float
@@ -156,19 +158,21 @@ function FormsMovies() {
           urlPhoto: "",
           countryId: "",
           actors: [],
-          awards: [],
           availability: [],
         });
+
+        setShowModal(false);
       } else {
         const errorResponse = await response.json();
-        alert(`Failed to add movie: ${errorResponse.error}`);
+        // Set errors from backend response
+        setErrors(errorResponse.error);
       }
     } catch (error) {
       console.error('Error adding movie:', error);
       alert('Failed to add movie');
     }
     
-    setShowModal(false); // Close modal on submit
+    // setShowModal(false); // Close modal on submit
   };
   
   const handleClose = () => setShowModal(false);
@@ -305,14 +309,15 @@ function FormsMovies() {
               </Col>
 
               <Col md={6}>
-                <Form.Group className="mb-3" controlId="formGroupAward">
-                  <Form.Label>Award</Form.Label>
+                <Form.Group className="mb-3" controlId="formGroupTrailerLink">
+                  <Form.Label>Trailer Link</Form.Label>
                   <Form.Control
                     type="text"
-                    name="award"
-                    value={formData.award}
-                    onChange={(e) => setFormData({ ...formData, award: e.target.value })}
-                    placeholder="Enter Category, Award, Year (ex. Best Animated Feature, Annie Awards, 2023)"
+                    name="trailerLink"
+                    value={formData.trailerLink}
+                    onChange={(e) => setFormData({ ...formData, trailerLink: e.target.value })}
+                    placeholder="Enter trailer link (from Youtube)"
+                    required
                   />
                 </Form.Group>
               </Col>
@@ -343,21 +348,7 @@ function FormsMovies() {
             </Row>
 
             <Row>
-              <Col md={6}>
-                <Form.Group className="mb-3" controlId="formGroupTrailerLink">
-                  <Form.Label>Trailer Link</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="trailerLink"
-                    value={formData.trailerLink}
-                    onChange={(e) => setFormData({ ...formData, trailerLink: e.target.value })}
-                    placeholder="Enter trailer link (from Youtube)"
-                    required
-                  />
-                </Form.Group>
-              </Col>
-
-              <Col md={6}>
+              <Col md={12}>
               <Form.Group className="mb-3" controlId="formGroupAvailability">
               <Form.Label>Availability on</Form.Label>
               <div className="dropdown">
@@ -433,9 +424,18 @@ function FormsMovies() {
                       </div>
                     ))}
                   </div>
+                  {actorRequired && (
+                    <p style={{ color: 'red' }}>Please select at least one actor.</p>
+                  )}
                 </Form.Group>
               </Col>
             </Row>
+
+            {errors && (
+            <Alert variant="danger" className="text-center">
+              {errors}
+            </Alert>
+          )}
 
             <Button variant="primary" type="submit">
               Submit

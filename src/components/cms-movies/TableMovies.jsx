@@ -15,6 +15,7 @@ function TableMovies() {
   const [newSynopsis, setNewSynopsis] = useState("");
   const [newUrlPhoto, setNewUrlPhoto] = useState("");
   const [editingMovieId, setEditingMovieId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
   
   // Function for sorting the table
   const sortBy = (key) => {
@@ -118,12 +119,17 @@ function TableMovies() {
     setNewUrlPhoto("");
   };
 
+  // Filter movies based on the search query
+  const filteredMovies = movies.filter(movie =>
+    movie.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   // Pagination
   const indexOfLastMovie = currentPage * moviesPerPage;
   const indexOfFirstMovie = indexOfLastMovie - moviesPerPage;
-  const currentMovies = movies.slice(indexOfFirstMovie, indexOfLastMovie);
+  const currentMovies = filteredMovies.slice(indexOfFirstMovie, indexOfLastMovie);
 
-  const totalPages = Math.ceil(movies.length / moviesPerPage);
+  const totalPages = Math.ceil(filteredMovies.length / moviesPerPage);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -131,13 +137,22 @@ function TableMovies() {
     <div className="table-countries">
       <h5>List of Dramas</h5>
 
-      <div className="sort-buttons">
-        <button className="sort-button" onClick={() => sortBy("title")}>
-          Sort By Title {sortConfig.key === "title" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-        </button>
-        <button className="sort-button" onClick={() => sortBy("year")}>
-          Sort By Year {sortConfig.key === "year" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-        </button>
+      <div className="d-flex justify-content-between align-items-center">
+        <div className="d-flex">
+          <button className="sort-button me-2" onClick={() => sortBy("title")}>
+            Sort By Title {sortConfig.key === "title" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+          </button>
+          <button className="sort-button" onClick={() => sortBy("year")}>
+            Sort By Year {sortConfig.key === "year" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+          </button>
+        </div>
+        <input
+          type="text"
+          placeholder="Search by Title"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="form-control search-form w-25"
+        />
       </div>
 
       <Table responsive striped bordered>

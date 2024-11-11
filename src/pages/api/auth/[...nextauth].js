@@ -60,7 +60,7 @@ export default NextAuth({
     strategy: "jwt",
   },
   pages: {
-    signIn: "/login", // Arahkan ke halaman login custom
+    signIn: "/cms-actors", // Arahkan ke halaman login custom
     error: "/error-suspended",
   },
   callbacks: {

@@ -31,6 +31,10 @@ export default async function handler(req, res) {
       return res.status(409).json({ message: 'Username already used' });
     }
 
+    if (!email.endsWith('@gmail.com')) {
+      return res.status(400).json({ message: 'Only @gmail.com email addresses are allowed' });
+    }
+
     // Hash password sebelum disimpan
     const hashedPassword = await bcrypt.hash(password, 10);
 

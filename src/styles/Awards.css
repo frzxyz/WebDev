@@ -40,3 +40,16 @@
   .sort-button:hover {
     background-color: #495057;
   }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .search-form{
+    max-width: 300px;
+    border-width: 2px;
+    border-color: #0d6efd;
+  }

@@ -1,120 +1,164 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Table from "react-bootstrap/Table";
 import { TiEdit, TiTrash } from "react-icons/ti";
+import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
-
-import "../../styles/Countries.css";
-import "../../styles/Awards.css";
-import { useEdit } from "../cms-global/cms-edit";
+import Pagination from 'react-bootstrap/Pagination';
 
 function TableAwards() {
-  const { cancelEdit, edit, saveEdit } = useEdit();
+  const [awards, setAwards] = useState([]);
+  const [editingAwardId, setEditingAwardId] = useState(null);
+  const [newName, setNewName] = useState("");
+  const [newYear, setNewYear] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [awardsPerPage] = useState(10);
 
-  const [users, setUsers] = useState([
-    { id: 1, countries: "Japan", years: "2024", awards: "Japanese Drama Awards Spring 2024" },
-    { id: 2, countries: "Korea", years: "2020", awards: "Korean Drama Awards Baeksang 2020" },
-    { id: 3, countries: "China", years: "2022", awards: "Chinese Drama Awards Summer 2022" },
-  ]); 
+  const fetchAwards = async () => {
+    try {
+      const response = await axios.get('/api/cms/awards');
+      setAwards(response.data);
+    } catch (error) {
+      console.error("Failed to fetch awards:", error);
+    }
+  };
 
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+  useEffect(() => {
+    fetchAwards();
+  }, []);
 
-  // Fungsi untuk melakukan sorting
-  const sortBy = (key) => {
-    let direction = "asc";
-    if (sortConfig.key === key && sortConfig.direction === "asc") {
-      direction = "desc";
+  const deleteAward = async (id) => {
+    const isConfirmed = window.confirm("Are you sure you want to delete this award?");
+    if (isConfirmed) {
+      try {
+        await axios.delete(`/api/cms/awards?id=${id}`);
+        setAwards(awards.filter((award) => award.id !== id));
+        alert("Award deleted successfully!");
+      } catch (error) {
+        console.error("Failed to delete award:", error);
+        alert("Failed to delete award.");
+      }
+    }
+  };
+
+  const handleEditClick = (award) => {
+    setEditingAwardId(award.id);
+    setNewName(award.name);
+    setNewYear(award.year);
+  };
+
+  const saveEdit = async (id) => {
+    if (!newName || !newYear) {
+      alert("Name and Year fields are required.");
+      return;
     }
 
-    const sortedUsers = [...users].sort((a, b) => {
-      if (a[key] < b[key]) {
-        return direction === "asc" ? -1 : 1;
-      }
-      if (a[key] > b[key]) {
-        return direction === "asc" ? 1 : -1;
-      }
-      return 0;
-    });
+    try {
+      const response = await axios.put('/api/cms/awards', {
+        id,
+        name: newName,
+        year: parseInt(newYear),
+      });
 
-    setSortConfig({ key, direction });
-    setUsers(sortedUsers);
+      if (response.status >= 200 && response.status < 300) {
+        setAwards(
+          awards.map((award) =>
+            award.id === id ? { ...award, name: newName, year: parseInt(newYear) } : award
+          )
+        );
+        alert("Award updated successfully!");
+      } else {
+        alert("Failed to update award.");
+      }
+    } catch (error) {
+      console.error("Error updating award:", error);
+      alert("Failed to update award.");
+    }
+
+    setEditingAwardId(null);
   };
-  
+
+  const indexOfLastAward = currentPage * awardsPerPage;
+  const indexOfFirstAward = indexOfLastAward - awardsPerPage;
+  const currentAwards = awards.slice(indexOfFirstAward, indexOfLastAward);
+  const totalPages = Math.ceil(awards.length / awardsPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
-    <div className="table-countries">
-      <h5 >List Awards</h5>
-
-      <div className="sort-buttons">
-        <button className="sort-button" onClick={() => sortBy("countries")}>
-          Sort By Countries {sortConfig.key === "countries" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-        </button>
-        <button className="sort-button" onClick={() => sortBy("years")}>
-          Sort By Years {sortConfig.key === "years" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-        </button>
-      </div>
-
-    <Table responsive striped>
-          <thead>
-            <tr>
-              <th>Id</th>
-              <th onClick={() => sortBy("countries")} style={{ cursor: "pointer" }}>
-              Countries {sortConfig.key === "countries" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-            </th>
-            <th onClick={() => sortBy("years")} style={{ cursor: "pointer" }}>
-              Years {sortConfig.key === "years" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-            </th>
-              <th>Awards</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-          {users.map((user) => (
-            <tr key={user.id} id={`row${user.id}`}>
-              <td>{user.id}</td>
-              <td>{user.countries}</td>
-              <td>{user.years}</td>
-              <td>{user.awards}</td>
+    <div className="container mt-4">
+      <div className="table-countries">
+      <h5 className="mb-4">List of Awards</h5>
+      <Table responsive striped>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Year</th>
+            <th>Drama</th>
+            <th>Country</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {currentAwards.map((award) => (
+            <tr key={award.id}>
+              <td>{award.id}</td>
               <td>
-                <button
-                  className="btn btn-success mx-2"
-                  id={`editBtn${user.id}`}
-                  onClick={() => edit(user.id)}
-                >
-                  <span className="d-flex align-items-center">
-                    <TiEdit className="me-2" />
-                    Edit
-                  </span>
-                </button>
-                <button
-                  className="btn btn-success mx-2 d-none"
-                  id={`cancelBtn${user.id}`}
-                  onClick={() => cancelEdit(user.id)}
-                >
-                  <span className="d-flex align-items-center">
-                    <TiEdit className="me-2" />
-                    Cancel
-                  </span>
-                </button>
-                <button className="btn btn-success mx-2 d-none" id={`saveBtn${user.id}`}
-                  onClick={() => saveEdit(user.id)}>
-                  <span className="d-flex align-items-center">
-                    <TiEdit className="me-2" />
-                    Save
-                  </span>
-                </button>
-                <button className="btn btn-danger">
-                  <span className="d-flex align-items-center">
-                    <TiTrash className="me-2" />
-                    Delete
-                  </span>
-                </button>
+                {editingAwardId === award.id ? (
+                  <input
+                    type="text"
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                  />
+                ) : (
+                  award.name
+                )}
+              </td>
+              <td>
+                {editingAwardId === award.id ? (
+                  <input
+                    type="number"
+                    value={newYear}
+                    onChange={(e) => setNewYear(e.target.value)}
+                  />
+                ) : (
+                  award.year
+                )}
+              </td>
+              <td>{award.drama.title}</td>
+              <td>{award.country.name}</td>
+              <td>
+                {editingAwardId === award.id ? (
+                  <>
+                    <button onClick={() => saveEdit(award.id)}>Save</button>
+                    <button onClick={() => setEditingAwardId(null)}>Cancel</button>
+                  </>
+                ) : (
+                  <>
+                    <button onClick={() => handleEditClick(award)}className="btn btn-success mx-2">
+                      <TiEdit /> Edit
+                    </button>
+                    <button onClick={() => deleteAward(award.id)}className="btn btn-danger btn-sm">
+                      <TiTrash /> Delete
+                    </button>
+                  </>
+                )}
               </td>
             </tr>
           ))}
         </tbody>
-        </Table>
-        </div>
+      </Table>
+
+      <Pagination>
+        {[...Array(totalPages).keys()].map(number => (
+          <Pagination.Item key={number + 1} active={number + 1 === currentPage} onClick={() => paginate(number + 1)}>
+            {number + 1}
+          </Pagination.Item>
+        ))}
+      </Pagination>
+    </div>
+    </div>
   );
 }
-
 
 export default TableAwards;

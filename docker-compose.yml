@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  database:
+    image: postgres:latest
+    container_name: dataOfMovies
+    environment:
+      POSTGRES_PASSWORD: Kelompok1Database  # Password untuk user default "postgres"
+      POSTGRES_USER: postgres               # Username default
+      POSTGRES_DB: moviesdb                 # Nama database
+    ports:
+      - "5431:5432"                         # Map port 5431 host ke port 5432 di container
+    volumes:
+      - movies_data:/var/lib/postgresql/data  # Volume untuk persisten data
+
+volumes:
+  movies_data:  # Volume untuk menyimpan data PostgreSQL secara persisten
