@@ -1,113 +1,87 @@
-import React, { useState } from "react";
-import Table from "react-bootstrap/Table";
-import { TiEdit, TiTrash, TiMail } from "react-icons/ti";
-import "bootstrap/dist/css/bootstrap.min.css";
-
-import "../../styles/Countries.css";
-import "../../styles/Awards.css";
-import { useEdit } from "../cms-global/cms-edit";
+// TableComments.jsx - Component to display and manage reviews/comments (view and delete only)
+import React, { useState, useEffect } from 'react';
+import Table from 'react-bootstrap/Table';
+import { TiTrash } from 'react-icons/ti';
+import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Pagination from 'react-bootstrap/Pagination';
 
 function TableComments() {
-  const { cancelEdit, edit, saveEdit } = useEdit(); // Destructure from your custom hook
+  const [reviews, setReviews] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [reviewsPerPage] = useState(10);
 
-  const [comments, setComments] = useState([
-    { commentId: 1, username: "welsyaalmaira13", email: "welsyaalmaira@gmail.com", comment: "This is a great article!", date: "2024-09-01" },
-    { commentId: 2, username: "rendi123", email: "rendi@polban.ac.id", comment: "I have some questions about the content.", date: "2024-09-02" },
-    { commentId: 3, username: "farrelrahandika", email: "farrel456@gmail.com", comment: "Thank you for the insights.", date: "2024-09-03" },
-  ]);
-
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
-
-  // Sorting function
-  const sortBy = (key) => {
-    let direction = "asc";
-    if (sortConfig.key === key && sortConfig.direction === "asc") {
-      direction = "desc";
+  const fetchReviews = async () => {
+    try {
+      const response = await axios.get('/api/cms/comments');
+      setReviews(response.data);
+    } catch (error) {
+      console.error('Failed to fetch reviews:', error);
     }
-
-    const sortedComments = [...comments].sort((a, b) => {
-      if (a[key] < b[key]) {
-        return direction === "asc" ? -1 : 1;
-      }
-      if (a[key] > b[key]) {
-        return direction === "asc" ? 1 : -1;
-      }
-      return 0;
-    });
-
-    setSortConfig({ key, direction });
-    setComments(sortedComments);
   };
 
+  useEffect(() => {
+    fetchReviews();
+  }, []);
+
+  const deleteReview = async (id) => {
+    const isConfirmed = window.confirm('Are you sure you want to delete this review?');
+    if (isConfirmed) {
+      try {
+        await axios.delete(`/api/cms/comments?id=${id}`);
+        setReviews(reviews.filter((review) => review.id !== id));
+        alert('Review deleted successfully!');
+      } catch (error) {
+        console.error('Failed to delete review:', error);
+        alert('Failed to delete review.');
+      }
+    }
+  };
+
+  const indexOfLastReview = currentPage * reviewsPerPage;
+  const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
+  const currentReviews = reviews.slice(indexOfFirstReview, indexOfLastReview);
+  const totalPages = Math.ceil(reviews.length / reviewsPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
-    <div className="table-countries">
-      <h5>List Comments</h5>
-
-      <div className="sort-buttons">
-        <button className="sort-button" onClick={() => sortBy("username")}>
-          Sort By Username {sortConfig.key === "username" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-        </button>
-        <button className="sort-button" onClick={() => sortBy("date")}>
-          Sort By Date {sortConfig.key === "date" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-        </button>
-      </div>
-
-      <Table responsive striped>
-        <thead>
+    <div className="container mt-4">
+      <h5 className="mb-4">List of Reviews</h5>
+      <Table responsive striped bordered hover>
+        <thead className="thead-dark">
           <tr>
-            <th>Id</th>
-            <th onClick={() => sortBy("username")} style={{ cursor: "pointer" }}>
-              Username {sortConfig.key === "username" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-            </th>
-            <th>Email</th>
+            <th>User Name</th>
+            <th>Rating</th>
             <th>Comment</th>
-            <th onClick={() => sortBy("date")} style={{ cursor: "pointer" }}>
-              Date {sortConfig.key === "date" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-            </th>
-            <th>Action</th>
+            <th>title</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {comments.map((comment) => (
-            <tr key={comment.commentId}>
-              <td>{comment.commentId}</td>
-              <td>{comment.username}</td>
-              <td>{comment.email}</td>
-              <td>{comment.comment}</td>
-              <td>{comment.date}</td>
+          {currentReviews.map((review) => (
+            <tr key={review.id}>
+              <td>{review.userName}</td>
+              <td>{review.rating}</td>
+              <td>{review.comment}</td>
+              <td>{review.drama.title}</td>
               <td>
-                <button className="btn btn-warning">
-                  <span className="d-flex align-items-center">
-                    <TiMail className="me-2" />
-                    Send Email
-                  </span>
-                </button>
-                <button
-                  className="btn btn-success mx-2"
-                  onClick={() => edit(comment.commentId)}
-                >
-                  <span className="d-flex align-items-center">
-                    <TiEdit className="me-2" />
-                    Edit
-                  </span>
-                </button>
-                <button
-                  className="btn btn-danger"
-                  onClick={() => {
-                    const filteredComments = comments.filter(c => c.commentId !== comment.commentId);
-                    setComments(filteredComments);
-                  }}
-                >
-                  <span className="d-flex align-items-center">
-                    <TiTrash className="me-2" />
-                    Delete
-                  </span>
+                <button onClick={() => deleteReview(review.id)} className="btn btn-danger btn-sm">
+                  <TiTrash /> Delete
                 </button>
               </td>
             </tr>
           ))}
         </tbody>
       </Table>
+
+      <Pagination className="justify-content-center mt-4">
+        {[...Array(totalPages).keys()].map((number) => (
+          <Pagination.Item key={number + 1} active={number + 1 === currentPage} onClick={() => paginate(number + 1)}>
+            {number + 1}
+          </Pagination.Item>
+        ))}
+      </Pagination>
     </div>
   );
 }

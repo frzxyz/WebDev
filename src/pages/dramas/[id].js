@@ -144,5 +144,22 @@ export default function DramaDetails({ drama, initialReviews }) {
 }
 
 function convertToEmbedUrl(url) {
-  return url.replace("watch?v=", "embed/");
+  let videoId;
+
+  // Check if the URL is in the short format (youtu.be)
+  if (url.includes("youtu.be")) {
+    videoId = url.split("youtu.be/")[1].split("?")[0];
+  }
+  // Check if the URL is in the standard format (youtube.com)
+  else if (url.includes("watch?v=")) {
+    videoId = url.split("watch?v=")[1].split("&")[0];
+  }
+
+  // Build the new embedded URL with parameters
+  return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&controls=1`;
 }
+
+// Example usage
+const originalUrl = "https://youtu.be/49_44FFKZ1M?feature=shared";
+const embedUrl = convertToEmbedUrl(originalUrl);
+console.log(embedUrl);
