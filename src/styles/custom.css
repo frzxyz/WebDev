@@ -266,6 +266,15 @@ body.dark .container-fluid {
   padding-left: 20px;
 }
 
+.form-select2 {
+  background-color: #2c2f33; /* Match the input field's color */
+  color: #fff;
+  border: none;
+  padding: 0.5rem; /* Adjust padding to align with input */
+  border-radius: 0; /* To match the rounded edges of the input, adjust as needed */
+  padding-left: 20px;
+}
+
 .input-group .form-select,
 .input-group .custom-input {
   border-radius: 0.5rem; /* Ensures the same rounded corners on both elements */

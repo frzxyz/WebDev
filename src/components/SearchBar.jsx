@@ -18,7 +18,7 @@ export default function SearchBar() {
     <form onSubmit={handleSearch} className="d-flex justify-content-end align-items-center pt-3 pb-2 mb-3">
       <div className="input-group custom-search-bar">
         <select
-          className="form-select" // Apply Bootstrap form-select styling for the dropdown
+          className="form-select2" // Apply Bootstrap form-select styling for the dropdown
           style={{ maxWidth: '120px' }} // Adjust width and spacing
           value={searchType}
           onChange={(e) => setSearchType(e.target.value)}
