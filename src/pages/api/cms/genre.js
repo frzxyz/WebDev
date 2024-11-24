@@ -86,22 +86,42 @@ export default async function handler(req, res) {
       }
       break;
 
-    // Delete - Remove a genre by id
-    case 'DELETE':
-      try {
-        const { id } = req.body;
-        if (!id) {
-          return res.status(400).json({ error: "Genre ID is required" });
-        }
-
-        await prisma.genre.delete({
-          where: { id: parseInt(id) },
-        });
-        res.status(200).json({ message: "Genre deleted successfully" });
-      } catch (error) {
-        res.status(500).json({ error: "Failed to delete genre" });
-      }
-      break;
+        // Delete - Remove a genre by id
+        case 'DELETE':
+          try {
+            const { id } = req.body;
+            if (!id) {
+              return res.status(400).json({ error: "Genre ID is required" });
+            }
+    
+            // Check if the genre is connected to any movie
+            const connectedMovies = await prisma.drama.findMany({
+              where: {
+                genres: {
+                  some: {
+                    id: parseInt(id),
+                  },
+                },
+              },
+            });
+    
+            if (connectedMovies.length > 0) {
+              return res.status(400).json({
+                error: `Cannot delete genre because it is associated with ${connectedMovies.length} movie(s). Remove the association before deleting.`,
+              });
+            }
+    
+            // Proceed to delete the genre
+            await prisma.genre.delete({
+              where: { id: parseInt(id) },
+            });
+    
+            res.status(200).json({ message: "Genre deleted successfully" });
+          } catch (error) {
+            console.error("Error deleting genre:", error);
+            res.status(500).json({ error: "Failed to delete genre" });
+          }
+          break;    
 
     default:
       res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);

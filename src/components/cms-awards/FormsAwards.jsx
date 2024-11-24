@@ -3,6 +3,7 @@ import Form from "react-bootstrap/Form";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../styles/Countries.css";
 import "../../styles/Awards.css";
+import StatusPopup from "../StatusPopup";
 
 function FormsAwards() {
   const [formData, setFormData] = useState({
@@ -13,6 +14,22 @@ function FormsAwards() {
   });
   const [dramas, setDramas] = useState([]);
   const [countries, setCountries] = useState([]);
+
+  const [statusPopup, setStatusPopup] = useState({
+    show: false,
+    type: "",
+    message: "",
+    onConfirm: null,
+    isConfirm: false,
+  });  
+  
+  const showPopup = (type, message, onConfirm = null, isConfirm = false) => {
+    setStatusPopup({ show: true, type, message, onConfirm, isConfirm });
+  };  
+  
+  const hidePopup = () => {
+    setStatusPopup({ show: false, type: "", message: "", onConfirm: null, isConfirm: false });
+  };
 
   // Fetch dramas and countries when the component mounts
   useEffect(() => {
@@ -45,7 +62,7 @@ function FormsAwards() {
     const { name, year, dramaId, countryId } = formData;
   
     if (!name.trim() || !year.trim() || !dramaId || !countryId) {
-      alert("All fields are required and must be valid.");
+      showPopup("error", "All fields are required and must be valid.");
       return;
     }
   
@@ -62,7 +79,7 @@ function FormsAwards() {
       });
   
       if (res.ok) {
-        alert("Award successfully added");
+        showPopup("success", "Award successfully added");
         setFormData({
           name: "",
           year: "",
@@ -70,12 +87,12 @@ function FormsAwards() {
           countryId: "",
         });
       } else {
-        const errorResponse = await res.json();
-        alert(`Failed to add award: ${errorResponse.error}`);
+        const errorResponse = await response.json();
+      showPopup("error", errorResponse.error || "Failed to add award.");
       }
     } catch (error) {
-      console.error("Failed to add award:", error);
-      alert("Failed to add award.");
+      const errorResponse = await response.json();
+      showPopup("error", errorResponse.error || "An error occurred while adding the drama. Please try again.");
     }
   };
   
@@ -85,6 +102,17 @@ function FormsAwards() {
       <h5>Add Award</h5>
       <div className="card">
         <div className="card-body">
+
+        {statusPopup.show && (
+          <StatusPopup
+            type={statusPopup.type}
+            message={statusPopup.message}
+            onClose={hidePopup}
+            onConfirm={statusPopup.onConfirm}
+            isConfirm={statusPopup.isConfirm}
+          />
+        )}
+        
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="formGroupAwardName">
               <Form.Label>Award Name</Form.Label>

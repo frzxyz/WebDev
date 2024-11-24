@@ -7,6 +7,7 @@ import "../../styles/Countries.css";
 import "../../styles/Awards.css";
 import { useEdit } from "../cms-global/cms-edit"; 
 import Pagination from 'react-bootstrap/Pagination'; 
+import StatusPopup from "../StatusPopup";
 
 function TableActors() {
   const { cancelEdit, edit } = useEdit();
@@ -19,6 +20,22 @@ function TableActors() {
   const [actorsPerPage] = useState(30);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const [statusPopup, setStatusPopup] = useState({
+    show: false,
+    type: "",
+    message: "",
+    onConfirm: null,
+    isConfirm: false,
+  });  
+  
+  const showPopup = (type, message, onConfirm = null, isConfirm = false) => {
+    setStatusPopup({ show: true, type, message, onConfirm, isConfirm });
+  };  
+  
+  const hidePopup = () => {
+    setStatusPopup({ show: false, type: "", message: "", onConfirm: null, isConfirm: false });
+  };
+  
   // Fungsi untuk melakukan sorting
   const sortBy = (key) => {
     let direction = "asc";
@@ -53,25 +70,30 @@ function TableActors() {
 
   // Handle delete actor (DELETE)
   const deleteActor = async (id) => {
-    const isConfirmed = window.confirm("Are you sure you want to delete this actor?");
-    if (isConfirmed) {
+    const onConfirm = async () => {
       try {
-        await axios.delete(`/api/cms/actors?id=${id}`); 
-        setActors(actors.filter((actor) => actor.id !== id)); 
-        alert("Actor deleted successfully!");
+        const response = await axios.delete('/api/cms/actors', { params: { id } });
+  
+        if (response.status === 200) {
+          setActors(actors.filter((actor) => actor.id !== id)); // Update state
+          showPopup("success", response.data.message || "Actor deleted successfully!");
+        }
       } catch (error) {
-        console.error("Failed to delete actor:", error);
-        alert("Failed to delete actor.");
+        const errorMessage = error.response?.data?.error || "Failed to delete actor.";
+        showPopup("error", errorMessage);
       }
-    }
-  };
+    };
+  
+    showPopup("warning", "Are you sure you want to delete this actor?", onConfirm, true);
+  };  
 
   // Handle editing the actor name
-  const handleEditClick = (actorId, actorName, urlPhoto) => {
-    setEditingActorId(actorId); 
-    setNewName(actorName); 
-    setNewUrlPhoto(urlPhoto); 
-  };
+  const handleEditClick = (actor) => {
+    console.log("Editing actor:", actor);
+    setEditingActorId(actor.id); 
+    setNewName(actor.name); 
+    setNewUrlPhoto(actor.photo || ""); 
+};
 
   // Cancel editing
   const handleCancelEdit = () => {
@@ -82,35 +104,38 @@ function TableActors() {
 
   // Handle save edit (PUT)
   const saveEdit = async (id) => {
-    if (!newName.trim() || !newUrlPhoto.trim()) {
-      alert("Actor name and Url Photo cannot be empty.");
-      return;
+    const trimmedName = newName.trim();
+    const trimmedUrlPhoto = newUrlPhoto.trim();
+
+    if (!trimmedName || !trimmedUrlPhoto) {
+      showPopup("error", "Actor name and Url Photo cannot be empty.");
+        return;
     }
 
     try {
-      const response = await axios.put('/api/cms/actors', {
-        id, // Send actor ID
-        name: newName, // Send updated actor name
-        photo: newUrlPhoto,
-      });
+        const response = await axios.put('/api/cms/actors', {
+            id, 
+            name: trimmedName,
+            photo: trimmedUrlPhoto,
+        });
 
-      if (response.status >= 200 && response.status < 300) {
-        setActors(
-          actors.map((actor) =>
-            actor.id === id ? { ...actor, name: newName, photo: newUrlPhoto } : actor
-          )
-        );
-        alert("Actor updated successfully!");
-      } else {
-        alert("Failed to update actor.");
-      }
+        if (response.status >= 200 && response.status < 300) {
+            setActors(
+                actors.map((actor) =>
+                    actor.id === id ? { ...actor, name: trimmedName, photo: trimmedUrlPhoto } : actor
+                )
+            );
+            showPopup("success", "Actor updated successfully!");
+        } else {
+          showPopup("error", "Failed to update actor.");
+        }
     } catch (error) {
-      console.error("Error updating actor:", error);
-      alert("Failed to update actor.");
+      const errorMessage = error.response?.data?.error || "Failed to update actor.";
+      showPopup("error", errorMessage);
     }
 
     setEditingActorId(null); 
-  };
+};
 
   // Filter actors based on the search query
   const filteredActors = actors.filter(actors =>
@@ -129,6 +154,16 @@ function TableActors() {
   return (
     <div className="table-countries">
       <h5>List of Actors</h5>
+
+      {statusPopup.show && (
+        <StatusPopup
+          type={statusPopup.type}
+          message={statusPopup.message}
+          onClose={hidePopup}
+          onConfirm={statusPopup.onConfirm}
+          isConfirm={statusPopup.isConfirm}
+        />
+      )}
 
       <div className="d-flex justify-content-between align-items-center">
         <div className="d-flex">
@@ -167,7 +202,6 @@ function TableActors() {
                     type="text"
                     value={newUrlPhoto}
                     onChange={(e) => setNewUrlPhoto(e.target.value)}
-                    placeholder="Enter new URL photo"
                   />
                 ) : (
                   <img src={actor.photo || "default_poster_url.jpg"} alt={actor.name} width="100" />
@@ -204,7 +238,7 @@ function TableActors() {
                   <>
                     <button
                       className="btn btn-success mx-2"
-                      onClick={() => handleEditClick(actor.id, actor.name)}
+                      onClick={() => handleEditClick(actor)}
                     >
                       <TiEdit className="me-2" />
                       Edit

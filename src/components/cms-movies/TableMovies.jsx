@@ -4,6 +4,7 @@ import { TiEdit, TiTrash } from "react-icons/ti";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from 'axios';
 import Pagination from 'react-bootstrap/Pagination'; 
+import StatusPopup from "../StatusPopup";
 
 function TableMovies() {
   const [movies, setMovies] = useState([]);
@@ -17,6 +18,22 @@ function TableMovies() {
   const [editingMovieId, setEditingMovieId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   
+  const [statusPopup, setStatusPopup] = useState({
+    show: false,
+    type: "",
+    message: "",
+    onConfirm: null,
+    isConfirm: false,
+  });  
+
+  const showPopup = (type, message, onConfirm = null, isConfirm = false) => {
+    setStatusPopup({ show: true, type, message, onConfirm, isConfirm });
+  };  
+
+  const hidePopup = () => {
+    setStatusPopup({ show: false, type: "", message: "", onConfirm: null, isConfirm: false });
+  };  
+
   // Function for sorting the table
   const sortBy = (key) => {
     let direction = "asc";
@@ -55,23 +72,28 @@ function TableMovies() {
 
   // Delete movie
   const deleteMovie = async (id) => {
-    const isConfirmed = window.confirm("Are you sure you want to delete this movie?");
-    
-    if (isConfirmed) {
+    const onConfirm = async () => {
       try {
-        await axios.delete(`/api/cms/movies?id=${id}`);
-        setMovies(movies.filter(movie => movie.id !== id)); // Remove movie from state
-        alert("Movie deleted successfully!");
+        const response = await axios.delete(`/api/cms/movies?id=${id}`);
+        if (response.status === 200) {
+          setMovies(movies.filter((movie) => movie.id !== id)); // Remove from state
+          showPopup("success", response.data.message || "Movie deleted successfully!");
+        } else {
+          throw new Error("Unexpected response status");
+        }
       } catch (error) {
-        console.error("Failed to delete movie:", error);
-        alert("Failed to delete movie.");
+        const errorMessage = error.response?.data?.error || "Server error occurred. Please try again.";
+        showPopup("error", errorMessage);
       }
-    }
-  };
+    };
+  
+    // Panggil showPopup untuk konfirmasi
+    showPopup("warning", "Are you sure you want to delete this movie?", onConfirm, true);
+  };  
 
   const saveEdit = async (id) => {
     if (!id) {
-      alert("Missing movie ID for update.");
+      showPopup("error", "Missing movie ID for update."); 
       return;
     }
 
@@ -92,14 +114,14 @@ function TableMovies() {
               : movie
           )
         );
-        alert("Movie updated successfully!");
+        showPopup("success", response.data.message || "Movie updated successfully!");
         setEditingMovieId(null); // Exit edit mode
       } else {
-        alert("Failed to update movie.");
+        showPopup("error", response.data.message || "Failed to update movie.");
       }
     } catch (error) {
-      console.error("Error updating movie:", error);
-      alert("Failed to update movie");
+      const errorMessage = error.response?.data?.error|| "Failed to update movie. Please try again.";
+      showPopup("error", errorMessage);
     }
   };
 
@@ -135,7 +157,17 @@ function TableMovies() {
 
   return (
     <div className="table-countries">
-      <h5>List of Dramas</h5>
+      <h5>List of Movies</h5>
+
+      {statusPopup.show && (
+      <StatusPopup
+        type={statusPopup.type}
+        message={statusPopup.message}
+        onClose={hidePopup}
+        onConfirm={statusPopup.onConfirm}
+        isConfirm={statusPopup.isConfirm}
+      />
+    )}
 
       <div className="d-flex justify-content-between align-items-center">
         <div className="d-flex">
@@ -206,7 +238,7 @@ function TableMovies() {
                 <td>
                   {editingMovieId === movie.id ? (
                   <input
-                    type="text"
+                    type="number"
                     value={newYear}
                     onChange={(e) => setNewYear(e.target.value)}
                   />

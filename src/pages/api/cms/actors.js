@@ -75,74 +75,87 @@ export default async function handler(req, res) {
       break;
     
 
-    case 'PUT': // Update - Ubah data actor
+      case 'PUT': // Update - Ubah data actor
       try {
         const { id, name, photo } = req.body;
-
+    
         if (!id) {
           return res.status(400).json({ error: 'ID is required' });
         }
+    
+        const dataToUpdate = {};
+    
+        // Validasi nama
         if (name !== undefined) {
           if (name.trim() === '' || !isValidName(name)) {
-          return res.status(400).json({ error: 'Invalid name. It must contain alphabetic characters and cannot be only numbers or special characters.' });
-        }
-        const capitalizedName = capitalizeName(name.trim());
-      }
-        if (photo !== undefined && photo.trim() === '') {
-          return res.status(400).json({ error: 'Photo cannot be empty' });
-        }
-
-        if (name && countryId) {
-          const existingActor = await prisma.actor.findFirst({
-            where: {
-              name: capitalizedName,
-              countryId: parseInt(countryId),
-              NOT: { id: parseInt(id) }, // Exclude the current actor from the duplicate check
-            },
-          });
-
-          if (existingActor) {
-            return res.status(409).json({ error: 'An actor with the same name and country already exists' });
+            return res.status(400).json({
+              error: 'Invalid name. It must contain alphabetic characters and cannot be only numbers or special characters.',
+            });
           }
+          dataToUpdate.name = capitalizeName(name.trim());
         }
-
-        const dataToUpdate = {};
-        if (name !== undefined) dataToUpdate.name = capitalizedName;
-        if (photo !== undefined) dataToUpdate.photo = photo.trim();
-
+    
+        // Validasi foto
+        if (photo !== undefined) {
+          if (photo.trim() === '') {
+            return res.status(400).json({ error: 'Photo cannot be empty' });
+          }
+          dataToUpdate.photo = photo.trim();
+        }
+    
+        // Update actor
         const updatedActor = await prisma.actor.update({
           where: { id: parseInt(id) },
-          data: { name, photo },
+          data: dataToUpdate,
         });
-
+    
         res.status(200).json(updatedActor);
       } catch (error) {
+        console.error("Error updating actor:", error); // Log error untuk debugging
         if (error.code === 'P2025') {
-          // Prisma error code for 'Record not found'
           res.status(404).json({ error: 'Actor not found' });
         } else {
           res.status(500).json({ error: 'Failed to update Actor' });
         }
       }
-      break;
+      break;    
 
-    case 'DELETE': // Delete - Hapus actor
+      case 'DELETE': // Delete - Hapus actor
       try {
         const { id } = req.query; // Gunakan query parameter untuk DELETE
         if (!id) {
-          return res.status(400).json({ error: 'Country ID is required' });
+          return res.status(400).json({ error: 'Actor ID is required' });
         }
 
+        // Check if the actor is connected to any drama
+        const connectedDramas = await prisma.drama.findMany({
+          where: {
+            actors: {
+              some: {
+                id: parseInt(id),
+              },
+            },
+          },
+        });
+
+        if (connectedDramas.length > 0) {
+          return res.status(400).json({
+            error: `Cannot delete actor because it is associated with ${connectedDramas.length} drama(s). Remove the association before deleting.`,
+          });
+        }
+
+        // Proceed to delete the actor
         await prisma.actor.delete({
           where: { id: parseInt(id) },
         });
 
-        res.status(200).json({ message: 'Country deleted successfully' });
+        res.status(200).json({ message: 'Actor deleted successfully' });
       } catch (error) {
         if (error.code === 'P2025') {
-          res.status(404).json({ error: 'Country not found' });
+          res.status(404).json({ error: 'Actor not found' });
         } else {
-          res.status(500).json({ error: 'Failed to delete country' });
+          console.error("Error deleting actor:", error);
+          res.status(500).json({ error: 'Failed to delete actor' });
         }
       }
       break;

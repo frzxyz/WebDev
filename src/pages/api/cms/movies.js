@@ -72,7 +72,7 @@ export default async function handler(req, res) {
         });
 
         if (existingDrama) {
-          return res.status(409).json({ error: 'A drama with the same title and year already exists' });
+          return res.status(409).json({ error: 'A movie with the same title and year already exists' });
         }
 
         const newDrama = await prisma.drama.create({
@@ -99,10 +99,13 @@ export default async function handler(req, res) {
           },
         });
 
-        res.status(201).json(newDrama);
+        res.status(201).json({
+          message: 'Movie successfully added!',
+          data: newDrama, 
+        });
       } catch (error) {
         console.error(error);
-        res.status(500).json({ error: error.message || 'Failed to create drama' });
+        res.status(500).json({ error: error.message || 'Failed to create movie' });
       }
       break;
 
@@ -145,6 +148,10 @@ export default async function handler(req, res) {
         const currentYear = new Date().getFullYear();
         if (parseInt(year) > currentYear) {
           return res.status(400).json({ error: `Year cannot be greater than the current year (${currentYear})` });
+        }
+
+        if (parseInt(year) < 1900) {
+          return res.status(400).json({ error: 'Year cannot be less than 1900' });
         }
     
         const existingDrama = await prisma.drama.findFirst({
@@ -193,10 +200,10 @@ export default async function handler(req, res) {
           where: { id: parseInt(id) },
         });
 
-        res.status(200).json({ message: 'Drama deleted successfully' });
+        res.status(200).json({ message: 'Movie deleted successfully' });
       } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Failed to delete drama' });
+        res.status(500).json({ error: 'Failed to delete movie' });
       }
       break;
 

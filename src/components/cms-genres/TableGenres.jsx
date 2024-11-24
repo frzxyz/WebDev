@@ -6,6 +6,7 @@ import axios from "axios";
 import "../../styles/Countries.css";
 import "../../styles/Awards.css";
 import { useEdit } from "../cms-global/cms-edit";
+import StatusPopup from "../StatusPopup";
 
 function TableGenres() {
   const { cancelEdit} = useEdit(); // Destructure from custom hook
@@ -14,6 +15,22 @@ function TableGenres() {
   const [newName, setNewName] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+
+  const [statusPopup, setStatusPopup] = useState({
+    show: false,
+    type: "",
+    message: "",
+    onConfirm: null,
+    isConfirm: false,
+  });  
+  
+  const showPopup = (type, message, onConfirm = null, isConfirm = false) => {
+    setStatusPopup({ show: true, type, message, onConfirm, isConfirm });
+  };  
+  
+  const hidePopup = () => {
+    setStatusPopup({ show: false, type: "", message: "", onConfirm: null, isConfirm: false });
+  };
 
   // Sorting function
   const sortBy = (key) => {
@@ -52,20 +69,22 @@ function TableGenres() {
 
   // Fungsi untuk menghapus genre
   const deleteGenre = async (id) => {
-    const isConfirmed = window.confirm("Apakah Anda yakin ingin menghapus data ini?");
-
-    if (isConfirmed) {
+    const onConfirm = async () => {
       try {
-        await axios.delete('/api/cms/genre', { data: { id } });
-        setGenres(genres.filter((genre) => genre.id !== id)); // Update state setelah dihapus
-        alert("Genre deleted successfully!");
+        const response = await axios.delete('/api/cms/genre', { data: { id } });
+  
+        if (response.status === 200) {
+          setGenres(genres.filter((genre) => genre.id !== id)); // Update state
+          showPopup("success", response.data.message || "Genre deleted successfully!");
+        } else {
+          throw new Error("Unexpected response");
+        }
       } catch (error) {
-        console.error("Failed to delete genre", error);
-        alert("Failed to delete genre.");
+        showPopup("error", error.response?.data?.error || "Failed to delete genre.");
       }
-    } else {
-      console.log("Penghapusan dibatalkan oleh pengguna.");
-    }
+    };
+
+    showPopup("warning", "Are you sure you want to delete this genre?", onConfirm, true);
   };
 
   // Handle edit button click
@@ -85,7 +104,7 @@ function TableGenres() {
   // Save edited genre (PUT)
   const saveEdit = async (id) => {
     if (!newName.trim() || !newDescription.trim()) {
-      alert("Genre name and description cannot be empty.");
+      showPopup("error", "Genre name and description cannot be empty.");
       return;
     }
 
@@ -102,13 +121,13 @@ function TableGenres() {
             genre.id === id ? { ...genre, name: newName, description: newDescription } : genre
           )
         );
-        alert("Genre updated successfully!");
+        showPopup("success", "Genre updated successfully!");
       } else {
-        alert("Failed to update genre.");
+        showPopup("error", "Failed to update genre.");
       }
     } catch (error) {
-      console.error("Error updating genre:", error);
-      alert("Failed to update genre.");
+      const errorMessage = error.response?.data?.error || "Failed to update actor.";
+      showPopup("error", errorMessage);
     }
 
     handleCancelEdit();
@@ -117,6 +136,16 @@ function TableGenres() {
   return (
     <div className="table-countries">
       <h5>List of Genres</h5>
+
+      {statusPopup.show && (
+          <StatusPopup
+            type={statusPopup.type}
+            message={statusPopup.message}
+            onClose={hidePopup}
+            onConfirm={statusPopup.onConfirm}
+            isConfirm={statusPopup.isConfirm}
+          />
+        )}
 
       <div className="sort-buttons">
         <button className="sort-button" onClick={() => sortBy("name")}>
