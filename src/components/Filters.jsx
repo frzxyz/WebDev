@@ -225,17 +225,20 @@ export default function Filters({ genres, availabilities, awards, onFilterChange
 
       </div>
       <div className="col text-end">
-        <label>Sorted by:</label>
-        <select 
-          className="form-select d-inline-block w-auto shadow-sm ms-2 border border-secondary bg-dark text-white"
-          value={sortOption}
-          onChange={handleSortChange}
-        >
-          <option value="alphabetic">Alphabetic</option>
-          <option value="year">Year</option>
-          <option value="rating">Rating</option>
-        </select>
-      </div>
+      <label className="me-2">Sorted by:</label>
+      <select
+        className="btn dropdown-toggle btn-outline-secondary text-white mb-1 btn-filter"
+        value={sortOption}
+        onChange={handleSortChange}
+        style={{ width: '130px' }}
+      >
+        <option value="alphabetic">Alphabetic</option>
+        <option value="year">Year</option>
+        <option value="rating">Rating</option>
+      </select>
+    </div>
+
+
     </div>
   );
 }
