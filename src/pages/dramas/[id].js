@@ -24,7 +24,7 @@ export async function getServerSideProps(context) {
     include: {
       genres: true,
       actors: true,
-      reviews: true, // Sertakan review
+      reviews: true, 
     },
   });
 

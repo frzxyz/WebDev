@@ -18,12 +18,13 @@ export default function AddReviewForm({ dramaId, onAddReview }) {
   
     const newReview = {
       dramaId,
-      userId: session.user.id, // Pastikan UUID dikirim sebagai string
+      userId: session.user.id, 
       userName: session.user.name,
       rating: parseInt(rating),
       comment,
     };
-  
+    console.log('Session saat ini:', session);
+
     console.log('Data review yang akan dikirim:', newReview);
   
     try {
@@ -55,8 +56,9 @@ export default function AddReviewForm({ dramaId, onAddReview }) {
   return (
     <form onSubmit={handleSubmit}>
       <div className="mb-3">
-        <label className="form-label">Name</label>
+        <label  htmlFor="userName" className="form-label">Name</label>
         <input
+          id="userName"
           type="text"
           className="form-control"
           value={userName}
@@ -65,8 +67,9 @@ export default function AddReviewForm({ dramaId, onAddReview }) {
         />
       </div>
       <div className="mb-3">
-        <label className="form-label">Rating</label>
+        <label htmlFor="rating" className="form-label">Rating</label>
         <select
+          id="rating"
           className="form-select"
           value={rating}
           onChange={(e) => setRating(parseInt(e.target.value))}
@@ -81,8 +84,9 @@ export default function AddReviewForm({ dramaId, onAddReview }) {
         </select>
       </div>
       <div className="mb-3">
-        <label className="form-label">Your Thoughts</label>
+        <label htmlFor="thoughts" className="form-label">Your Thoughts</label>
         <textarea
+          id="thoughts"
           className="form-control"
           rows="3"
           value={comment}
