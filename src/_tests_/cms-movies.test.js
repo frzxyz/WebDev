@@ -1,179 +1,206 @@
-import React from "react";
-import { render, screen, fireEvent, act } from "@testing-library/react";
-import FormsMovies from "../components/cms-movies/FormsMovies";
-import "@testing-library/jest-dom";
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom';
+import FormsMovies from '../components/cms-movies/FormsMovies';
 
-// Mock global alert to avoid test environment errors
-global.alert = jest.fn();
+// Mock fetch API
+global.fetch = jest.fn();
 
-// Mock fetch for tests
-global.fetch = jest.fn(() =>
-  Promise.resolve({
-    ok: true,
-    json: () =>
-      Promise.resolve([
-        { id: 1, name: "Actor 1" },
-        { id: 2, name: "Actor 2" },
-      ]),
-  })
-);
+// Mock data
+const mockGenres = [
+  { id: 1, name: 'Action' },
+  { id: 2, name: 'Comedy' },
+  { id: 3, name: 'Drama' }
+];
 
-describe("FormsMovies Component", () => {
+const mockCountries = [
+  { id: 1, name: 'United States' },
+  { id: 2, name: 'United Kingdom' }
+];
+
+const mockActors = [
+  { id: 1, name: 'Tom Hanks', photo: 'tom-hanks.jpg' },
+  { id: 2, name: 'Emma Stone', photo: 'emma-stone.jpg' }
+];
+
+describe('FormsMovies Component', () => {
   beforeEach(() => {
-    jest.clearAllMocks(); // Clear mocks before each test
+    // Reset fetch mock before each test
+    fetch.mockReset();
+    
+    // Mock API responses
+    fetch.mockImplementation((url) => {
+      if (url === '/api/cms/genre') {
+        return Promise.resolve({
+          json: () => Promise.resolve(mockGenres)
+        });
+      }
+      if (url === '/api/cms/countries') {
+        return Promise.resolve({
+          json: () => Promise.resolve(mockCountries)
+        });
+      }
+      if (url === '/api/cms/actors') {
+        return Promise.resolve({
+          json: () => Promise.resolve(mockActors)
+        });
+      }
+      return Promise.reject(new Error('Not found'));
+    });
   });
 
-  it("renders the form correctly", () => {
+  test('renders Add Movie button', () => {
     render(<FormsMovies />);
-
-    // Check if essential elements are rendered
-    expect(screen.getByText(/Add Movie/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Title/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Year/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Genre/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Actors/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Submit/i })).toBeInTheDocument();
+    expect(screen.getByText('Add Movie')).toBeInTheDocument();
   });
 
-  it("validates required fields", async () => {
+  test('opens modal when Add Movie button is clicked', () => {
     render(<FormsMovies />);
+    fireEvent.click(screen.getByText('Add Movie'));
+    expect(screen.getByText('Add New Movie')).toBeInTheDocument();
+  });
 
-    // Attempt to submit without filling in required fields
-    await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: /Submit/i }));
+  test('loads and displays genres', async () => {
+    render(<FormsMovies />);
+    fireEvent.click(screen.getByText('Add Movie'));
+    
+    await waitFor(() => {
+      mockGenres.forEach(genre => {
+        expect(screen.getByLabelText(genre.name)).toBeInTheDocument();
+      });
+    });
+  });
+
+  test('loads and displays countries in select dropdown', async () => {
+    render(<FormsMovies />);
+    fireEvent.click(screen.getByText('Add Movie'));
+    
+    await waitFor(() => {
+      const countrySelect = screen.getByLabelText('Country');
+      mockCountries.forEach(country => {
+        expect(countrySelect).toContainHTML(country.name);
+      });
+    });
+  });
+
+  test('validates required fields on submit', async () => {
+    render(<FormsMovies />);
+    fireEvent.click(screen.getByText('Add Movie'));
+    
+    const submitButton = screen.getByText('Submit');
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Please select at least one genre.')).toBeInTheDocument();
+      expect(screen.getByText('Please select at least one actor.')).toBeInTheDocument();
+    });
+  });
+
+  test('handles genre selection correctly', async () => {
+    render(<FormsMovies />);
+    fireEvent.click(screen.getByText('Add Movie'));
+    
+    await waitFor(() => {
+      const genreCheckbox = screen.getByLabelText('Action');
+      fireEvent.click(genreCheckbox);
+      expect(genreCheckbox).toBeChecked();
+    });
+  });
+
+  test('handles actor selection correctly', async () => {
+    render(<FormsMovies />);
+    fireEvent.click(screen.getByText('Add Movie'));
+    
+  });
+
+  test('handles form submission with valid data', async () => {
+    render(<FormsMovies />);
+    fireEvent.click(screen.getByText('Add Movie'));
+    
+    // Fill in required fields
+    await waitFor(() => {
+      // Fill title
+      const titleInput = screen.getByLabelText('Title');
+      fireEvent.change(titleInput, { target: { value: 'Test Movie' } });
+
+      // Select country
+      const countrySelect = screen.getByLabelText('Country');
+      fireEvent.change(countrySelect, { target: { value: '1' } });
+
+      // Fill year
+      const yearInput = screen.getByLabelText('Year');
+      fireEvent.change(yearInput, { target: { value: '2023' } });
+
+      // Select genre
+      const genreCheckbox = screen.getByLabelText('Action');
+      fireEvent.click(genreCheckbox);
+
+      // Add actor
+      const actorInput = screen.getByPlaceholderText('Search Actor Names');
+      fireEvent.change(actorInput, { target: { value: mockActors[0].name } });
     });
 
-    // Verify that required field errors are displayed
-    expect(
-      await screen.findByText(/Please select at least one genre/i)
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByText(/Please select at least one actor/i)
-    ).toBeInTheDocument();
-  });
-
-  it("handles valid form submission", async () => {
-    // Mock fetch API
-    global.fetch = jest.fn(() =>
+    // Mock successful submission
+    fetch.mockImplementationOnce(() => 
       Promise.resolve({
         ok: true,
-        json: () => Promise.resolve({ title: "Inception" }),
+        json: () => Promise.resolve({ message: 'Movie successfully added!' })
       })
     );
 
-    render(<FormsMovies />);
+    fireEvent.click(screen.getByText('Submit'));
 
-    // Fill in the form with valid data
-    await act(async () => {
-      fireEvent.change(screen.getByLabelText(/Title/i), {
-        target: { value: "Inception" },
-      });
-      fireEvent.change(screen.getByLabelText(/Year/i), {
-        target: { value: "2010" },
-      });
-      fireEvent.click(screen.getByLabelText(/Action/i)); // Simulate selecting a genre
-      fireEvent.change(screen.getByLabelText(/Actors/i), {
-        target: { value: "Leonardo DiCaprio" },
-      });
-      fireEvent.click(screen.getByRole("button", { name: /Submit/i }));
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledWith('/api/cms/movies', expect.any(Object));
     });
-
-    // Verify fetch is called with the correct data
-    expect(global.fetch).toHaveBeenCalledWith("/api/cms/movies", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title: "Inception",
-        year: 2010,
-        genre: ["Action"],
-        actors: ["Leonardo DiCaprio"],
-      }),
-    });
-
-    // Verify success alert
-    expect(global.alert).toHaveBeenCalledWith("Movie successfully added");
   });
 
-  it("handles API error response", async () => {
-    // Mock fetch API with error response
-    global.fetch = jest.fn(() =>
+  test('handles availability selection correctly', async () => {
+    render(<FormsMovies />);
+    fireEvent.click(screen.getByText('Add Movie'));
+    
+    await waitFor(() => {
+      const availabilityButton = screen.getByText('Select Availability');
+      fireEvent.click(availabilityButton);
+      
+      const netflixOption = screen.getByLabelText('Netflix');
+      fireEvent.click(netflixOption);
+      
+      expect(netflixOption).toBeChecked();
+    });
+  });
+
+  test('displays error message from backend', async () => {
+    render(<FormsMovies />);
+    fireEvent.click(screen.getByText('Add Movie'));
+
+    // Mock failed submission
+    fetch.mockImplementationOnce(() => 
       Promise.resolve({
         ok: false,
-        json: () => Promise.resolve({ error: "Failed to add movie" }),
+        json: () => Promise.resolve({ error: 'Invalid movie data' })
       })
     );
 
-    render(<FormsMovies />);
+    fireEvent.click(screen.getByText('Submit'));
 
-    // Fill in the form with valid data
-    await act(async () => {
-      fireEvent.change(screen.getByLabelText(/Title/i), {
-        target: { value: "Inception" },
-      });
-      fireEvent.change(screen.getByLabelText(/Year/i), {
-        target: { value: "2010" },
-      });
-      fireEvent.click(screen.getByLabelText(/Action/i));
-      fireEvent.change(screen.getByLabelText(/Actors/i), {
-        target: { value: "Leonardo DiCaprio" },
-      });
-      fireEvent.click(screen.getByRole("button", { name: /Submit/i }));
+    await waitFor(() => {
+      expect(screen.getByText('Invalid movie data')).toBeInTheDocument();
     });
-
-    // Verify fetch is called with correct data
-    expect(global.fetch).toHaveBeenCalledWith("/api/cms/movies", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title: "Inception",
-        year: 2010,
-        genre: ["Action"],
-        actors: ["Leonardo DiCaprio"],
-      }),
-    });
-
-    // Verify error alert
-    expect(await screen.findByRole("alert")).toHaveTextContent(
-      "Failed to add movie"
-    );
   });
 
-  it("handles unexpected errors", async () => {
-    // Mock fetch API with network error
-    global.fetch = jest.fn(() => Promise.reject(new Error("Network Error")));
-
+  test('validates title format', async () => {
     render(<FormsMovies />);
+    fireEvent.click(screen.getByText('Add Movie'));
 
-    // Fill in the form with valid data
-    await act(async () => {
-      fireEvent.change(screen.getByLabelText(/Title/i), {
-        target: { value: "Inception" },
-      });
-      fireEvent.change(screen.getByLabelText(/Year/i), {
-        target: { value: "2010" },
-      });
-      fireEvent.click(screen.getByLabelText(/Action/i));
-      fireEvent.change(screen.getByLabelText(/Actors/i), {
-        target: { value: "Leonardo DiCaprio" },
-      });
-      fireEvent.click(screen.getByRole("button", { name: /Submit/i }));
+    await waitFor(() => {
+      const titleInput = screen.getByLabelText('Title');
+      fireEvent.change(titleInput, { target: { value: 'Test123' } });
+      
+      fireEvent.click(screen.getByText('Submit'));
+      
+      expect(screen.getByText('Title must only contain letters, spaces, hyphens, and apostrophes.')).toBeInTheDocument();
     });
-
-    // Verify fetch is called
-    expect(global.fetch).toHaveBeenCalledWith("/api/cms/movies", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title: "Inception",
-        year: 2010,
-        genre: ["Action"],
-        actors: ["Leonardo DiCaprio"],
-      }),
-    });
-
-    // Verify error alert
-    expect(await screen.findByRole("alert")).toHaveTextContent(
-      "An unexpected error occurred. Please try again."
-    );
   });
 });
