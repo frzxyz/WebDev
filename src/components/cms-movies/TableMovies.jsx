@@ -22,42 +22,66 @@ function TableMovies() {
   });
 
   const showPopup = (type, message) => {
-    setStatusPopup({ show: true, type: message });
+    setStatusPopup({ show: true, type, message });
   };
 
   const hidePopup = () => {
     setStatusPopup({ show: false, type: "", message: "" });
   };
 
-  // Fetch movies, genres, and actors from the API
+  // Fetch movies from the API
+  const fetchMovies = async () => {
+    try {
+      const response = await axios.get("/api/cms/movies");
+      setMovies(response.data);
+    } catch (error) {
+      console.error("Failed to fetch movies:", error);
+      showPopup("error", "Failed to fetch movies. Please try again.");
+    }
+  };
+
+  // Fetch genres from the API
+  const fetchGenres = async () => {
+    try {
+      const response = await axios.get("/api/cms/genre");
+      setGenres(response.data);
+    } catch (error) {
+      console.error("Failed to fetch genres:", error);
+      showPopup("error", "Failed to fetch genres. Please try again.");
+    }
+  };
+
+  // Fetch actors from the API
+  const fetchActors = async () => {
+    try {
+      const response = await axios.get("/api/cms/actors");
+      setActors(response.data);
+    } catch (error) {
+      console.error("Failed to fetch actors:", error);
+      showPopup("error", "Failed to fetch actors. Please try again.");
+    }
+  };
+
+  // Delete movie function
+  const deleteMovie = async (id) => {
+    if (window.confirm("Are you sure you want to delete this movie?")) {
+      try {
+        const response = await axios.delete(`/api/cms/movies?id=${id}`);
+        if (response.status === 200) {
+          setMovies(movies.filter((movie) => movie.id !== id));
+          showPopup("success", response.data.message || "Movie deleted successfully!");
+        } else {
+          throw new Error("Unexpected response status");
+        }
+      } catch (error) {
+        const errorMessage = error.response?.data?.error || "Server error occurred. Please try again.";
+        showPopup("error", errorMessage);
+      }
+    }
+  };
+
+  // Initial data fetch
   useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        const response = await axios.get("/api/cms/movies");
-        setMovies(response.data);
-      } catch (error) {
-        console.error("Failed to fetch movies:", error);
-      }
-    };
-
-    const fetchGenres = async () => {
-      try {
-        const response = await axios.get("/api/cms/genre");
-        setGenres(response.data);
-      } catch (error) {
-        console.error("Failed to fetch genres:", error);
-      }
-    };
-
-    const fetchActors = async () => {
-      try {
-        const response = await axios.get("/api/cms/actors");
-        setActors(response.data);
-      } catch (error) {
-        console.error("Failed to fetch actors:", error);
-      }
-    };
-
     fetchMovies();
     fetchGenres();
     fetchActors();
@@ -66,8 +90,8 @@ function TableMovies() {
   const handleEditClick = (movie) => {
     setEditingMovie({
       ...movie,
-      genre: movie.genres.map((g) => g.id), // Convert genres to IDs
-      actors: movie.actors.map((a) => a.id), // Convert actors to IDs
+      genre: movie.genres.map((g) => g.id),
+      actors: movie.actors.map((a) => a.id),
     });
     setEditModalVisible(true);
   };
@@ -181,7 +205,10 @@ function TableMovies() {
                   <TiEdit className="me-2" />
                   Edit
                 </button>
-                <button className="btn btn-danger mx-2">
+                <button 
+                  className="btn btn-danger mx-2"
+                  onClick={() => deleteMovie(movie.id)}
+                >
                   <TiTrash className="me-2" />
                   Delete
                 </button>
@@ -260,4 +287,3 @@ function TableMovies() {
 }
 
 export default TableMovies;
-  
