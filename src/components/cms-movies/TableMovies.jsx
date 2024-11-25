@@ -226,6 +226,14 @@ function TableMovies() {
           </Modal.Header>
           <Modal.Body>
             <Form>
+            <Form.Group className="mb-3">
+                <Form.Label>urlPhoto</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={editingMovie.urlPhoto}
+                  onChange={(e) => handleInputChange("title", e.target.value)}
+                />
+              </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Title</Form.Label>
                 <Form.Control
