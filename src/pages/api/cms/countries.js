@@ -87,13 +87,40 @@ export default async function handler(req, res) {
       }
       break;
 
-    case 'DELETE': // Delete - Hapus negara
+      case 'DELETE': // Delete - Hapus negara
       try {
         const { id } = req.query; // Gunakan query parameter untuk DELETE
         if (!id) {
           return res.status(400).json({ error: 'Country ID is required' });
         }
 
+        // Check if the country is connected to any drama
+        const connectedDramas = await prisma.drama.findMany({
+          where: {
+            countryId: parseInt(id),
+          },
+        });
+
+        if (connectedDramas.length > 0) {
+          return res.status(400).json({
+            error: `Cannot delete country because it is associated with ${connectedDramas.length} drama(s). Remove the association before deleting.`,
+          });
+        }
+
+        // Check if the country is connected to any actor
+        const connectedActors = await prisma.actor.findMany({
+          where: {
+            countryId: parseInt(id),
+          },
+        });
+
+        if (connectedActors.length > 0) {
+          return res.status(400).json({
+            error: `Cannot delete country because it is associated with ${connectedActors.length} actor(s). Remove the association before deleting.`,
+          });
+        }
+
+        // Proceed to delete the country
         await prisma.country.delete({
           where: { id: parseInt(id) },
         });
@@ -103,7 +130,8 @@ export default async function handler(req, res) {
         if (error.code === 'P2025') {
           res.status(404).json({ error: 'Country not found' });
         } else {
-          res.status(500).json({ error: 'Failed to delete country' });
+          console.error("Error deleting country:", error);
+          res.status(500).json({ error: 'Failed to delete country because it is associated with another table.' });
         }
       }
       break;

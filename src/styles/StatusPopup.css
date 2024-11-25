@@ -1,0 +1,84 @@
+/* Gaya umum untuk pop-up */
+.status-popup {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+  }
+  
+  /* Warna untuk pop-up success */
+  .status-popup.success {
+    background-color: #e7f9ed;
+    color: #28a745;
+    border: 1px solid #28a745;
+  }
+  
+  /* Warna untuk pop-up error */
+  .status-popup.error {
+    background-color: #fce8e8;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+  }
+
+  /* Warna untuk pop-up warning */
+  .status-popup.warning {
+    background-color: #fff3cd; /* Warna latar oren */
+    color: #856404; /* Warna teks oren */
+    border: 1px solid #856404;
+  }
+  
+  /* Gaya untuk ikon */
+  .status-popup-icon {
+    font-size: 24px;
+  }
+  
+  /* Gaya untuk pesan */
+  .status-popup-message {
+    font-size: 16px;
+    font-weight: 500;
+  }
+  
+  /* Tombol OK */
+  .status-popup-button {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  .status-popup-button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Tombol Yes */
+.status-popup-button.yes {
+    background-color: #28a745; /* Hijau */
+    color: white;
+  }
+  
+  .status-popup-button.yes:hover {
+    background-color: #218838; /* Hijau gelap */
+  }
+  
+  /* Tombol No */
+  .status-popup-button.no {
+    background-color: #dc3545; /* Merah */
+    color: white;
+  }
+  
+  .status-popup-button.no:hover {
+    background-color: #c82333; /* Merah gelap */
+  }
+  

@@ -4,14 +4,30 @@ import { TiEdit, TiTrash } from "react-icons/ti";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useEdit } from "../cms-global/cms-edit";
 import axios from 'axios'; // Untuk HTTP request
-
 import "../../styles/Countries.css";
 import "../../styles/Awards.css";
+import StatusPopup from "../StatusPopup";
 
 function TableCountries() {
   const { cancelEdit, edit } = useEdit(); // Destructure dari objek
   const [countries, setCountries] = useState([]); // State untuk daftar negara
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+
+  const [statusPopup, setStatusPopup] = useState({
+    show: false,
+    type: "",
+    message: "",
+    onConfirm: null,
+    isConfirm: false,
+  });  
+  
+  const showPopup = (type, message, onConfirm = null, isConfirm = false) => {
+    setStatusPopup({ show: true, type, message, onConfirm, isConfirm });
+  };  
+  
+  const hidePopup = () => {
+    setStatusPopup({ show: false, type: "", message: "", onConfirm: null, isConfirm: false });
+  };
 
   // Fungsi untuk melakukan sorting
   const sortBy = (key) => {
@@ -51,22 +67,23 @@ function TableCountries() {
 
   // Fungsi untuk menghapus negara (DELETE)
   const deleteCountry = async (id) => {
-    const isConfirmed = window.confirm("Apakah Anda yakin ingin menghapus data ini?");
-    
-    if (isConfirmed) {
+    const onConfirm = async () => {
       try {
-        await axios.delete(`/api/cms/countries?id=${id}`); // Menghapus negara melalui API
-        setCountries(countries.filter(country => country.id !== id)); // Menghapus dari state
-        alert("Country deleted successfully!");
+        const response = await axios.delete('/api/cms/countries', { params: { id } });
+  
+        if (response.status === 200) {
+          setCountries(countries.filter((country) => country.id !== id));
+          showPopup("success", response.data.message || "Country deleted successfully!");
+        } else {
+          throw new Error("Unexpected response");
+        }
       } catch (error) {
-        console.error("Failed to delete country:", error);
-        alert("Failed to delete country.");
+        showPopup("error", error.response?.data?.error || "Failed to delete country.");
       }
-    } else {
-      console.log("Penghapusan dibatalkan oleh pengguna.");
-    }
-    
-  };
+    };
+  
+    showPopup("warning", "Are you sure you want to delete this country?", onConfirm, true);
+  };  
 
   // Fungsi untuk menyimpan perubahan (PUT)
   const saveEdit = async (id) => {
@@ -97,13 +114,13 @@ function TableCountries() {
             country.id === id ? { ...country, name: updatedCountryName } : country
           )
         );
-        alert("Country updated successfully!");
+        showPopup("success", "Country updated successfully!");
       } else {
-        alert("Failed to update country.");
+        showPopup("error", "Failed to update country.");
       }
     } catch (error) {
-      console.error("Error updating country:", error);
-      alert("Failed to update country.");
+      const errorMessage = error.response?.data?.error || "Failed to update actor.";
+      showPopup("error", errorMessage);
     }
 
     // Ubah tombol setelah menyimpan
@@ -121,6 +138,16 @@ function TableCountries() {
   return (
     <div className="table-countries">
       <h5>List Countries</h5>
+
+      {statusPopup.show && (
+        <StatusPopup
+          type={statusPopup.type}
+          message={statusPopup.message}
+          onClose={hidePopup}
+          onConfirm={statusPopup.onConfirm}
+          isConfirm={statusPopup.isConfirm}
+        />
+      )}
 
       <div className="sort-buttons">
         <button className="sort-button" onClick={() => sortBy("name")}>
@@ -154,6 +181,12 @@ function TableCountries() {
                     Edit
                   </span>
                 </button>
+                <button className="btn btn-success mx-2 d-none" id={`saveBtn${country.id}`}
+                  onClick={() => saveEdit(country.id, setCountries, countries)}>
+                  <span className="d-flex align-items-center">
+                    Save
+                  </span>
+                </button>
                 <button
                   className="btn btn-warning mx-2 d-none"
                   id={`cancelBtn${country.id}`}
@@ -161,12 +194,6 @@ function TableCountries() {
                 >
                   <span className="d-flex align-items-center">
                     Cancel
-                  </span>
-                </button>
-                <button className="btn btn-success mx-2 d-none" id={`saveBtn${country.id}`}
-                  onClick={() => saveEdit(country.id, setCountries, countries)}>
-                  <span className="d-flex align-items-center">
-                    Save
                   </span>
                 </button>
                 <button 

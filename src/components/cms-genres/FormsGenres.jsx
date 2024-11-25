@@ -3,18 +3,35 @@ import Form from "react-bootstrap/Form";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../styles/Countries.css";
 import "../../styles/Awards.css";
+import StatusPopup from "../StatusPopup";
 
 function FormsGenres({ onAddGenre }) {
   const [genreName, setGenreName] = useState("");
   const [description, setDescription] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
+  const [statusPopup, setStatusPopup] = useState({
+    show: false,
+    type: "",
+    message: "",
+    onConfirm: null,
+    isConfirm: false,
+  });  
+  
+  const showPopup = (type, message, onConfirm = null, isConfirm = false) => {
+    setStatusPopup({ show: true, type, message, onConfirm, isConfirm });
+  };  
+  
+  const hidePopup = () => {
+    setStatusPopup({ show: false, type: "", message: "", onConfirm: null, isConfirm: false });
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setErrorMessage(""); // Clear any previous error message
 
     if (!genreName.trim()) {
-      alert("Please enter a valid genre name.");
+      showPopup("error", "Please enter a valid genre name.");
       return;
     }
 
@@ -22,7 +39,7 @@ function FormsGenres({ onAddGenre }) {
     const validNameRegex = /^[A-Za-z\s'-]+$/;
 
     if (!validNameRegex.test(genreName)) {
-      alert("Genre name must only contain letters, spaces, hyphens, and apostrophes.");
+      showPopup("error", "Genre name must only contain letters, spaces, hyphens, and apostrophes.");
       return;
     }
 
@@ -43,22 +60,37 @@ function FormsGenres({ onAddGenre }) {
         setErrorMessage(errorData.error || "Failed to add genre");
         return;
       }
+      if (!validNameRegex.test(genreName)) {
+        showPopup("error", "Genre name must only contain letters, spaces, hyphens, and apostrophes.");
+        return;
+      }
 
       const result = await response.json();
-      alert(`Genre "${result.name}" added successfully!`);
+      showPopup("success", `Genre "${result.name}" added successfully!`);
 
       // Reset form after successful submit
       setGenreName("");
       setDescription("");
     } catch (error) {
-      console.error("Failed to add genre", error);
-      setErrorMessage("An unexpected error occurred. Please try again.");
+      const errorResponse = await response.json();
+      showPopup("error", errorResponse.error ||"An unexpected error occurred. Please try again.");
     }
   };
 
   return (
     <div className="add-country">
       <h5>Add Genre</h5>
+
+      {statusPopup.show && (
+          <StatusPopup
+            type={statusPopup.type}
+            message={statusPopup.message}
+            onClose={hidePopup}
+            onConfirm={statusPopup.onConfirm}
+            isConfirm={statusPopup.isConfirm}
+          />
+        )}
+        
       <div className="card">
         <div className="card-body">
           <Form onSubmit={handleSubmit}>

@@ -3,6 +3,7 @@ import { Modal, Button, Form, Row, Col, Alert } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../styles/Countries.css";
 import "../../styles/Awards.css";
+import StatusPopup from "../StatusPopup";
 
 function FormsMovies() {
   const [formData, setFormData] = useState({
@@ -33,6 +34,16 @@ function FormsMovies() {
     "Netflix", "Prime Video", "Vidio", "Amazon Prime", "Apple TV",
     "Disney+ Hotstar", "Bstation", "Microsoft Store", "Google Play Movies", "Hulu", "Crunchyroll"
   ];
+
+  const [statusPopup, setStatusPopup] = useState({ show: false, type: "", message: "" });
+
+  const showPopup = (type, message) => {
+    setStatusPopup({ show: true, type, message });
+  };
+
+  const hidePopup = () => {
+    setStatusPopup({ show: false, type: "", message: "" });
+  };
 
   useEffect(() => {
     const fetchGenres = async () => {
@@ -114,40 +125,47 @@ function FormsMovies() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     setErrors('');
-
+  
     if (formData.genre.length === 0) {
       setGenreRequired(true); // Tampilkan error jika genre kosong
       return;
     }
-
+  
     if (formData.actors.length === 0) {
-      setActorRequired(true); // Tampilkan error jika genre kosong
+      setActorRequired(true); // Tampilkan error jika actors kosong
       return;
     }
-
-  const movieData = {
-    ...formData,
-    genres: formData.genre, 
-    views: parseInt(formData.views) || 0, // Ensure views are an integer
-    year: parseInt(formData.year),         // Ensure year is an integer
-    rating: formData.rating ? parseFloat(formData.rating) : 0,   // Ensure rating is a float
-    duration: formData.duration ? parseInt(formData.duration) : 0, // Ensure duration is an integer
-    availability: selectedAvailability.join(', '),
-  };
-
+  
+    const movieData = {
+      ...formData,
+      genres: formData.genre,
+      views: parseInt(formData.views) || 0,
+      year: parseInt(formData.year),
+      rating: formData.rating ? parseFloat(formData.rating) : 0,
+      duration: formData.duration ? parseInt(formData.duration) : 0,
+      availability: selectedAvailability.join(', '),
+    };
+  
     try {
       const response = await fetch('/api/cms/movies', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(movieData),
       });
-
+      const validNameRegex = /^[A-Za-z\s'-]+$/;
+      if (!validNameRegex.test(formData.title)) {
+        showPopup(
+          "error",
+          "Title must only contain letters, spaces, hyphens, and apostrophes."
+        );
+        return;
+      }
       if (response.ok) {
-        const newMovie = await response.json();
-        console.log('Movie successfully added:', newMovie);
-        alert('Movie successfully added');
+        const result = await response.json();
+        console.log('Movie successfully added:', result);
+        showPopup("success", result.message || "Movie successfully added!");
         setFormData({
           title: "",
           year: "",
@@ -160,19 +178,16 @@ function FormsMovies() {
           actors: [],
           availability: [],
         });
-
         setShowModal(false);
       } else {
         const errorResponse = await response.json();
-        // Set errors from backend response
-        setErrors(errorResponse.error);
+        setErrors(errorResponse.error); // Set errors dari backend
+        showPopup("error", errorResponse.error || "Failed to add movie. Please try again.");
       }
     } catch (error) {
-      console.error('Error adding movie:', error);
-      alert('Failed to add movie');
+      console.error("Error submitting movie:", error);
+      showPopup("error", "Failed to add movie. Please try again.");
     }
-    
-    // setShowModal(false); // Close modal on submit
   };
   
   const handleClose = () => setShowModal(false);
@@ -184,6 +199,14 @@ function FormsMovies() {
       <Button variant="primary" onClick={handleShow}>
         Add Movie
       </Button>
+
+      {statusPopup.show && (
+      <StatusPopup
+        type={statusPopup.type}
+        message={statusPopup.message}
+        onClose={hidePopup}
+      />
+    )}
 
       {/* Modal */}
       <Modal show={showModal} onHide={handleClose} size="lg" className="custom-modal-background">

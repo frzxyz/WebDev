@@ -5,13 +5,29 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import 'bootstrap/dist/css/bootstrap.min.css';
-
 import "../../styles/Countries.css";
+import StatusPopup from "../StatusPopup";
 
 const AddCountry = () => {
   // State untuk menyimpan nama negara yang diinput
   const [countryName, setCountryName] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+
+  const [statusPopup, setStatusPopup] = useState({
+    show: false,
+    type: "",
+    message: "",
+    onConfirm: null,
+    isConfirm: false,
+  });  
+  
+  const showPopup = (type, message, onConfirm = null, isConfirm = false) => {
+    setStatusPopup({ show: true, type, message, onConfirm, isConfirm });
+  };  
+  
+  const hidePopup = () => {
+    setStatusPopup({ show: false, type: "", message: "", onConfirm: null, isConfirm: false });
+  };
 
   // Fungsi untuk menangani submit form
   const handleSubmit = async (e) => {
@@ -19,7 +35,7 @@ const AddCountry = () => {
     setErrorMessage('');
 
     if (!countryName.trim()) {
-      alert("Please enter a valid country name.");
+      showPopup("error", "Please enter a valid country name.");
       return;
     }
 
@@ -28,7 +44,7 @@ const AddCountry = () => {
 
     // Cek apakah input valid
     if (!validNameRegex.test(countryName)) {
-      alert("Country name must only contain letters, spaces, hyphens, and apostrophes.");
+      showPopup("error", "Country name must only contain letters, spaces, hyphens, and apostrophes.");
       return;
     }
 
@@ -48,7 +64,7 @@ const AddCountry = () => {
       }
 
       const result = await response.json();
-      alert(`Country "${result.name}" added successfully!`);
+      showPopup("success", `Country "${result.name}" added successfully!`);
 
       // Reset form
       setCountryName('');
@@ -63,6 +79,17 @@ const AddCountry = () => {
       <h5 >Add Country</h5>
       <div className="card">
       <div className="card-body">
+
+      {statusPopup.show && (
+        <StatusPopup
+          type={statusPopup.type}
+          message={statusPopup.message}
+          onClose={hidePopup}
+          onConfirm={statusPopup.onConfirm}
+          isConfirm={statusPopup.isConfirm}
+        />
+      )}
+
       <Container>
         <Form onSubmit={handleSubmit}>
           <Row >

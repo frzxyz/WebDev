@@ -4,6 +4,7 @@ import { TiEdit, TiTrash } from "react-icons/ti";
 import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
 import Pagination from 'react-bootstrap/Pagination';
+import StatusPopup from "../StatusPopup";
 
 function TableAwards() {
   const [awards, setAwards] = useState([]);
@@ -12,6 +13,22 @@ function TableAwards() {
   const [newYear, setNewYear] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [awardsPerPage] = useState(10);
+
+  const [statusPopup, setStatusPopup] = useState({
+    show: false,
+    type: "",
+    message: "",
+    onConfirm: null,
+    isConfirm: false,
+  });  
+  
+  const showPopup = (type, message, onConfirm = null, isConfirm = false) => {
+    setStatusPopup({ show: true, type, message, onConfirm, isConfirm });
+  };  
+  
+  const hidePopup = () => {
+    setStatusPopup({ show: false, type: "", message: "", onConfirm: null, isConfirm: false });
+  };
 
   const fetchAwards = async () => {
     try {
@@ -27,18 +44,19 @@ function TableAwards() {
   }, []);
 
   const deleteAward = async (id) => {
-    const isConfirmed = window.confirm("Are you sure you want to delete this award?");
-    if (isConfirmed) {
+    const onConfirm = async () => {
       try {
         await axios.delete(`/api/cms/awards?id=${id}`);
         setAwards(awards.filter((award) => award.id !== id));
-        alert("Award deleted successfully!");
+        showPopup("success", "Award deleted successfully!");
       } catch (error) {
         console.error("Failed to delete award:", error);
-        alert("Failed to delete award.");
+        showPopup("error", "Failed to delete award.");
       }
-    }
-  };
+    };
+  
+    showPopup("warning", "Are you sure you want to delete this award?", onConfirm, true);
+  };  
 
   const handleEditClick = (award) => {
     setEditingAwardId(award.id);
@@ -48,34 +66,34 @@ function TableAwards() {
 
   const saveEdit = async (id) => {
     if (!newName || !newYear) {
-      alert("Name and Year fields are required.");
+      showPopup("error", "Name and Year fields are required.");
       return;
     }
-
+  
     try {
       const response = await axios.put('/api/cms/awards', {
         id,
         name: newName,
         year: parseInt(newYear),
       });
-
+  
       if (response.status >= 200 && response.status < 300) {
         setAwards(
           awards.map((award) =>
             award.id === id ? { ...award, name: newName, year: parseInt(newYear) } : award
           )
         );
-        alert("Award updated successfully!");
+        showPopup("success", "Award updated successfully!");
       } else {
-        alert("Failed to update award.");
+        showPopup("error", "Failed to update award.");
       }
     } catch (error) {
       console.error("Error updating award:", error);
-      alert("Failed to update award.");
+      showPopup("error", "Failed to update award.");
     }
-
+  
     setEditingAwardId(null);
-  };
+  };  
 
   const indexOfLastAward = currentPage * awardsPerPage;
   const indexOfFirstAward = indexOfLastAward - awardsPerPage;
@@ -88,6 +106,17 @@ function TableAwards() {
     <div className="container mt-4">
       <div className="table-countries">
       <h5 className="mb-4">List of Awards</h5>
+
+      {statusPopup.show && (
+          <StatusPopup
+            type={statusPopup.type}
+            message={statusPopup.message}
+            onClose={hidePopup}
+            onConfirm={statusPopup.onConfirm}
+            isConfirm={statusPopup.isConfirm}
+          />
+        )}
+
       <Table responsive striped>
         <thead>
           <tr>
@@ -130,12 +159,12 @@ function TableAwards() {
               <td>
                 {editingAwardId === award.id ? (
                   <>
-                  <button className="btn btn-success mx-2" onClick={() => saveEdit(award.id)}>
+                    <button className="btn btn-success mx-2" onClick={() => saveEdit(award.id)}>
                       Save
                     </button>
                     <button className="btn btn-warning mx-2" onClick={() => setEditingAwardId(null)}>
                       Cancel
-                    </button> 
+                    </button>
                   </>
                 ) : (
                   <>

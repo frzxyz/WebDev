@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import Table from "react-bootstrap/Table";
 import { TiEdit, TiTrash, TiMail } from "react-icons/ti";
 import "bootstrap/dist/css/bootstrap.min.css";
-
 import "../../styles/Countries.css";
 import "../../styles/Awards.css";
 import axios from 'axios';
 import { useEdit } from "../cms-global/cms-edit";
+import StatusPopup from "../StatusPopup";
 
 function TableUsers() {
   const { cancelEdit, edit } = useEdit(); // Destructure dari objek
@@ -15,6 +15,22 @@ function TableUsers() {
   const [newUsername, setNewUsername] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+
+  const [statusPopup, setStatusPopup] = useState({
+    show: false,
+    type: "",
+    message: "",
+    onConfirm: null,
+    isConfirm: false,
+  });  
+  
+  const showPopup = (type, message, onConfirm = null, isConfirm = false) => {
+    setStatusPopup({ show: true, type, message, onConfirm, isConfirm });
+  };  
+  
+  const hidePopup = () => {
+    setStatusPopup({ show: false, type: "", message: "", onConfirm: null, isConfirm: false });
+  };
 
   // Fungsi untuk melakukan sorting
   const sortBy = (key) => {
@@ -54,20 +70,18 @@ function TableUsers() {
 
   // Fungsi untuk menghapus user (DELETE)
   const deleteUser = async (id) => {
-    const isConfirmed = window.confirm("Apakah Anda yakin ingin menghapus data ini?");
-    
-    if (isConfirmed) {
+    const onConfirm = async () => {
       try {
         await axios.delete(`/api/cms/users?id=${id}`); // Menghapus user melalui API
         setUsers(users.filter(user => user.id !== id)); // Menghapus dari state
-        alert("User deleted successfully!");
+        showPopup("success", "User deleted successfully!");
       } catch (error) {
-        console.error("Failed to delete user:", error);
-        alert("Failed to delete user.");
+        const errorMessage = error.response?.data?.error || "Failed to delete user.";
+        showPopup("error", errorMessage);
       }
-    } else {
-      console.log("Penghapusan dibatalkan oleh pengguna.");
-    }
+    };
+
+    showPopup("warning", "Are you sure you want to delete this user?", onConfirm, true);
   };
 
   // Handle edit click
@@ -87,7 +101,7 @@ function TableUsers() {
   // Handle save edit
   const saveEdit = async (id) => {
     if (!newUsername.trim() || !newEmail.trim()) {
-      alert("Username and email cannot be empty.");
+      showPopup("error", "Username and email cannot be empty.");
       return;
     }
 
@@ -104,13 +118,13 @@ function TableUsers() {
             user.id === id ? { ...user, username: newUsername, email: newEmail } : user
           )
         );
-        alert("User updated successfully!");
+        showPopup("success", "User updated successfully!");
       } else {
-        alert("Failed to update user.");
+        showPopup("error", "Failed to update user.");
       }
     } catch (error) {
-      console.error("Error updating user:", error);
-      alert("Failed to update user.");
+      const errorMessage = error.response?.data?.error || "Failed to update user.";
+      showPopup("error", errorMessage);
     }
 
     setEditingUserId(null);
@@ -125,17 +139,27 @@ function TableUsers() {
   
       if (response.status === 200) {
         setUsers(users.map(user => user.id === id ? { ...user, isSuspended: !isSuspended } : user));
-        alert(`User ${!isSuspended ? 'suspended' : 'unsuspended'} successfully!`);
+        showPopup("success", `User ${!isSuspended ? 'suspended' : 'unsuspended'} successfully!`);
       }
     } catch (error) {
       console.error("Failed to suspend/unsuspend user:", error);
-      alert("Failed to update suspend status.");
+      showPopup("error", "Failed to update suspend status.");
     }
   };  
 
   return (
     <div className="table-countries">
       <h5>List Users</h5>
+
+      {statusPopup.show && (
+          <StatusPopup
+            type={statusPopup.type}
+            message={statusPopup.message}
+            onClose={hidePopup}
+            onConfirm={statusPopup.onConfirm}
+            isConfirm={statusPopup.isConfirm}
+          />
+        )}
       
       <div className="sort-buttons">
         <button className="sort-button" onClick={() => sortBy("username")}>

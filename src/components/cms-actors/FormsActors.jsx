@@ -3,6 +3,7 @@ import Form from "react-bootstrap/Form";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../styles/Countries.css";
 import "../../styles/Awards.css";
+import StatusPopup from "../StatusPopup";
 
 function FormsActors() {
   const [formData, setFormData] = useState({
@@ -11,7 +12,29 @@ function FormsActors() {
     countryId: "",
   });
   const [countries, setCountries] = useState([]);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const [statusPopup, setStatusPopup] = useState({
+    show: false,
+    type: "",
+    message: "",
+    onConfirm: null,
+    isConfirm: false,
+  });
+
+  const showPopup = (type, message, onConfirm = null, isConfirm = false) => {
+    setStatusPopup({ show: true, type, message, onConfirm, isConfirm });
+  };
+
+  const hidePopup = () => {
+    setStatusPopup({
+      show: false,
+      type: "",
+      message: "",
+      onConfirm: null,
+      isConfirm: false,
+    });
+  };
 
   // Fetch the countries when the component mounts
   useEffect(() => {
@@ -29,12 +52,27 @@ function FormsActors() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setErrorMessage('');
+    setErrorMessage("");
 
     const { name, photo, countryId } = formData;
 
+    // Validasi nama aktor menggunakan regex
+    const validNameRegex = /^[A-Za-z\s'-]+$/;
+    if (!validNameRegex.test(name)) {
+      showPopup(
+        "error",
+        "Actor name must only contain letters, spaces, hyphens, and apostrophes."
+      );
+      return;
+    }
+
     if (!name.trim()) {
-      alert("Please enter a valid actor name.");
+      showPopup("error", "Please enter a valid actor name.");
+      return;
+    }
+
+    if (!photo.trim()) {
+      showPopup("error", "Please enter a valid photo URL.");
       return;
     }
 
@@ -47,7 +85,7 @@ function FormsActors() {
 
       if (res.ok) {
         const data = await res.json();
-        alert("Actor successfully added");
+        showPopup("success", "Actor successfully added");
         setFormData({
           name: "",
           photo: "",
@@ -55,11 +93,15 @@ function FormsActors() {
         });
       } else {
         const errorData = await res.json();
-        setErrorMessage(errorData.error || 'Failed to add user');
+        showPopup("error", errorData.error || "Failed to add actor.");
       }
     } catch (error) {
       const errorResponse = await response.json();
-      alert(`Failed to add actor: ${errorResponse.error}`);
+      showPopup(
+        "error",
+        errorResponse.error ||
+          "An error occurred while adding the actor. Please try again."
+      );
     }
   };
 
@@ -68,6 +110,16 @@ function FormsActors() {
       <h5>Add Actor</h5>
       <div className="card">
         <div className="card-body">
+          {statusPopup.show && (
+            <StatusPopup
+              type={statusPopup.type}
+              message={statusPopup.message}
+              onClose={hidePopup}
+              onConfirm={statusPopup.onConfirm}
+              isConfirm={statusPopup.isConfirm}
+            />
+          )}
+
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="formGroupActorName">
               <Form.Label>Actor Name</Form.Label>
