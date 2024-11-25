@@ -12,8 +12,10 @@ import StatusPopup from "../StatusPopup";
 function TableActors() {
   const { cancelEdit, edit } = useEdit();
   const [actors, setActors] = useState([]);
+  const [countries, setCountries] = useState([]);
   const [editingActorId, setEditingActorId] = useState(null);
   const [newName, setNewName] = useState("");
+  const [newCountry, setNewCountry] = useState("");
   const [newUrlPhoto, setNewUrlPhoto] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
   const [currentPage, setCurrentPage] = useState(1);  
@@ -63,9 +65,20 @@ function TableActors() {
     }
   };
 
+  // Fetch countries from the API
+  const fetchCountries = async () => {
+    try {
+      const response = await axios.get('/api/cms/countries'); // Endpoint daftar country
+      setCountries(response.data);
+    } catch (error) {
+      console.error("Failed to fetch countries:", error);
+    }
+  };
+
   // useEffect to fetch actors when the component is mounted
   useEffect(() => {
     fetchActors();
+    fetchCountries();
   }, []);
 
   // Handle delete actor (DELETE)
@@ -93,6 +106,7 @@ function TableActors() {
     setEditingActorId(actor.id); 
     setNewName(actor.name); 
     setNewUrlPhoto(actor.photo || ""); 
+    setNewCountry(actor.country?.id || ""); 
 };
 
   // Cancel editing
@@ -100,6 +114,7 @@ function TableActors() {
     setEditingActorId(null); 
     setNewName(""); 
     setNewUrlPhoto("");
+    setNewCountry("");
   };
 
   // Handle save edit (PUT)
@@ -107,8 +122,8 @@ function TableActors() {
     const trimmedName = newName.trim();
     const trimmedUrlPhoto = newUrlPhoto.trim();
 
-    if (!trimmedName || !trimmedUrlPhoto) {
-      showPopup("error", "Actor name and Url Photo cannot be empty.");
+    if (!trimmedName || !trimmedUrlPhoto || !newCountry) {
+      showPopup("error", "Actor name, Url Photo, and Country cannot be empty.");
         return;
     }
 
@@ -117,12 +132,13 @@ function TableActors() {
             id, 
             name: trimmedName,
             photo: trimmedUrlPhoto,
+            countryId: newCountry,
         });
 
         if (response.status >= 200 && response.status < 300) {
             setActors(
                 actors.map((actor) =>
-                    actor.id === id ? { ...actor, name: trimmedName, photo: trimmedUrlPhoto } : actor
+                    actor.id === id ? { ...actor, name: trimmedName, photo: trimmedUrlPhoto, country: { id: newCountry, name: countries.find((c) => c.id === parseInt(newCountry))?.name } } : actor
                 )
             );
             showPopup("success", "Actor updated successfully!");
@@ -219,7 +235,23 @@ function TableActors() {
                   actor.name
                 )}
               </td>
-              <td>{actor.country?.name}</td>
+              <td>
+                {editingActorId === actor.id ? (
+                  <select
+                    className="form-select"
+                    value={newCountry}
+                    onChange={(e) => setNewCountry(e.target.value)}
+                  >
+                    <option value="">Select Country</option>
+                    {countries.map((country) => (
+                      <option key={country.id} value={country.id}>
+                        {country.name}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  actor.country?.name || "No country assigned"
+                )}</td>
               <td>{actor.dramas.length > 0
                   ? actor.dramas.map(drama => drama.title).join(', ')
                   : 'No movies available'}

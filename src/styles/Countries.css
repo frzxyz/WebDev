@@ -191,6 +191,27 @@
 
 
 /* actors grid for cms-movies */
+.dropdown-menu {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.dropdown-item {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0; /* Warna background saat hover */
+  color: #495057; /* Warna teks saat hover */
+}
+
+.actor-photo {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
 .selected-actors-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* 3 columns layout */
@@ -217,7 +238,7 @@
   position: absolute;
   right: 10px;
   top: 10px;
-  background-color: #051941;
+  background-color: #dc3545;
   color: white;
   border: none;
   border-radius: 3px;

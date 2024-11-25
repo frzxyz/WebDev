@@ -23,12 +23,14 @@ function FormsMovies() {
   const [countries, setCountries] = useState([]);
   const [actors, setActors] = useState([]);
   const [selectedActors, setSelectedActors] = useState([]);
+  const [filteredActors, setFilteredActors] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [genreRequired, setGenreRequired] = useState(false);
   const [actorRequired, setActorRequired] = useState(false);
   const [selectedAvailability, setSelectedAvailability] = useState([]);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [errors, setErrors] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const availabilities = [
     "Netflix", "Prime Video", "Vidio", "Amazon Prime", "Apple TV",
@@ -61,12 +63,16 @@ function FormsMovies() {
       try {
         const res = await fetch("/api/cms/actors");
         const data = await res.json();
-        console.log("Actors fetched: ", data); // Add this line to check if actors are being fetched
-        setActors(data);
+        console.log("Actors fetched: ", data); // Tambahkan log untuk memeriksa data
+        if (Array.isArray(data)) {
+          setActors(data);
+        } else {
+          console.error("Invalid data format from API");
+        }
       } catch (error) {
-        console.error('Failed to fetch actors', error);
+        console.error('Failed to fetch actors:', error);
       }
-    };
+    };    
 
     fetchGenres();
     fetchCountries();
@@ -83,23 +89,29 @@ function FormsMovies() {
     });
   };
 
-  const handleActorSelect = (e) => {
-    const actor = actors.find((actor) => actor.name === e.target.value);
-  
-    if (actor) {
-      // Check if the actor is already selected
-      if (!selectedActors.some((selectedActor) => selectedActor.id === actor.id)) {
-        setSelectedActors([...selectedActors, actor]);
-        setFormData((prevFormData) => ({
-          ...prevFormData,
-          actors: [...prevFormData.actors, actor.id],
-        }));
-        setActorRequired(false);
-      } else {
-        console.error('Actor is already selected');
-      }
+  const handleSearch = (e) => {
+    const query = e.target.value.trim().toLowerCase();
+    setSearchQuery(query);
+
+    if (query.length > 0) {
+      const results = actors.filter((actor) =>
+        actor.name.toLowerCase().includes(query)
+      );
+      setFilteredActors(results);
     } else {
-      console.error('Actor not found');
+      setFilteredActors([]);
+    }
+  };
+
+  const handleSelectActor = (actor) => {
+    if (!selectedActors.some((selected) => selected.id === actor.id)) {
+      setSelectedActors([...selectedActors, actor]);
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        actors: [...prevFormData.actors, actor.id],
+      }));
+      setSearchQuery(""); // Kosongkan input setelah memilih aktor
+      setFilteredActors([]); // Kosongkan hasil pencarian
     }
   };
 
@@ -418,38 +430,46 @@ function FormsMovies() {
                 <Form.Group className="mb-3" controlId="formGroupActors">
                   <Form.Label>Actors (Search & Add)</Form.Label>
                   <Form.Control
-                    type="text"
-                    placeholder="Search Actor Names"
-                    list="actors-list"
-                    onChange={(e) => handleActorSelect(e)}
-                    required
-                  />
-                  <datalist id="actors-list">
-                    {actors.map((actor) => (
-                      <option key={actor.id} value={actor.name}>
-                        {actor.name}
-                      </option>
-                    ))}
-                  </datalist>
-                  <div className="selected-actors-grid">
-                    {selectedActors.map((actor, index) => (
-                      <div key={index} className="selected-actor-item">
-                        <img src={actor.photo} alt={actor.name} className="actor-photo" />
-                        <span>{actor.name}</span>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setSelectedActors(selectedActors.filter((a) => a.id !== actor.id))
-                          }
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  {actorRequired && (
-                    <p style={{ color: 'red' }}>Please select at least one actor.</p>
-                  )}
+                      type="text"
+                      placeholder="Search Actor Names"
+                      value={searchQuery}
+                      onChange={handleSearch}
+                    />
+                    {filteredActors.length > 0 && (
+                      <ul className="dropdown-menu show" style={{ display: "block" }}>
+                        {filteredActors.map((actor) => (
+                          <li
+                            key={actor.id}
+                            className="dropdown-item"
+                            onClick={() => handleSelectActor(actor)}
+                          >
+                            {actor.name}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    <div className="selected-actors-grid mt-2">
+                      {selectedActors.map((actor) => (
+                        <div key={actor.id} className="selected-actor-item">
+                          <img
+                            src={actor.photo}
+                            alt={actor.name}
+                            className="actor-photo"
+                          />
+                          <span>{actor.name}</span>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setSelectedActors(
+                                selectedActors.filter((a) => a.id !== actor.id)
+                              )
+                            }
+                          >
+                            -
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                 </Form.Group>
               </Col>
             </Row>

@@ -77,7 +77,7 @@ export default async function handler(req, res) {
 
       case 'PUT': // Update - Ubah data actor
       try {
-        const { id, name, photo } = req.body;
+        const { id, name, photo, countryId } = req.body;
     
         if (!id) {
           return res.status(400).json({ error: 'ID is required' });
@@ -101,6 +101,21 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Photo cannot be empty' });
           }
           dataToUpdate.photo = photo.trim();
+        }
+
+        // Validasi dan update country
+        if (countryId !== undefined) {
+          const countryExists = await prisma.country.findUnique({
+            where: { id: parseInt(countryId) },
+          });
+
+          if (!countryExists) {
+            return res.status(400).json({ error: 'Invalid countryId. Country not found.' });
+          }
+
+          dataToUpdate.country = {
+            connect: { id: parseInt(countryId) },
+          };
         }
     
         // Update actor
