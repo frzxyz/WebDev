@@ -60,6 +60,10 @@ function FormsGenres({ onAddGenre }) {
         setErrorMessage(errorData.error || "Failed to add genre");
         return;
       }
+      if (!validNameRegex.test(genreName)) {
+        showPopup("error", "Genre name must only contain letters, spaces, hyphens, and apostrophes.");
+        return;
+      }
 
       const result = await response.json();
       showPopup("success", `Genre "${result.name}" added successfully!`);

@@ -35,6 +35,14 @@ function FormsUsers() {
       showPopup("error", "Please enter a valid country name.");
       return;
     }
+    const validNameRegex = /^[A-Za-z\s'-]+$/;
+    if (!validNameRegex.test(username)) {
+      showPopup(
+        "error",
+        "Username must only contain letters, spaces, hyphens, and apostrophes."
+      );
+      return;
+    }
 
     try {
       const res = await fetch('/api/cms/users', {

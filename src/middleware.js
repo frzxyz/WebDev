@@ -19,21 +19,7 @@ export async function middleware(req) {
   ];
 
   const { pathname } = req.nextUrl;
-
-  // Cek apakah URL yang diakses adalah salah satu dari path yang dibatasi
-  if (cmsPaths.some(path => pathname.startsWith(path))) {
-    // Jika token tidak ada, user belum login, redirect ke halaman login
-    if (!token) {
-      return NextResponse.redirect(new URL("/login", req.url));
-    }
-
-    // Periksa apakah user memiliki role 'Admin'
-    if (token.role !== "admin") {
-      // Redirect ke halaman tidak berizin jika role bukan Admin
-      return NextResponse.redirect(new URL("/not-authorized", req.url));
-    }
-  }
-
+  
   // Jika semua validasi berhasil, lanjutkan ke halaman yang dituju
   return NextResponse.next();
 }

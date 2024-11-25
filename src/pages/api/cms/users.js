@@ -29,9 +29,9 @@ export default async function handler(req, res) {
           return res.status(400).json({ error: 'All fields are required' });
         }
 
-        if (!isValidUsername(username)) {
-          return res.status(400).json({ error: 'Invalid username. It must contain alphabetic characters and cannot be only numbers or special characters.' });
-        }
+        // if (!isValidUsername(username)) {
+        //   return res.status(400).json({ error: 'Invalid username. It must contain alphabetic characters and cannot be only numbers or special characters.' });
+        // }
 
         // Check for duplicate username
         const existingUsername = await prisma.user.findFirst({

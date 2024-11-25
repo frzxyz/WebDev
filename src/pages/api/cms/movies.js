@@ -12,7 +12,7 @@ export default async function handler(req, res) {
           include: {
             country: true, // Include related country data
             genres: true,  // Include related genres
-            actors: true   // Include related actors
+            actors: true,  // Include related actors
           },
         });
         res.status(200).json(dramas);
@@ -23,50 +23,36 @@ export default async function handler(req, res) {
 
     case 'POST': // Create - Add a new drama
       try {
-        console.log('Received data:', req.body);
-        
         const {
           title,
-          alternativeTitle = "",
+          alternativeTitle = '',
           urlPhoto,
           year,
           countryId,
-          synopsis = "",
+          synopsis = '',
           availability,
           genres = [],
           actors = [],
-          trailerLink = "",
+          trailerLink = '',
           rating = 0,
           views = 0,
-          duration = 0
+          duration = 0,
         } = req.body;
 
-        // Ensure that all necessary fields are provided
-        if (!title || !year || !countryId || !urlPhoto || !synopsis  || !actors) {
-          return res.status(400).json({ error: 'Title, year, synopsis, actors, country, and url photo are required' });
+        if (!title || !year || !countryId || !urlPhoto || !synopsis || !actors.length) {
+          return res
+            .status(400)
+            .json({ error: 'Title, year, synopsis, actors, country, and URL photo are required' });
         }
 
-        // Validate that required fields are not only whitespace
-        const isWhitespace = (str) => !str || !str.trim();
-        if (isWhitespace(title) || isWhitespace(synopsis) || isWhitespace(urlPhoto) || isWhitespace(trailerLink)) {
-          return res.status(400).json({ error: 'Title, synopsis, URL photo, and trailer link cannot be empty or whitespace' });
+        if (isWhitespace(title) || isWhitespace(synopsis) || isWhitespace(urlPhoto)) {
+          return res.status(400).json({ error: 'Fields cannot be empty or whitespace' });
         }
 
-        // Validate URL photo extension
         if (!/\.(jpg|jpeg|png)$/i.test(urlPhoto)) {
           return res.status(400).json({ error: 'Poster URL must end with .jpg, .jpeg, or .png' });
         }
-        
-        // Validate data types
-        if (typeof title !== 'string' || typeof alternativeTitle !== 'string' || typeof synopsis !== 'string') {
-          return res.status(400).json({ error: 'Title, alternative title, and synopsis must be strings must be an array' });
-        }
 
-        if (isNaN(parseInt(year)) || isNaN(parseInt(countryId)) || isNaN(parseFloat(rating)) || isNaN(parseInt(views)) || isNaN(parseInt(duration))) {
-          return res.status(400).json({ error: 'Year, rating, views, and duration must be numbers' });
-        }
-
-        // Check for duplicate drama by title and year
         const existingDrama = await prisma.drama.findFirst({
           where: { title, year: parseInt(year) },
         });
@@ -82,15 +68,15 @@ export default async function handler(req, res) {
             urlPhoto: urlPhoto.trim(),
             year: parseInt(year),
             country: {
-              connect: { id: parseInt(countryId) },  // Connect the country
+              connect: { id: parseInt(countryId) },
             },
             synopsis: synopsis.trim(),
             availability,
             genres: {
-              connect: genres.map((genreId) => ({ id: parseInt(genreId) })),  // Connect genres
+              connect: genres.map((genreId) => ({ id: parseInt(genreId) })),
             },
             actors: {
-              connect: actors.map((actorId) => ({ id: parseInt(actorId) })),  // Connect actors
+              connect: actors.map((actorId) => ({ id: parseInt(actorId) })),
             },
             trailerLink: trailerLink.trim(),
             rating: parseFloat(rating),
@@ -101,7 +87,7 @@ export default async function handler(req, res) {
 
         res.status(201).json({
           message: 'Movie successfully added!',
-          data: newDrama, 
+          data: newDrama,
         });
       } catch (error) {
         console.error(error);
@@ -109,21 +95,14 @@ export default async function handler(req, res) {
       }
       break;
 
-      case 'PUT': // Update - Modify an existing drama
+    case 'PUT': // Update - Modify an existing drama
       try {
-        const {
-          id,
-          title,
-          urlPhoto,
-          year,
-          synopsis,
-        } = req.body;
-    
+        const { id, title, urlPhoto, year, synopsis, genres = [], actors = [] } = req.body;
+
         if (!id) {
           return res.status(400).json({ error: 'ID is required to update drama' });
         }
 
-        // Validate required fields and ensure they are not just whitespace
         if (!title || isWhitespace(title) || typeof title !== 'string') {
           return res.status(400).json({ error: 'Title is required and must be a non-empty string' });
         }
@@ -131,8 +110,7 @@ export default async function handler(req, res) {
         if (!urlPhoto || isWhitespace(urlPhoto) || typeof urlPhoto !== 'string') {
           return res.status(400).json({ error: 'URL photo is required and must be a non-empty string' });
         }
-        
-        // Validate URL photo extension
+
         if (!/\.(jpg|jpeg|png)$/i.test(urlPhoto)) {
           return res.status(400).json({ error: 'Poster URL must end with .jpg, .jpeg, or .png' });
         }
@@ -153,41 +131,53 @@ export default async function handler(req, res) {
         if (parseInt(year) < 1900) {
           return res.status(400).json({ error: 'Year cannot be less than 1900' });
         }
-    
+
         const existingDrama = await prisma.drama.findFirst({
           where: {
             title,
             year: parseInt(year),
-            NOT: { id: parseInt(id) },  // Exclude the current movie ID
+            NOT: { id: parseInt(id) },
           },
         });
 
         if (existingDrama) {
           return res.status(409).json({ error: 'A drama with the same title and year already exists' });
         }
-        
+
         const updateData = {
           title: title.trim(),
           urlPhoto: urlPhoto.trim(),
           year: parseInt(year),
           synopsis: synopsis.trim(),
         };
-    
+
+        if (genres.length > 0) {
+          updateData.genres = {
+            set: genres.map((genreId) => ({ id: parseInt(genreId) })),
+          };
+        }
+
+        if (actors.length > 0) {
+          updateData.actors = {
+            set: actors.map((actorId) => ({ id: parseInt(actorId) })),
+          };
+        }
+
         const updatedDrama = await prisma.drama.update({
           where: { id: parseInt(id) },
-          data: updateData, 
+          data: updateData,
         });
-    
+
         res.status(200).json(updatedDrama);
       } catch (error) {
         if (error.code === 'P2025') {
           res.status(404).json({ error: 'Movie not found' });
         } else {
-          console.error("Error updating drama:", error);
+          console.error('Error updating drama:', error);
           res.status(500).json({ error: 'Failed to update drama' });
         }
       }
-      break;    
+      break;
 
     case 'DELETE': // Delete - Remove a drama
       try {

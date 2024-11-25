@@ -12,7 +12,7 @@ function FormsActors() {
     countryId: "",
   });
   const [countries, setCountries] = useState([]);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [statusPopup, setStatusPopup] = useState({
     show: false,
@@ -20,14 +20,20 @@ function FormsActors() {
     message: "",
     onConfirm: null,
     isConfirm: false,
-  });  
-  
+  });
+
   const showPopup = (type, message, onConfirm = null, isConfirm = false) => {
     setStatusPopup({ show: true, type, message, onConfirm, isConfirm });
-  };  
-  
+  };
+
   const hidePopup = () => {
-    setStatusPopup({ show: false, type: "", message: "", onConfirm: null, isConfirm: false });
+    setStatusPopup({
+      show: false,
+      type: "",
+      message: "",
+      onConfirm: null,
+      isConfirm: false,
+    });
   };
 
   // Fetch the countries when the component mounts
@@ -46,12 +52,27 @@ function FormsActors() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setErrorMessage('');
+    setErrorMessage("");
 
     const { name, photo, countryId } = formData;
 
+    // Validasi nama aktor menggunakan regex
+    const validNameRegex = /^[A-Za-z\s'-]+$/;
+    if (!validNameRegex.test(name)) {
+      showPopup(
+        "error",
+        "Actor name must only contain letters, spaces, hyphens, and apostrophes."
+      );
+      return;
+    }
+
     if (!name.trim()) {
       showPopup("error", "Please enter a valid actor name.");
+      return;
+    }
+
+    if (!photo.trim()) {
+      showPopup("error", "Please enter a valid photo URL.");
       return;
     }
 
@@ -76,7 +97,11 @@ function FormsActors() {
       }
     } catch (error) {
       const errorResponse = await response.json();
-      showPopup("error", errorResponse.error || "An error occurred while adding the actor. Please try again.");
+      showPopup(
+        "error",
+        errorResponse.error ||
+          "An error occurred while adding the actor. Please try again."
+      );
     }
   };
 
@@ -85,16 +110,15 @@ function FormsActors() {
       <h5>Add Actor</h5>
       <div className="card">
         <div className="card-body">
-
-        {statusPopup.show && (
-          <StatusPopup
-            type={statusPopup.type}
-            message={statusPopup.message}
-            onClose={hidePopup}
-            onConfirm={statusPopup.onConfirm}
-            isConfirm={statusPopup.isConfirm}
-          />
-        )}
+          {statusPopup.show && (
+            <StatusPopup
+              type={statusPopup.type}
+              message={statusPopup.message}
+              onClose={hidePopup}
+              onConfirm={statusPopup.onConfirm}
+              isConfirm={statusPopup.isConfirm}
+            />
+          )}
 
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="formGroupActorName">

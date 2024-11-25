@@ -65,7 +65,20 @@ function FormsAwards() {
       showPopup("error", "All fields are required and must be valid.");
       return;
     }
+    const validNameRegex = /^[A-Za-z\s'-]+$/;
+    if (!validNameRegex.test(name)) {
+      showPopup("error", "Awards name must only contain letters, spaces, hyphens, and apostrophes.");
+      return;
+    }
   
+    if (isNaN(year) || year <= 1900 || year > 2024) {
+      showPopup(
+        "error",
+        `Year must be greater than 1900 and less than or equal to 2024.`
+      );
+      return;
+    }
+
     try {
       const res = await fetch("/api/cms/awards", {
         method: "POST",

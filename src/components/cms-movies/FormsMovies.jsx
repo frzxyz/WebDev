@@ -154,7 +154,14 @@ function FormsMovies() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(movieData),
       });
-  
+      const validNameRegex = /^[A-Za-z\s'-]+$/;
+      if (!validNameRegex.test(formData.title)) {
+        showPopup(
+          "error",
+          "Title must only contain letters, spaces, hyphens, and apostrophes."
+        );
+        return;
+      }
       if (response.ok) {
         const result = await response.json();
         console.log('Movie successfully added:', result);
