@@ -6,15 +6,12 @@ services:
       context: .
     container_name: node_app
     environment:
-      DATABASE_HOST: database
-      DATABASE_PORT: 5432
-      DATABASE_USER: postgres
-      DATABASE_PASSWORD: Kelompok1Database
-      DATABASE_NAME: moviesdb
+      DATABASE_URL: postgresql://postgres:Kelompok1Database@database:5432/moviesdb
     ports:
-      - "3000:3000" # Map port aplikasi Node.js
+      - "3000:3000"
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     networks:
       - app_network
 
@@ -26,9 +23,15 @@ services:
       POSTGRES_PASSWORD: Kelompok1Database
       POSTGRES_DB: moviesdb
     ports:
-      - "5432:5432" # Map port PostgreSQL
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./database_dump_utf8.sql:/docker-entrypoint-initdb.d/database_dump.sql:ro
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - app_network
 

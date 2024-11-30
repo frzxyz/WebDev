@@ -1,23 +1,26 @@
-# Use an official Node.js runtime as the base image
-FROM node:16-alpine
+# Gunakan versi Node.js yang sesuai
+FROM node:18-alpine
 
-# Set the working directory in the container
+# Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json to install dependencies
+# Copy package.json dan package-lock.json
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy the rest of the application code
+# Copy kode aplikasi dan Prisma schema
 COPY . .
 
-# Build the Next.js application
+# Generate Prisma client
+RUN npx prisma generate
+
+# Build aplikasi Next.js
 RUN npm run build
 
-# Expose the port that the app will run on
+# Expose port aplikasi
 EXPOSE 3000
 
-# Start the Next.js application
+# Jalankan aplikasi
 CMD ["npm", "start"]
