@@ -1,8 +1,8 @@
 // src/pages/cms-users.js
 
 import Sidebar from '../components/cms-genres/Sidebar-genres';
-import TableGenres from '../components/cms-genres/Tablegenres';
-import FormsGenres from '../components/cms-genres/Formsgenres';
+import TableGenres from '../components/cms-genres/TableGenres';
+import FormsGenres from '../components/cms-genres/FormsGenres';
 import { EditProvider } from "../components/cms-global/cms-edit";
 
 import "../styles/Awards.css";

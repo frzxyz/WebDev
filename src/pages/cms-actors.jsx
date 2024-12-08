@@ -1,8 +1,8 @@
 // src/pages/cms-actors.js
 
 import Sidebar from '../components/cms-actors/Sidebar-actors';
-import TableActors from '../components/cms-actors/Tableactors';
-import FormsActors from '../components/cms-actors/Formsactors';
+import TableActors from '../components/cms-actors/TableActors';
+import FormsActors from '../components/cms-actors/FormsActors';
 import { EditProvider } from "../components/cms-global/cms-edit";
 
 import "../styles/Countries.css";
